@@ -1,92 +1,113 @@
 ---
-title: 'Exercise 09: Cleanup'
+title: 'Exercise 09: Resource Cleanup'
 layout: default
 nav_order: 11
 has_children: false
 ---
 
-# Exercise 09 — Cleanup Resources You Created
+# Exercise 09 — Resource Cleanup
 
-The Foundry account, Cosmos DB, Search service, Container Apps environment,
-ACR, and Bing connection were provisioned for you and are typically shared.
-You should **not** delete those. However, you should remove the per-attendee
-artefacts you created in this workshop.
+## Scenario
 
-## What to remove
+The platform-team-provisioned resources (Foundry account, Cosmos DB, AI Search,
+ACR, ACA environment, App Insights, Bing) are shared and should **not** be
+deleted. The artefacts *you* created during the workshop, however, are
+yours to remove. This exercise lists them and shows the safe way to delete
+each one.
 
-| Artefact | Created in | How to remove |
-| -------- | ---------- | ------------- |
-| `pepsico-products-mcp` Container App | Ex. 01 | `az containerapp delete -g $RG -n pepsico-products-mcp -y` |
-| `pepsico-marketing-mcp` Container App | Ex. 02 | `az containerapp delete -g $RG -n pepsico-marketing-mcp -y` |
-| Cosmos `products` container | Ex. 01 | Data Explorer → right-click → Delete container |
-| Cosmos `marketing_campaigns` container | Ex. 02 | Data Explorer → right-click → Delete container |
-| `pepsico-hr-source` Search index | Ex. 03 | Portal → Search service → Indexes → Delete |
-| `pepsico-hr-kb` Foundry IQ knowledge base | Ex. 03 | Foundry portal → Knowledge bases → Delete |
-| `pepsico-hr-kb-conn` Foundry connection | Ex. 03 | Foundry portal → Connections → Delete |
-| `pepsico-products-mcp-conn` Foundry connection | Ex. 04 | Foundry portal → Connections → Delete |
-| `pepsico-marketing-mcp-conn` Foundry connection | Ex. 05 | Foundry portal → Connections → Delete |
-| 4 Foundry agents | Ex. 03-07 | Foundry portal → Agents → Delete each |
+## Success Criteria
 
-{: .warning }
-> Do **NOT** delete the Foundry project, the Cosmos DB account, the Search
-> service, the Container Apps environment, the ACR, the Application Insights
-> instance, or the Bing Grounding resource — these are shared workshop
-> resources.
+{: .success }
+> - The two Container Apps you deployed are removed.
+> - The Foundry agents you created are removed.
+> - The Foundry project connections you registered are removed.
+> - The HR Foundry IQ knowledge base and Search index are removed.
+> - The Cosmos `products` and `marketing_campaigns` containers (and optionally
+>   the `pepsico` database) are removed.
 
-## One-shot teardown script (per-attendee artefacts only)
+## Key Tasks
+
+### 01: Delete the Container Apps
 
 ```powershell
 $RG = $env:AZURE_RESOURCE_GROUP
-
-# 1. Container Apps
-az containerapp delete -g $RG -n pepsico-products-mcp -y
-az containerapp delete -g $RG -n pepsico-marketing-mcp -y
-
-# 2. Cosmos containers
-$cosmosAcct = ($env:COSMOS_ENDPOINT -replace 'https://','' -replace '\.documents\.azure\.com.*','')
-az cosmosdb sql container delete -g $RG -a $cosmosAcct -d $env:COSMOS_DATABASE -n $env:COSMOS_PRODUCTS_CONTAINER -y
-az cosmosdb sql container delete -g $RG -a $cosmosAcct -d $env:COSMOS_DATABASE -n $env:COSMOS_MARKETING_CONTAINER -y
-
-# 3. Search index
-$searchName = ($env:AZURE_SEARCH_ENDPOINT -replace 'https://','' -replace '\.search\.windows\.net.*','')
-az search index delete -g $RG --service-name $searchName --name $env:HR_KB_SOURCE_ID -y
-
-# 4. Foundry agents (Python helper)
-python - <<'PY'
-from src.common.foundry_client import get_project_client
-from src.common.settings import get_settings
-s = get_settings()
-client = get_project_client()
-for name in (s.hr_agent_name, s.products_agent_name, s.marketing_agent_name, s.response_agent_name):
-    try:
-        client.agents.delete(agent_name=name)
-        print("deleted", name)
-    except Exception as e:
-        print("skip", name, e)
-PY
+az containerapp delete -g $RG -n pepsico-products-mcp --yes
+az containerapp delete -g $RG -n pepsico-marketing-mcp --yes
 ```
 
-The Foundry IQ knowledge base and the Foundry connections are most reliably
-removed in the Foundry portal — do those by hand.
+### 02: Delete the Foundry agents
 
-## Success criteria
+In the Foundry portal → **Agents**, delete:
 
-{: .success }
-> - `az containerapp list -g $RG -o tsv --query "[].name"` does not contain
->   either MCP app
-> - The two Cosmos containers and the Search index are gone
-> - The four Foundry agents are gone from the project
-> - The shared resources (Foundry account/project, Cosmos account, Search
->   service, ACA environment, ACR, App Insights, Bing connection) are
->   **still present**
+* `pepsico-hr-agent`
+* `pepsico-products-agent`
+* `pepsico-marketing-agent`
+* `pepsico-response-generator`
 
-## You are done!
+Or via REST:
 
-You have built an end-to-end Pepsico multi-agent assistant. From here, ideas
-to extend:
+<details markdown="block">
+<summary><strong>Expand for CLI / Python deletion</strong></summary>
 
-- Add a **Sales** specialist with another MCP server (sales orders in SQL DB).
-- Replace Magentic with the **Handoff** pattern for a chained content
-  workflow (researcher → writer → editor).
-- Wire **content safety** filters on the response generator output.
-- Add **evaluation** runs in Foundry against a curated test set.
+```python
+from src.common.foundry_client import get_project_client
+from src.common.settings import get_settings
+
+s = get_settings()
+project = get_project_client()
+for name in (s.hr_agent_name, s.products_agent_name, s.marketing_agent_name, s.response_agent_name):
+    try:
+        project.agents.delete(agent_name=name)
+        print("deleted", name)
+    except Exception as exc:
+        print("skip", name, exc)
+```
+
+</details>
+
+### 03: Delete the Foundry project connections
+
+In the Foundry portal → **Management center → Connections**, delete:
+
+* `pepsico-products-mcp-conn`
+* `pepsico-marketing-mcp-conn`
+* `pepsico-hr-kb-conn`
+
+(Leave the `Grounding with Bing Search` connection if your platform team
+created it for you.)
+
+### 04: Delete the HR knowledge base + index
+
+```powershell
+$SEARCH = $env:AZURE_SEARCH_ENDPOINT
+$API    = "2025-11-01-preview"
+$TOKEN  = az account get-access-token --resource https://search.azure.com/ --query accessToken -o tsv
+
+curl -X DELETE -H "Authorization: Bearer $TOKEN" `
+  "$SEARCH/knowledgebases/pepsico-hr-kb?api-version=$API"
+
+curl -X DELETE -H "Authorization: Bearer $TOKEN" `
+  "$SEARCH/indexes/pepsico-hr-source?api-version=$API"
+```
+
+### 05: Delete the Cosmos containers
+
+```powershell
+$COSMOS = "<your-cosmos-account-name>"
+az cosmosdb sql container delete -a $COSMOS -g $RG -d pepsico -n products --yes
+az cosmosdb sql container delete -a $COSMOS -g $RG -d pepsico -n marketing_campaigns --yes
+# optional: delete the database too
+# az cosmosdb sql database delete -a $COSMOS -g $RG -n pepsico --yes
+```
+
+### 06: Local cleanup (optional)
+
+```powershell
+deactivate
+Remove-Item -Recurse -Force .venv
+Remove-Item .env
+```
+
+## You are done
+
+Thanks for completing the Pepsico AI Agents Workshop.

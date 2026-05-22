@@ -1,0 +1,62 @@
+---
+title: 'Exercise 07: Magentic Orchestrator'
+layout: default
+nav_order: 9
+has_children: true
+---
+
+# Exercise 07 — Build the Magentic Multi-Agent Orchestrator
+
+## Scenario
+
+Each specialist works in isolation, but real Pepsico questions often cross
+domains: *"Which active Gatorade campaigns target youth athletes, and what is
+the PTO policy for marketing managers attending those activations?"* A single
+agent cannot answer that — the orchestrator can.
+
+You will build a **Magentic** orchestrator with the **Microsoft Agent
+Framework**. Magentic uses a small **manager** model to plan a sequence of
+calls across the three specialists, then synthesises a final answer.
+
+## Description
+
+You will:
+
+1. Read a short overview of how Magentic plans and stalls.
+2. Fill in `src/orchestrator/magentic_router.py` so it wraps the three
+   specialist Foundry agents and a manager.
+3. Flip `AGENT_MODE=orchestrator` and ask mixed-domain questions.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    U[User] --> F[FastAPI /chat]
+    F --> M[Magentic Manager]
+    M --> HR[HR Agent (Foundry IQ)]
+    M --> PR[Products Agent (MCP)]
+    M --> MK[Marketing Agent (MCP + Bing)]
+    M --> RG[Response Generator (Ex 08)]
+```
+
+## Success Criteria
+
+{: .success }
+> - `src/orchestrator/magentic_router.py` no longer raises `NotImplementedError`.
+> - `python -m src.orchestrator.runner --query "What is our PTO policy?"`
+>   returns a real answer.
+> - With `AGENT_MODE=orchestrator` in `.env`, the chat UI returns a planned
+>   multi-agent answer for a mixed-domain question.
+
+## Learning Resources
+
+* [Microsoft Agent Framework — Magentic](https://learn.microsoft.com/azure/ai-foundry/agents/agent-framework-magentic)
+* [Magentic-One paper (background)](https://arxiv.org/abs/2411.04468)
+
+## Tasks
+
+| Task | Description |
+| ---- | ----------- |
+| [07.01 — Magentic in 5 minutes](07_01_magentic_overview.md) | The mental model: manager, participants, plan, stall, reset. |
+| [07.02 — Build the orchestrator](07_02_build_orchestrator.md) | Implement `run_query` in `magentic_router.py`. |
+| [07.03 — Run the orchestrator from the chat UI](07_03_wire_orchestrator_into_chat.md) | Flip `AGENT_MODE=orchestrator`. |

@@ -77,6 +77,9 @@ class Settings(BaseSettings):
     )
     otel_service_name: str = Field(default="pepsico-agents-workshop", alias="OTEL_SERVICE_NAME")
 
+    # ---- Chat app backend mode (Exercise 01 — see docs) -------------------
+    agent_mode: str = Field(default="stub", alias="AGENT_MODE")
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

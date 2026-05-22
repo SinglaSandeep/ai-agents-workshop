@@ -1,4 +1,11 @@
-"""Read-only Cosmos DB repository for the Pepsico products catalog."""
+"""Read-only Cosmos DB repository for the Pepsico products catalog.
+
+You implement this file in **Exercise 02 / Task 02.02**. Every method should
+return plain Python ``dict``s so the MCP server can JSON-serialise the result
+straight back to the caller.
+
+Reference solution: ``solution/mcp_servers/products/cosmos_repo.py``.
+"""
 
 from __future__ import annotations
 
@@ -14,45 +21,28 @@ class ProductsRepository:
         self._container = get_container(settings.cosmos_products_container)
 
     def list_categories(self) -> list[str]:
-        query = "SELECT DISTINCT VALUE c.category FROM c"
-        return [c for c in self._container.query_items(query=query, enable_cross_partition_query=True)]
+        """Return every distinct ``c.category`` value in the products container."""
+
+        # TODO (Exercise 02): run a `SELECT DISTINCT VALUE c.category FROM c`
+        # query and return the list.
+        raise NotImplementedError
 
     def list_products(self, category: str | None = None, limit: int = 20) -> list[dict[str, Any]]:
-        if category:
-            query = (
-                "SELECT TOP @limit c.id, c.name, c.category, c.brand, c.size, "
-                "c.description, c.calories, c.price_usd FROM c WHERE LOWER(c.category) = LOWER(@cat)"
-            )
-            params = [{"name": "@limit", "value": limit}, {"name": "@cat", "value": category}]
-        else:
-            query = (
-                "SELECT TOP @limit c.id, c.name, c.category, c.brand, c.size, "
-                "c.description, c.calories, c.price_usd FROM c"
-            )
-            params = [{"name": "@limit", "value": limit}]
-        return list(
-            self._container.query_items(
-                query=query, parameters=params, enable_cross_partition_query=True
-            )
-        )
+        """Return up to ``limit`` products, optionally filtered by ``category``."""
+
+        # TODO (Exercise 02): SELECT TOP @limit ... with an optional WHERE
+        # filter when `category` is provided.
+        raise NotImplementedError
 
     def get_product(self, product_id: str) -> dict[str, Any] | None:
-        try:
-            return self._container.read_item(item=product_id, partition_key=product_id)
-        except Exception:
-            return None
+        """Return a single product by id, or ``None`` if it does not exist."""
+
+        # TODO (Exercise 02): call `self._container.read_item(...)` and
+        # return `None` on failure.
+        raise NotImplementedError
 
     def search_products(self, text: str, limit: int = 10) -> list[dict[str, Any]]:
-        query = (
-            "SELECT TOP @limit c.id, c.name, c.category, c.brand, c.size, "
-            "c.description, c.calories, c.price_usd FROM c "
-            "WHERE CONTAINS(LOWER(c.name), LOWER(@q)) "
-            "   OR CONTAINS(LOWER(c.description), LOWER(@q)) "
-            "   OR CONTAINS(LOWER(c.brand), LOWER(@q))"
-        )
-        params = [{"name": "@limit", "value": limit}, {"name": "@q", "value": text}]
-        return list(
-            self._container.query_items(
-                query=query, parameters=params, enable_cross_partition_query=True
-            )
-        )
+        """Free-text CONTAINS search across product name, brand, and description."""
+
+        # TODO (Exercise 02): SELECT TOP @limit ... WHERE CONTAINS(LOWER(...)).
+        raise NotImplementedError

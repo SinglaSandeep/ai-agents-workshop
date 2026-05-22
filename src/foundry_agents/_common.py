@@ -1,13 +1,14 @@
 """Shared helpers used by the agent-creation scripts in this package.
 
-Every `create_*_agent.py` script in this folder follows the same shape:
+Every ``create_*_agent.py`` script in this folder will, once you have built
+it, follow the same shape:
 
-1. Compose `PromptAgentDefinition` (model + instructions + tools).
-2. Call `project_client.agents.create_version(...)`.
-3. Print the agent name and version so subsequent scripts can re-use them.
+1. Compose a ``PromptAgentDefinition`` (model + instructions + tools).
+2. Call ``project_client.agents.create_version(...)``.
+3. Print the agent name + version so subsequent scripts can re-use them.
 
-These helpers centralise the boilerplate so each script stays focused on
-*what makes that agent different* (its tools and its instructions).
+This module is fully implemented because every exercise from 03 onward depends
+on it. You will read it, but you do not need to change it.
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ def create_or_update_agent(
     model: str | None = None,
 ):
     """Create a new **version** of the named Foundry agent."""
+
     settings = get_settings()
     project = get_project_client()
 
@@ -40,7 +42,12 @@ def create_or_update_agent(
         tools=tools,
     )
 
-    LOG.info("Creating agent version: %s (model=%s, tools=%d)", agent_name, definition.model, len(tools))
+    LOG.info(
+        "Creating agent version: %s (model=%s, tools=%d)",
+        agent_name,
+        definition.model,
+        len(tools),
+    )
     agent = project.agents.create_version(
         agent_name=agent_name,
         definition=definition,

@@ -1,24 +1,32 @@
-"""Register a Foundry project connection for the **Products MCP server**
-and create the Products Foundry Prompt Agent.
+"""Create the Pepsico **Products** Foundry Prompt Agent.
 
-Pre-requisite: the Products MCP container app from Exercise 01 is running and
-its public URL is set as `PRODUCTS_MCP_URL` in `.env`.
+You implement this script in **Exercise 03 / Task 03.02**. It does two
+things:
+
+1. Registers (or updates) a Foundry project **connection** that points at the
+   Products MCP server you deployed in Exercise 02.
+2. Creates a new version of the Products Prompt Agent, attaching the MCP
+   server as an ``MCPTool``.
+
+Run (after you complete the TODOs):
 
     python -m src.foundry_agents.create_products_agent
+
+Reference solution: ``solution/foundry_agents/create_products_agent.py``.
 """
 
 from __future__ import annotations
 
 import logging
 
-from azure.ai.projects.models import MCPTool
-
-from src.common.foundry_client import upsert_project_connection
-from src.common.settings import get_settings
-
-from ._common import create_or_update_agent
+# TODO (Exercise 03): import MCPTool and the helpers below.
+#   from azure.ai.projects.models import MCPTool
+#   from src.common.foundry_client import upsert_project_connection
+#   from src.common.settings import get_settings
+#   from ._common import create_or_update_agent
 
 LOG = logging.getLogger(__name__)
+
 
 INSTRUCTIONS = """You are the Pepsico Products Specialist.
 
@@ -39,36 +47,22 @@ Rules:
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    settings = get_settings()
 
-    if not settings.products_mcp_url:
-        raise RuntimeError(
-            "PRODUCTS_MCP_URL is empty. Deploy the Products MCP server in Exercise 01 first."
-        )
+    # TODO (Exercise 03 / Task 03.02):
+    #
+    # 1. Load settings and validate that PRODUCTS_MCP_URL is populated.
+    # 2. Call `upsert_project_connection` with:
+    #       category="RemoteTool",
+    #       target=settings.products_mcp_url,
+    #       auth_type="ProjectManagedIdentity",
+    #       audience="https://management.azure.com/",
+    #       metadata={"ApiType": "MCP"},
+    # 3. Build an `MCPTool` referencing the new connection.
+    # 4. Call `create_or_update_agent(agent_name=settings.products_agent_name,
+    #       instructions=INSTRUCTIONS, tools=[products_tool], ...)`.
 
-    # 1. Make sure a Foundry project connection points at the MCP server.
-    upsert_project_connection(
-        connection_name=settings.products_mcp_connection_name,
-        category="RemoteTool",
-        target=settings.products_mcp_url,
-        auth_type="ProjectManagedIdentity",
-        audience="https://management.azure.com/",
-        metadata={"ApiType": "MCP"},
-    )
-
-    # 2. Attach an MCPTool referencing that connection to the agent.
-    products_tool = MCPTool(
-        server_label="pepsico-products",
-        server_url=settings.products_mcp_url,
-        require_approval="never",
-        project_connection_id=settings.products_mcp_connection_name,
-    )
-
-    create_or_update_agent(
-        agent_name=settings.products_agent_name,
-        instructions=INSTRUCTIONS,
-        tools=[products_tool],
-        description="Pepsico Products specialist (MCP-backed by Cosmos DB).",
+    raise NotImplementedError(
+        "create_products_agent is not implemented yet — complete Exercise 03."
     )
 
 

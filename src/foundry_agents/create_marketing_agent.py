@@ -1,29 +1,36 @@
-"""Create the Marketing Foundry Prompt Agent with TWO tools:
-  - the Marketing MCP server (Cosmos-backed campaign data)
-  - the Grounding-with-Bing-Search web search tool
+"""Create the Pepsico **Marketing** Foundry Prompt Agent.
+
+You implement this script in **Exercise 05**. The Marketing agent gets two
+tools: the Marketing MCP server (Cosmos-backed campaign data) **and** the
+Grounding-with-Bing-Search web tool.
 
 Pre-requisites:
-- Marketing MCP container app deployed (Exercise 02) and `MARKETING_MCP_URL` set.
-- A Grounding-with-Bing-Search resource exists AND a Foundry **connection** to
-  it has been registered on your project with the name in
-  `BING_GROUNDING_CONNECTION_NAME` (see docs/05_marketing_foundry_agent/05_01_register_mcp_and_bing.md).
+
+* Marketing MCP container app deployed (Exercise 04) and ``MARKETING_MCP_URL``
+  set in ``.env``.
+* A Grounding-with-Bing-Search resource exists *and* a Foundry connection
+  to it has been registered on your project with the name in
+  ``BING_GROUNDING_CONNECTION_NAME``.
 
 Run:
+
     python -m src.foundry_agents.create_marketing_agent
+
+Reference solution: ``solution/foundry_agents/create_marketing_agent.py``.
 """
 
 from __future__ import annotations
 
 import logging
 
-from azure.ai.projects.models import MCPTool, WebSearchTool
-
-from src.common.foundry_client import upsert_project_connection
-from src.common.settings import get_settings
-
-from ._common import create_or_update_agent
+# TODO (Exercise 05): import MCPTool, WebSearchTool, helpers.
+#   from azure.ai.projects.models import MCPTool, WebSearchTool
+#   from src.common.foundry_client import upsert_project_connection
+#   from src.common.settings import get_settings
+#   from ._common import create_or_update_agent
 
 LOG = logging.getLogger(__name__)
+
 
 INSTRUCTIONS = """You are the Pepsico Marketing Specialist.
 
@@ -47,40 +54,18 @@ Rules:
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    settings = get_settings()
 
-    if not settings.marketing_mcp_url:
-        raise RuntimeError(
-            "MARKETING_MCP_URL is empty. Deploy the Marketing MCP server (Exercise 02) first."
-        )
+    # TODO (Exercise 05):
+    #
+    # 1. Load settings + validate MARKETING_MCP_URL.
+    # 2. Upsert the Marketing MCP project connection.
+    # 3. Build an MCPTool pointing at it.
+    # 4. Build a WebSearchTool() (it picks up the Bing connection by name
+    #    via the BING_GROUNDING_CONNECTION_NAME setting).
+    # 5. Call `create_or_update_agent(..., tools=[marketing_tool, web_search_tool])`.
 
-    # 1. Marketing MCP project connection.
-    upsert_project_connection(
-        connection_name=settings.marketing_mcp_connection_name,
-        category="RemoteTool",
-        target=settings.marketing_mcp_url,
-        auth_type="ProjectManagedIdentity",
-        audience="https://management.azure.com/",
-        metadata={"ApiType": "MCP"},
-    )
-
-    marketing_tool = MCPTool(
-        server_label="pepsico-marketing",
-        server_url=settings.marketing_mcp_url,
-        require_approval="never",
-        project_connection_id=settings.marketing_mcp_connection_name,
-    )
-
-    # 2. Bing Grounding web-search tool. The Bing CONNECTION is created out of
-    #    band (see docs/05_marketing_foundry_agent/05_01_register_mcp_and_bing.md);
-    #    we just reference it by name here.
-    web_search_tool = WebSearchTool()
-
-    create_or_update_agent(
-        agent_name=settings.marketing_agent_name,
-        instructions=INSTRUCTIONS,
-        tools=[marketing_tool, web_search_tool],
-        description="Pepsico Marketing specialist (Cosmos-backed MCP + Bing Grounding).",
+    raise NotImplementedError(
+        "create_marketing_agent is not implemented yet — complete Exercise 05."
     )
 
 

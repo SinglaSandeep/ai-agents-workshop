@@ -91,4 +91,4 @@ account endpoint.
 ## Next
 
 You are ready to start building. Continue to
-[Exercise 01 — Build & Deploy the Products MCP Server](../01_products_mcp_server/01_products_mcp_server.md).
+[Exercise 01 — Scaffold the Chat App](../01_chat_app_scaffold/01_chat_app_scaffold.md).

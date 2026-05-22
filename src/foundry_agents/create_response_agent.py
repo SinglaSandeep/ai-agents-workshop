@@ -1,21 +1,28 @@
-"""Create the **Response Generator** Foundry Prompt Agent.
+"""Create the Pepsico **Response Generator** Foundry Prompt Agent.
 
-This agent has NO tools. Its only job is to take the structured output of the
-Magentic orchestrator (the specialist transcripts) and produce the final
+This agent has NO tools — its only job is to take the structured output of
+the Magentic orchestrator (the specialist transcripts) and produce the final
 user-facing answer in a consistent Pepsico voice.
 
+You implement this script in **Exercise 08**.
+
+Run:
+
     python -m src.foundry_agents.create_response_agent
+
+Reference solution: ``solution/foundry_agents/create_response_agent.py``.
 """
 
 from __future__ import annotations
 
 import logging
 
-from src.common.settings import get_settings
-
-from ._common import create_or_update_agent
+# TODO (Exercise 08): import helpers.
+#   from src.common.settings import get_settings
+#   from ._common import create_or_update_agent
 
 LOG = logging.getLogger(__name__)
+
 
 INSTRUCTIONS = """You are the Pepsico Response Generator.
 
@@ -29,20 +36,21 @@ Rules:
 - Merge information from multiple specialists when relevant; never invent facts.
 - If specialists conflict, prefer Pepsico's internal sources (HR knowledge base,
   Products MCP, Marketing MCP) over web search.
-- End with a `Sources:` line listing the specialists used (e.g. `Sources: hr, products`)
-  and any URLs surfaced by the marketing agent.
+- End with a `Sources:` line listing the specialists used (e.g.
+  `Sources: hr, products`) and any URLs surfaced by the marketing agent.
 - Tone: warm, professional, concise. Pepsico-internal employees are the audience.
 """
 
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    settings = get_settings()
-    create_or_update_agent(
-        agent_name=settings.response_agent_name,
-        instructions=INSTRUCTIONS,
-        tools=[],
-        description="Pepsico final-answer synthesiser.",
+
+    # TODO (Exercise 08): call `create_or_update_agent` with
+    #   agent_name=settings.response_agent_name, instructions=INSTRUCTIONS,
+    #   tools=[].
+
+    raise NotImplementedError(
+        "create_response_agent is not implemented yet — complete Exercise 08."
     )
 
 
