@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pepsico AI Agents Workshop</title>
+  <style>
+    :root { --brand:#004B93; --brand2:#E32934; --bg:#f3f5f8; --ink:#0f172a; --muted:#475569; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Inter, Arial, sans-serif; margin: 0; background: var(--bg); color: var(--ink); }
+    header { background: linear-gradient(90deg, var(--brand), var(--brand2)); color: #fff; padding: 20px 28px; }
+    header h1 { margin: 0; font-size: 22px; }
+    header p { margin: 4px 0 0; opacity: .9; font-size: 14px; }
+    main { max-width: 980px; margin: 0 auto; padding: 24px 20px; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+    label { display:block; font-weight:600; margin-bottom:8px; color: var(--ink); }
+    textarea { width:100%; min-height:90px; padding:12px; border:1px solid #cbd5e1; border-radius:6px; font: inherit; resize: vertical; }
+    button { margin-top:12px; padding:10px 18px; border:0; border-radius:6px; background: var(--brand); color:#fff; font-weight:600; cursor:pointer; }
+    button:hover { background:#003a73; }
+    .answer { white-space: pre-wrap; line-height: 1.55; }
+    .meta { color: var(--muted); font-size: 13px; margin-top:10px; }
+    details { margin-top: 8px; }
+    pre { background:#0f172a; color:#f8fafc; padding:14px; border-radius:6px; overflow:auto; font-size:12.5px; }
+    .pill { display:inline-block; padding:2px 8px; border-radius:999px; background:#e0e7ff; color:#3730a3; font-size:12px; margin-right:6px; }
+    .pill.hr { background:#dcfce7; color:#166534; }
+    .pill.products { background:#fef9c3; color:#854d0e; }
+    .pill.marketing { background:#fee2e2; color:#991b1b; }
+    .pill.response_generator { background:#e0e7ff; color:#3730a3; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pepsico AI Agents Workshop</h1>
+    <p>Multi-agent assistant orchestrated by Microsoft Agent Framework over Foundry agents (HR · Products · Marketing · Response Generator)</p>
+  </header>
+  <main>
+    <section class="card">
+      <form id="chat-form">
+        <label for="query">Ask a question</label>
+        <textarea id="query" placeholder="e.g. Which active Gatorade campaigns target youth athletes, and what's the PTO policy for marketing managers attending those activations?">What is the PTO policy at Pepsico?</textarea>
+        <button type="submit">Ask the assistant</button>
+      </form>
+    </section>
+
+    <section class="card" id="answer-card" hidden>
+      <h3>Final Answer</h3>
+      <div class="answer" id="final"></div>
+      <div class="meta" id="plan"></div>
+      <details>
+        <summary>Specialist transcripts</summary>
+        <pre id="transcripts"></pre>
+      </details>
+      <details>
+        <summary>Orchestrator events</summary>
+        <pre id="events"></pre>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('chat-form');
+    const card = document.getElementById('answer-card');
+    const finalEl = document.getElementById('final');
+    const planEl = document.getElementById('plan');
+    const transcriptsEl = document.getElementById('transcripts');
+    const eventsEl = document.getElementById('events');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = document.getElementById('query').value.trim();
+      if (!query) return;
+      card.hidden = false;
+      finalEl.textContent = 'Thinking...';
+      planEl.textContent = '';
+      transcriptsEl.textContent = '';
+      eventsEl.textContent = '';
+
+      try {
+        const r = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query }),
+        });
+        const data = await r.json();
+        finalEl.textContent = data.final_answer || '(no answer)';
+        planEl.innerHTML = 'Plan: ' + (data.plan || []).map(n => `<span class="pill ${n}">${n}</span>`).join('');
+        transcriptsEl.textContent = JSON.stringify(data.transcripts, null, 2);
+        eventsEl.textContent = JSON.stringify(data.events, null, 2);
+      } catch (err) {
+        finalEl.textContent = 'Error: ' + err;
+      }
+    });
+  </script>
+</body>
+</html>

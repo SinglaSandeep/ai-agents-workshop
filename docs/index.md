@@ -1,30 +1,21 @@
 ---
-title: Workshop Guide
+title: Contents
 layout: default
-nav_order: 2
-has_children: true
+nav_order: 1
+has_children: false
 ---
 
-# AI Agents Workshop Guide
+# Workshop Contents
 
-This guide walks through a local-first version of a FoundryIQ-style multi-agent assistant. You build the application agent by agent and verify a running version after every exercise.
-
-## Exercises
-
-1. [Setup](00_setup.md)
-2. [Exercise 01: Build the HR agent](01_hr_agent.md)
-3. [Exercise 02: Add the Products agent](02_products_agent.md)
-4. [Exercise 03: Add the Marketing agent](03_marketing_agent.md)
-5. [Exercise 04: Add the Orchestrator](04_orchestrator.md)
-6. [Exercise 05: Add Observability for Microsoft Foundry](05_observability_ai_foundry.md)
-
-## Scenario
-
-Zava needs an internal assistant that can answer questions from different business domains. Instead of one large prompt, the app uses specialist agents:
-
-- HR agent: PTO, benefits, handbook, and remote work policy
-- Products agent: catalog, pricing, warranty, and specifications
-- Marketing agent: campaigns, brand voice, audience, and channels
-- Orchestrator: routes each user question to the best specialist
-
-The workshop starts locally so learners can understand the agent pattern before replacing local markdown knowledge with FoundryIQ knowledge bases.
+| #  | Exercise |
+| -- | -------- |
+| 00 | [Setup & Verify Pre-Provisioned Resources](00_setup/00_setup.md) |
+| 01 | [Build & Deploy the Products MCP Server](01_products_mcp_server/01_products_mcp_server.md) |
+| 02 | [Build & Deploy the Marketing MCP Server](02_marketing_mcp_server/02_marketing_mcp_server.md) |
+| 03 | [Create the HR Agent with Foundry IQ](03_hr_foundry_iq_agent/03_hr_foundry_iq_agent.md) |
+| 04 | [Create the Products Agent (Foundry + MCP)](04_products_foundry_agent/04_products_foundry_agent.md) |
+| 05 | [Create the Marketing Agent (Foundry + MCP + Bing)](05_marketing_foundry_agent/05_marketing_foundry_agent.md) |
+| 06 | [Build the Magentic Orchestrator](06_orchestrator_agent_framework/06_orchestrator_agent_framework.md) |
+| 07 | [Add the Response Generator Agent](07_response_generator_agent/07_response_generator_agent.md) |
+| 08 | [Wire the Chat App & Add Observability](08_chat_app_and_observability/08_chat_app_and_observability.md) |
+| 09 | [Resource Cleanup](09_cleanup/09_cleanup.md) |

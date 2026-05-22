@@ -1,30 +1,61 @@
 [project]
-name = "ai-agents-workshop"
-version = "0.1.0"
-description = "Local-first workshop for building a multi-agent business assistant"
+name = "pepsico-ai-agents-workshop"
+version = "1.0.0"
+description = "End-to-end multi-agent Pepsico assistant on Azure (Microsoft Foundry, Agent Framework, Foundry IQ, Bing Grounding, MCP on Container Apps, Cosmos DB)."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi>=0.109.0",
-    "uvicorn[standard]>=0.27.0",
-    "pydantic>=2.5.0",
-    "python-dotenv>=1.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.4.0",
+    "python-dotenv>=1.0.1",
+    "httpx>=0.27.0",
+    "azure-identity>=1.17.0",
+    "azure-cosmos>=4.7.0",
+    "azure-ai-projects>=2.0.0b1",
+    "azure-core>=1.30.0",
+    "requests>=2.32.0",
+    "openai>=1.55.0",
 ]
 
 [project.optional-dependencies]
+mcp = [
+    "mcp>=1.4.0",
+    "fastmcp>=2.5.0",
+]
+framework = [
+    "agent-framework-core>=1.0.0b260107",
+    "agent-framework-azure-ai>=1.0.0b260107",
+]
 observability = [
     "azure-monitor-opentelemetry>=1.6.0",
-    "opentelemetry-api>=1.25.0",
-    "opentelemetry-sdk>=1.25.0",
-    "opentelemetry-instrumentation-fastapi>=0.46b0",
+    "opentelemetry-api>=1.27.0",
+    "opentelemetry-sdk>=1.27.0",
+    "opentelemetry-instrumentation-fastapi>=0.48b0",
+    "opentelemetry-instrumentation-httpx>=0.48b0",
 ]
 dev = [
-    "pytest>=7.0.0",
-    "ruff>=0.5.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.6.0",
 ]
+
+[project.scripts]
+pepsico-workshop = "src.app.cli:main"
+pepsico-products-mcp = "src.mcp_servers.products.server:main"
+pepsico-marketing-mcp = "src.mcp_servers.marketing.server:main"
+pepsico-seed-products = "src.mcp_servers.products.seed.seed_cosmos:main"
+pepsico-seed-marketing = "src.mcp_servers.marketing.seed.seed_cosmos:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+asyncio_mode = "auto"
 
 [tool.ruff]
-line-length = 100
+line-length = 110
+target-version = "py311"
