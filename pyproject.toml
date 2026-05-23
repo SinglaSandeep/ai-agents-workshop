@@ -35,6 +35,17 @@ observability = [
     "opentelemetry-instrumentation-fastapi>=0.48b0",
     "opentelemetry-instrumentation-httpx>=0.48b0",
 ]
+evals = [
+    "azure-ai-evaluation>=1.0.0",
+]
+redteam = [
+    "azure-ai-evaluation[redteam]>=1.0.0",
+    "rich>=13.7.0",
+]
+hosted = [
+    "agent-framework-foundry-hosting>=0.3.0",
+    "mcp>=1.4.0",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",

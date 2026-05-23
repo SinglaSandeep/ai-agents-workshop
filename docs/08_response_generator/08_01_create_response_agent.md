@@ -2,7 +2,7 @@
 title: '1. Create the Response Generator agent'
 layout: default
 nav_order: 1
-parent: 'Exercise 08: Response Generator + Observability'
+parent: 'Exercise 08: Response Generator'
 ---
 
 # Task 08.01 — Create the Response Generator Agent
@@ -38,8 +38,6 @@ from src.common.settings import get_settings
 
 from ._common import create_or_update_agent
 
-LOG = logging.getLogger(__name__)
-
 INSTRUCTIONS = """You are the Pepsico Response Generator.
 
 You receive a JSON object with the user's original question and the answers
@@ -50,10 +48,8 @@ Rules:
 - Lead with a single direct sentence answering the question.
 - Then 1-3 short paragraphs of supporting detail. Use bullet points if helpful.
 - Merge information from multiple specialists when relevant; never invent facts.
-- If specialists conflict, prefer Pepsico's internal sources (HR knowledge base,
-  Products MCP, Marketing MCP) over web search.
-- End with a `Sources:` line listing the specialists used (e.g. `Sources: hr, products`)
-  and any URLs surfaced by the marketing agent.
+- If specialists conflict, prefer Pepsico's internal sources over web search.
+- End with a `Sources:` line listing the specialists used and any URLs.
 - Tone: warm, professional, concise. Pepsico-internal employees are the audience.
 """
 

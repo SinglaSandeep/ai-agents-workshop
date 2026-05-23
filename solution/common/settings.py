@@ -36,6 +36,16 @@ class Settings(BaseSettings):
     hr_kb_name: str = Field(default="pepsico-hr-kb", alias="HR_KB_NAME")
     hr_kb_source_id: str = Field(default="pepsico-hr-source", alias="HR_KB_SOURCE_ID")
     hr_kb_connection_name: str = Field(default="pepsico-hr-kb-conn", alias="HR_KB_CONNECTION_NAME")
+    marketing_kb_name: str = Field(default="pepsico-marketing-kb", alias="MARKETING_KB_NAME")
+    marketing_kb_source_id: str = Field(
+        default="pepsico-marketing-source", alias="MARKETING_KB_SOURCE_ID"
+    )
+    marketing_kb_connection_name: str = Field(
+        default="pepsico-marketing-kb-conn", alias="MARKETING_KB_CONNECTION_NAME"
+    )
+    marketing_toolbox_name: str = Field(
+        default="pepsico-marketing-tools", alias="MARKETING_TOOLBOX_NAME"
+    )
 
     # ---- Cosmos DB ---------------------------------------------------------
     cosmos_endpoint: str = Field(default="", alias="COSMOS_ENDPOINT")
