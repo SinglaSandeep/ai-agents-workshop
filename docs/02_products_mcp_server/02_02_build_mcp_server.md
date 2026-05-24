@@ -33,7 +33,7 @@ if you get stuck.
 
 ### 01: Implement `cosmos_repo.py`
 
-Open [src/mcp_servers/products/cosmos_repo.py](../../src/mcp_servers/products/cosmos_repo.py).
+Open [src/mcp_servers/products/cosmos_repo.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/mcp_servers/products/cosmos_repo.py).
 The skeleton already imports `get_container` from `src.common.cosmos` and
 selects the products container in `__init__`. You just need to fill in each
 query method.
@@ -125,7 +125,7 @@ server can JSON-serialise the response straight back to the LLM.
 
 ### 02: Implement `server.py`
 
-Open [src/mcp_servers/products/server.py](../../src/mcp_servers/products/server.py).
+Open [src/mcp_servers/products/server.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/mcp_servers/products/server.py).
 Follow the TODOs to:
 
 1. Import `FastMCP` and your `ProductsRepository`.

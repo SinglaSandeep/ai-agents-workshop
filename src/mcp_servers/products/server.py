@@ -26,15 +26,26 @@ import os
 
 
 # TODO (Exercise 02 / Task 02.02): instantiate the FastMCP app with a name
-# and clear `instructions` text. The instructions are read by the calling
-# LLM and help it pick the right tool.
+# and rich, task-oriented `instructions` text. The instructions are read by
+# the calling LLM at tool-discovery time and help it pick the right tool.
+# Follow Microsoft's MCP development best practices:
+# https://microsoft.github.io/mcp-azure-security-guide/adoption/development-best-practices/
+#
+# Good instructions explain (1) what the server does, (2) the brands/domain
+# in scope, (3) tool-selection guidance, and (4) data format conventions
+# (currency, units, id format). Example:
 #
 #   mcp = FastMCP(
 #       name="pepsico-products",
 #       instructions=(
-#           "Use these tools to look up Pepsico products in the catalog. "
-#           "Prefer `search_products` for free-text questions and `list_products` "
-#           "when the user names a specific category (Beverages, Snacks, etc.)."
+#           "Pepsico Products catalog assistant. Use these tools to answer "
+#           "questions about Pepsico beverages and snacks.\n\n"
+#           "Tool selection:\n"
+#           "  • `search_products`  → free-text questions\n"
+#           "  • `list_products`   → user names a category\n"
+#           "  • `list_categories` → enumerate available categories\n"
+#           "  • `get_product`     → fetch one SKU by id (PEP-###)\n\n"
+#           "Prices in USD, calories in kcal. Do not invent SKU ids."
 #       ),
 #   )
 
@@ -42,15 +53,38 @@ import os
 # TODO (Exercise 02 / Task 02.02): for each of the four tools, write a
 # Python function and decorate it with `@mcp.tool`. The docstring becomes
 # the tool description the LLM sees, and the type hints become the JSON
-# schema. Example shape:
+# schema. A good tool description tells the LLM (1) what it does in one
+# sentence, (2) WHEN to pick it over similar tools, (3) the return shape,
+# and (4) what `null` / empty results mean.
+#
+# Add parameter constraints/descriptions via `Annotated[..., Field(...)]`
+# so the LLM sees richer JSON Schema (regex patterns, min/max, examples):
+#
+#   from typing import Annotated
+#   from pydantic import Field
 #
 #   def _repo() -> "ProductsRepository":
 #       return ProductsRepository()
 #
 #   @mcp.tool
 #   def list_categories() -> list[str]:
-#       """List all distinct product categories available in the Pepsico catalog."""
+#       """List every distinct product category in the catalog.
+#
+#       Use this first if you are unsure which category strings are valid
+#       before calling `list_products`. Always returns a non-empty list.
+#       """
 #       return _repo().list_categories()
+#
+#   @mcp.tool
+#   def get_product(
+#       product_id: Annotated[
+#           str,
+#           Field(pattern=r"^PEP-\d{3,}$", examples=["PEP-001"],
+#                 description="Product id like 'PEP-001'. Do not guess."),
+#       ],
+#   ) -> dict | None:
+#       """Fetch one product by id. Returns null if the SKU does not exist."""
+#       return _repo().get_product(product_id)
 
 
 # TODO (Exercise 02 / Task 02.02): expose the FastMCP app as an ASGI app over

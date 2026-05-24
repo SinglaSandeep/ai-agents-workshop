@@ -24,7 +24,7 @@ to score the agent's output.
 ### 01: Use the starter dataset
 
 We ship a starter at
-[solution/evaluations/eval_data/quality_ground_truth.jsonl](../../solution/evaluations/eval_data/quality_ground_truth.jsonl).
+[solution/evaluations/eval_data/quality_ground_truth.jsonl](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/solution/evaluations/eval_data/quality_ground_truth.jsonl).
 Copy it into `src/` for your run, then add 2-3 of your own prompts.
 
 Each line is:

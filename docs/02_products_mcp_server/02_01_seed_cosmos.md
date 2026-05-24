@@ -23,7 +23,7 @@ container. Before you can run it, you need data. We ship a JSON file with
 
 ### 01: Inspect the seed data
 
-Open [src/mcp_servers/products/seed/products_seed.json](../../src/mcp_servers/products/seed/products_seed.json)
+Open [src/mcp_servers/products/seed/products_seed.json](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/mcp_servers/products/seed/products_seed.json)
 and look at the document shape:
 
 ```json

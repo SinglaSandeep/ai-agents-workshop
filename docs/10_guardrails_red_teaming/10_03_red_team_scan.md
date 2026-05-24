@@ -37,12 +37,12 @@ Leave this running. It exposes `http://localhost:8088/responses`.
 
 ### 02: Implement `red_team/red_team_scan_local.py`
 
-Open [src/red_team/red_team_scan_local.py](../../src/red_team/red_team_scan_local.py).
+Open [src/red_team/red_team_scan_local.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/red_team/red_team_scan_local.py).
 
 <details markdown="block">
 <summary><strong>Expand for the solution</strong></summary>
 
-See [solution/red_team/red_team_scan_local.py](../../solution/red_team/red_team_scan_local.py).
+See [solution/red_team/red_team_scan_local.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/solution/red_team/red_team_scan_local.py).
 It builds a `RedTeam` configured with `Violence`, `HateUnfairness`, `Sexual`
 and `SelfHarm` risk categories and the `Baseline`, `Url`, and `Tense` attack
 strategies, invokes the agent over local HTTP, and prints a rich summary.

@@ -30,12 +30,12 @@ The script:
 
 ### 01: Implement `evaluations/quality_eval.py`
 
-Open [src/evaluations/quality_eval.py](../../src/evaluations/quality_eval.py).
+Open [src/evaluations/quality_eval.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/evaluations/quality_eval.py).
 
 <details markdown="block">
 <summary><strong>Expand to view the full solution</strong></summary>
 
-See [solution/evaluations/quality_eval.py](../../solution/evaluations/quality_eval.py).
+See [solution/evaluations/quality_eval.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/solution/evaluations/quality_eval.py).
 It is a near-direct port of the sample-repo script, retargeted at
 `pepsico-marketing-agent` and the three tools we wired in Exercise 05.
 

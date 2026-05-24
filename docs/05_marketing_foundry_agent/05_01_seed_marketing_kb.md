@@ -50,7 +50,7 @@ connection used by the hosted agent.
 <details markdown="block">
 <summary><strong>Expand to view the solution implementation</strong></summary>
 
-See [solution/foundry_agents/setup_marketing_knowledge_base.py](../../solution/foundry_agents/setup_marketing_knowledge_base.py).
+See [solution/foundry_agents/setup_marketing_knowledge_base.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/solution/foundry_agents/setup_marketing_knowledge_base.py).
 It mirrors the HR version from Exercise 06 — index → upload → KB → connection.
 
 </details>

@@ -15,7 +15,7 @@ Foundry hosted agents follow a simple contract: your code creates an
 hosted runtime exposes that agent over the **OpenAI Responses API** on port
 `8088` and takes care of identity, tracing, content-safety, and scaling.
 
-The agent code lives under [src/foundry_agents/marketing_hosted/](../../src/foundry_agents/marketing_hosted/)
+The agent code lives under [src/foundry_agents/marketing_hosted/](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/marketing_hosted/)
 and ships as its own Docker image:
 
 ```text
@@ -38,7 +38,7 @@ src/foundry_agents/marketing_hosted/
 
 ### 01: Implement `main()`
 
-Open [src/foundry_agents/marketing_hosted/main.py](../../src/foundry_agents/marketing_hosted/main.py).
+Open [src/foundry_agents/marketing_hosted/main.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/marketing_hosted/main.py).
 
 <details markdown="block">
 <summary><strong>Expand to view the solution</strong></summary>
@@ -179,7 +179,7 @@ if __name__ == "__main__":
 
 ### 02: Review `agent.yaml`
 
-[src/foundry_agents/marketing_hosted/agent.yaml](../../src/foundry_agents/marketing_hosted/agent.yaml)
+[src/foundry_agents/marketing_hosted/agent.yaml](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/marketing_hosted/agent.yaml)
 
 ```yaml
 kind: hosted

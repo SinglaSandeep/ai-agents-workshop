@@ -22,7 +22,7 @@ questions in the browser.
 
 ### 01: Activate the orchestrator branch in `main.py`
 
-Open [src/app/main.py](../../src/app/main.py) and replace the
+Open [src/app/main.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/app/main.py) and replace the
 `return _not_yet_wired(...)` line in the `AGENT_MODE == "orchestrator"`
 branch with the live call.
 

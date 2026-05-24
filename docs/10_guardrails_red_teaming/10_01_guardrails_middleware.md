@@ -24,7 +24,7 @@ exception and returns a friendly refusal instead.
 
 ### 01: Implement the middleware
 
-Open [src/foundry_agents/marketing_hosted/middleware.py](../../src/foundry_agents/marketing_hosted/middleware.py).
+Open [src/foundry_agents/marketing_hosted/middleware.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/marketing_hosted/middleware.py).
 
 <details markdown="block">
 <summary><strong>Expand for the solution</strong></summary>

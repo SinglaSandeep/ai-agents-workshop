@@ -27,7 +27,7 @@ uvicorn, and ask the Products agent real questions from the browser.
 
 ### 01: Implement `run_single_agent`
 
-Open [src/foundry_agents/run_single_agent.py](../../src/foundry_agents/run_single_agent.py).
+Open [src/foundry_agents/run_single_agent.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/run_single_agent.py).
 The skeleton imports `get_settings` and explains the three steps in TODO
 comments.
 
@@ -75,7 +75,7 @@ async def run_single_agent(mode: str, query: str) -> str:
 
 ### 02: Wire it into `_dispatch`
 
-Open [src/app/main.py](../../src/app/main.py). In `_dispatch`, replace the
+Open [src/app/main.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/app/main.py). In `_dispatch`, replace the
 `return _not_yet_wired(query, AGENT_MODE)` line inside the
 `AGENT_MODE in {"products", "marketing", "hr"}` branch with the live call.
 

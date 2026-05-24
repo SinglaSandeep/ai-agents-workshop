@@ -38,7 +38,7 @@ If empty, finish Exercise 02 first.
 
 ### 02: Read `upsert_project_connection`
 
-Open [src/common/foundry_client.py](../../src/common/foundry_client.py) and
+Open [src/common/foundry_client.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/common/foundry_client.py) and
 read the `upsert_project_connection` helper. It does an ARM REST `PUT` to
 `/connections/{name}` on the Foundry project resource id.
 

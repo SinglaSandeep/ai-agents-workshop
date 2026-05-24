@@ -23,7 +23,7 @@ admin operations on the Search service.
 
 ### 01: Implement `main()`
 
-Open [src/foundry_agents/create_hr_agent.py](../../src/foundry_agents/create_hr_agent.py).
+Open [src/foundry_agents/create_hr_agent.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/create_hr_agent.py).
 
 <details markdown="block">
 <summary><strong>Expand this section to view the solution</strong></summary>

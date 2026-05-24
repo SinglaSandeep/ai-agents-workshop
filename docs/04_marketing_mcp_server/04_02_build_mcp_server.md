@@ -30,7 +30,7 @@ because marketing teams care about KPIs:
 
 ### 01: Implement `cosmos_repo.py`
 
-Open [src/mcp_servers/marketing/cosmos_repo.py](../../src/mcp_servers/marketing/cosmos_repo.py)
+Open [src/mcp_servers/marketing/cosmos_repo.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/mcp_servers/marketing/cosmos_repo.py)
 and follow the TODOs.
 
 <details markdown="block">
@@ -114,7 +114,7 @@ class MarketingRepository:
 
 ### 02: Implement `server.py`
 
-Open [src/mcp_servers/marketing/server.py](../../src/mcp_servers/marketing/server.py).
+Open [src/mcp_servers/marketing/server.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/mcp_servers/marketing/server.py).
 
 <details markdown="block">
 <summary><strong>Expand this section to view the solution</strong></summary>

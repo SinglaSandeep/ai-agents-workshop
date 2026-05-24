@@ -28,7 +28,7 @@ in one command.
 
 ### 01: Inspect the Dockerfile
 
-Open [src/mcp_servers/products/Dockerfile](../../src/mcp_servers/products/Dockerfile).
+Open [src/mcp_servers/products/Dockerfile](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/mcp_servers/products/Dockerfile).
 Key things to notice:
 
 * Base image is `python:3.12-slim`.

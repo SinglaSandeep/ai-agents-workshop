@@ -30,7 +30,7 @@ task.
 
 ### 01: Open the starter script
 
-Open [src/foundry_agents/create_products_agent.py](../../src/foundry_agents/create_products_agent.py).
+Open [src/foundry_agents/create_products_agent.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/create_products_agent.py).
 The `INSTRUCTIONS` block is already filled in. You just need to implement
 `main()` — read its TODO comments.
 

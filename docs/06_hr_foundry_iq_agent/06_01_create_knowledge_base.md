@@ -44,7 +44,7 @@ pepsico_pto_policy.md
 
 ### 02: Implement `setup_hr_knowledge_base.py`
 
-Open [src/foundry_agents/setup_hr_knowledge_base.py](../../src/foundry_agents/setup_hr_knowledge_base.py)
+Open [src/foundry_agents/setup_hr_knowledge_base.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/setup_hr_knowledge_base.py)
 and follow the TODOs.
 
 <details markdown="block">

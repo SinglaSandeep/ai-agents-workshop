@@ -22,7 +22,7 @@ script that mirrors the Products seed from Exercise 02.
 
 ### 01: Inspect the seed file
 
-Open [src/mcp_servers/marketing/seed/marketing_seed.json](../../src/mcp_servers/marketing/seed/marketing_seed.json).
+Open [src/mcp_servers/marketing/seed/marketing_seed.json](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/mcp_servers/marketing/seed/marketing_seed.json).
 Each document looks like:
 
 ```json

@@ -29,7 +29,7 @@ it and you will fall back to the last transcript.
 
 ### 01: Implement `run_query`
 
-Open [src/orchestrator/magentic_router.py](../../src/orchestrator/magentic_router.py).
+Open [src/orchestrator/magentic_router.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/orchestrator/magentic_router.py).
 
 <details markdown="block">
 <summary><strong>Expand this section to view the solution</strong></summary>

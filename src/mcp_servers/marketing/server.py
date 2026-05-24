@@ -26,12 +26,19 @@ import os
 #   from .cosmos_repo import MarketingRepository
 
 
-# TODO (Exercise 04): instantiate the FastMCP app with a name + instructions.
+# TODO (Exercise 04): instantiate the FastMCP app with a name + rich,
+# task-oriented `instructions`. Follow Microsoft MCP best practices:
+# https://microsoft.github.io/mcp-azure-security-guide/adoption/development-best-practices/
+# The instructions should explain the domain (campaigns / brands / regions),
+# give tool-selection guidance, and state data conventions (USD, ISO dates,
+# CTR/ROI as decimal ratios, `CMP-YYYY-###` id format).
 #   mcp = FastMCP(name="pepsico-marketing", instructions="...")
 
 
 # TODO (Exercise 04): declare the five `@mcp.tool` functions. Mirror the
-# pattern used for the Products MCP server in Exercise 02.
+# pattern used for the Products MCP server in Exercise 02 — task-oriented
+# docstrings (what + when-to-use + return shape) and `Annotated[..., Field(...)]`
+# parameters with regex patterns / examples for ids like `CMP-2026-001`.
 
 
 # TODO (Exercise 04): expose the streamable-HTTP ASGI app.

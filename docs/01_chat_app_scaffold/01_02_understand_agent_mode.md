@@ -31,7 +31,7 @@ backend handles `/chat`. As you complete each exercise, you will flip
 
 ### 01: Read `main.py`
 
-Open [src/app/main.py](../../src/app/main.py) and read through:
+Open [src/app/main.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/app/main.py) and read through:
 
 * The `ChatRequest` / `ChatResponse` Pydantic models.
 * The `/chat` route — note the `trace_span(...)` call (you will wire up
