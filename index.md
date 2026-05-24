@@ -81,8 +81,7 @@ What you do need on your laptop before you start:
 - **Visual Studio Code** (recommended) or any editor you are comfortable with.
 - **PowerShell 7+** (Windows) or **bash / zsh** (macOS / Linux) for the
   terminal commands shown throughout the workshop.
-- **Docker Desktop** running locally — used to build and run the MCP server
-  containers in Exercises 02 and 04.
+
 - The **Azure CLI** (`az`) installed and signed in (`az login`). Used to
   read configuration from your pre-provisioned resources.
 - The **Azure Developer CLI** (`azd`) installed, with the AI extension
@@ -97,8 +96,8 @@ What you do need on your laptop before you start:
   `*.azurecontainerapps.io`, `pypi.org`, `ghcr.io` and `mcr.microsoft.com`
   (corporate proxies that block these will need an exception).
 
-That is everything. If you can run `python --version`, `docker --version`,
-`az --version` and `azd version` successfully, you are ready to begin.
+That is everything. If you can run `python --version`, `az --version` and
+`azd version` successfully, you are ready to begin.
 
 ## Start Here
 

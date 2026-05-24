@@ -12,7 +12,7 @@ parent: 'Exercise 00: Setup & Verify Resources'
 1. **Clone the repo and `cd` into it**
 
    ```powershell
-   git clone https://github.com/<your-org>/ai-agents-workshop.git
+   git clone https://github.com/SinglaSandeep/ai-agents-workshop.git
    cd ai-agents-workshop
    ```
 

@@ -86,6 +86,10 @@ flowchart LR
 
 > Full prerequisites are in [Exercise 00](docs/00_setup/00_setup.md). The minimum:
 
+> No local Docker / container runtime is required — Container Apps deploys
+> use ACR Tasks (cloud build) and the hosted Marketing agent is built by
+> `azd ai agent up` against your Foundry account.
+
 ```powershell
 # 1. Enter the repo
 cd ai-agents-workshop

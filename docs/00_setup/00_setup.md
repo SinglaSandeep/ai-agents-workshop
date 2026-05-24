@@ -17,7 +17,7 @@ the resources are assumed to already exist in your subscription.
 Your platform team has provisioned a shared Azure environment for the workshop.
 Before you can start building agents you need to:
 
-1. Install the local tools (Python, Azure CLI, Docker, VS Code).
+1. Install the local tools (Python, Azure CLI, `azd`, VS Code, Git).
 2. Clone the workshop repo and create a Python virtual environment.
 3. Sign in to Azure and confirm role assignments.
 4. Inventory the pre-provisioned resources and write their identifiers into a
@@ -40,7 +40,7 @@ Before you can start building agents you need to:
 
 | Task | Description |
 | ---- | ----------- |
-| [00.01 — Local prerequisites](00_01_prerequisites.md) | Install Python, Azure CLI, Docker, VS Code, Git. |
+| [00.01 — Local prerequisites](00_01_prerequisites.md) | Install Python, Azure CLI, `azd`, VS Code, Git. |
 | [00.02 — Clone and bootstrap the repo](00_02_clone_and_bootstrap.md) | Clone, create venv, install the workshop package, copy `.env`. |
 | [00.03 — Verify pre-provisioned resources](00_03_verify_resources.md) | Find every resource id and populate `.env`. |
 | [00.04 — Verify your environment](00_04_verify_environment.md) | Run the smoke tests and a Cosmos / Foundry connectivity check. |
