@@ -16,8 +16,8 @@ the MCP SDK.
 
 ## Success Criteria
 
-* `zava-products-mcp` (or `uvicorn src.mcp_servers.products.server:app
-  --port 8001`) prints `Application startup complete.`
+* `uvicorn src.mcp_servers.products.server:app --port 8001` prints
+  `Application startup complete.`
 * The MCP Inspector at <http://localhost:6274> lists the four tools.
 * `list_categories` returns the categories seeded in Task 02.01.
 
@@ -26,7 +26,7 @@ the MCP SDK.
 ### 01: Start the server
 
 ```powershell
-zava-products-mcp
+uvicorn src.mcp_servers.products.server:app --port 8001
 ```
 
 You should see uvicorn start on port 8001 and a FastMCP banner log a line per

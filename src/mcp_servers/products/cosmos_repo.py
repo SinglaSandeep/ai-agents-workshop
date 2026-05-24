@@ -1,16 +1,4 @@
-"""Read-only Cosmos DB repository for the Zava products catalog.
-
-You implement this file in **Exercise 02 / Task 02.02**. Every method should
-return plain Python ``dict``s so the MCP server can JSON-serialise the result
-straight back to the caller.
-
-**Observability requirement.** Log every Cosmos query (op name, query text,
-parameters, row count, elapsed ms) at ``INFO`` on the
-``zava.mcp.products.cosmos`` logger so we can audit what the agent asks
-for. See the reference solution for the exact helper.
-
-Reference solution: ``solution/mcp_servers/products/cosmos_repo.py``.
-"""
+"""Read-only Cosmos DB repository for the Zava products catalog."""
 
 from __future__ import annotations
 
@@ -24,28 +12,10 @@ from src.common.settings import get_settings
 logger = logging.getLogger("zava.mcp.products.cosmos")
 
 
-def _log_query(
-    op: str,
-    query: str,
-    params: list[dict[str, Any]] | None,
-    *,
-    count: int,
-    elapsed_ms: float,
-) -> None:
-    """Emit one structured log line per Cosmos query.
-
-    TODO (Exercise 02): call this helper at the end of every method below
-    so each tool invocation produces an audit line on the
-    ``zava.mcp.products.cosmos`` logger.
-    """
-
+def _log_query(op, query, params, *, count, elapsed_ms):
     logger.info(
         "cosmos %s rows=%d elapsed_ms=%.1f query=%s params=%s",
-        op,
-        count,
-        elapsed_ms,
-        " ".join(query.split()),
-        params or [],
+        op, count, elapsed_ms, " ".join(query.split()), params or [],
     )
 
 
@@ -55,59 +25,82 @@ class ProductsRepository:
         self._container = get_container(settings.cosmos_products_container)
 
     def list_categories(self) -> list[str]:
-        """Return every distinct ``c.category`` value in the products container.
-
-        Zava categories are short ids like ``paint``, ``power-tools``,
-        ``hardware``.
-        """
-
-        # TODO (Exercise 02): run a `SELECT DISTINCT VALUE c.category FROM c`
-        # query, time it with `time.perf_counter()`, call `_log_query(...)`,
-        # then return the list.
-        raise NotImplementedError
+        query = "SELECT DISTINCT VALUE c.category FROM c"
+        t0 = time.perf_counter()
+        rows = list(
+            self._container.query_items(
+                query=query, enable_cross_partition_query=True
+            )
+        )
+        _log_query("list_categories", query, None, count=len(rows),
+                   elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def list_products(self, category: str | None = None, limit: int = 20) -> list[dict[str, Any]]:
-        """Return up to ``limit`` products, optionally filtered by ``category``."""
-
-        # TODO (Exercise 02): SELECT TOP @limit ... with an optional WHERE
-        # filter when `category` is provided. Log via `_log_query(...)`.
-        raise NotImplementedError
+        if category:
+            query = (
+                "SELECT TOP @limit c.id, c.name, c.category, c.brand, c.size, "
+                "c.description, c.calories, c.price_usd "
+                "FROM c WHERE LOWER(c.category) = LOWER(@cat)"
+            )
+            params = [
+                {"name": "@limit", "value": limit},
+                {"name": "@cat", "value": category},
+            ]
+        else:
+            query = (
+                "SELECT TOP @limit c.id, c.name, c.category, c.brand, c.size, "
+                "c.description, c.calories, c.price_usd FROM c"
+            )
+            params = [{"name": "@limit", "value": limit}]
+        t0 = time.perf_counter()
+        rows = list(
+            self._container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True,
+            )
+        )
+        _log_query("list_products", query, params, count=len(rows),
+                   elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def get_product(self, product_id: str) -> dict[str, Any] | None:
-        """Return one product by id (e.g. ``ZV-PNT-001``), or ``None`` if missing."""
-
-        # TODO (Exercise 02): call `self._container.read_item(...)` and
-        # return `None` on failure. Emit `logger.info(...)` with the id and
-        # whether the item was found.
-        raise NotImplementedError
+        t0 = time.perf_counter()
+        try:
+            item = self._container.read_item(item=product_id, partition_key=product_id)
+            logger.info(
+                "cosmos get_product id=%s found=True elapsed_ms=%.1f",
+                product_id, (time.perf_counter() - t0) * 1000,
+            )
+            return item
+        except Exception as exc:
+            logger.info(
+                "cosmos get_product id=%s found=False elapsed_ms=%.1f error=%s",
+                product_id, (time.perf_counter() - t0) * 1000, exc.__class__.__name__,
+            )
+            return None
 
     def search_products(self, text: str, limit: int = 10) -> list[dict[str, Any]]:
-        """Free-text CONTAINS search across product name, brand, and description."""
-
-        # TODO (Exercise 02): SELECT TOP @limit ... WHERE CONTAINS(LOWER(...)).
-        # Log via `_log_query(...)`.
-        raise NotImplementedError
-
-    def inventory_by_store(self, product_id: str) -> dict[str, Any] | None:
-        """Return the per-store inventory map for one product.
-
-        Each product document has an ``inventory_by_store`` field shaped like
-        ``{"seattle": 45, "bellevue": 12, ...}`` plus a ``reorder_threshold``.
-        Return both, alongside the product id and name.
-        """
-
-        # TODO (Exercise 02): call `self.get_product(...)` and reshape the
-        # result. Return None if the product is missing.
-        raise NotImplementedError
-
-    def low_stock_alerts(self, store_id: str, limit: int = 50) -> list[dict[str, Any]]:
-        """Products at ``store_id`` whose on-hand stock is at or below the reorder threshold.
-
-        Cosmos can't index a string-keyed nested object, so read all docs and
-        filter in-process — fine for workshop-sized data (sub-100 SKUs).
-        """
-
-        # TODO (Exercise 02): query all docs, filter where
-        # `inventory_by_store[store_id] <= reorder_threshold`, sort ascending
-        # by on-hand, cap at `limit`.
-        raise NotImplementedError
+        query = (
+            "SELECT TOP @limit c.id, c.name, c.category, c.brand, c.size, "
+            "c.description, c.calories, c.price_usd FROM c "
+            "WHERE CONTAINS(LOWER(c.name), LOWER(@q)) "
+            "   OR CONTAINS(LOWER(c.description), LOWER(@q)) "
+            "   OR CONTAINS(LOWER(c.brand), LOWER(@q))"
+        )
+        params = [
+            {"name": "@limit", "value": limit},
+            {"name": "@q", "value": text},
+        ]
+        t0 = time.perf_counter()
+        rows = list(
+            self._container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True,
+            )
+        )
+        _log_query("search_products", query, params, count=len(rows),
+                   elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows

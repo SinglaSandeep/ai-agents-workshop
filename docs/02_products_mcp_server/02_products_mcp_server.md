@@ -44,7 +44,7 @@ flowchart LR
 >
 > - The Cosmos `zava` database exists with a `products` container holding
 >   12 documents.
-> - `zava-products-mcp` runs locally on <http://127.0.0.1:8001/mcp> and the
+> - The server runs locally on <http://127.0.0.1:8001/mcp> and the
 >   MCP inspector lists the four tools.
 > - A Container App named `zava-products-mcp` is running in your ACA
 >   environment with a public ingress URL.
