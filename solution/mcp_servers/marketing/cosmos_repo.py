@@ -1,11 +1,33 @@
-"""Read-only Cosmos DB repository for Pepsico marketing campaigns."""
+"""Read-only Cosmos DB repository for Pepsico marketing campaigns.
+
+Every query executed against Cosmos is logged at INFO level on the
+``pepsico.mcp.marketing.cosmos`` logger. Uvicorn forwards stdlib logging
+to the console by default, so you will see one line per tool call when
+running the server locally.
+"""
 
 from __future__ import annotations
 
+import logging
+import time
 from typing import Any
 
 from src.common.cosmos import get_container
 from src.common.settings import get_settings
+
+logger = logging.getLogger("pepsico.mcp.marketing.cosmos")
+
+
+def _log_query(op: str, query: str, params: list[dict[str, Any]] | None, *, count: int, elapsed_ms: float) -> None:
+    """Emit one structured log line per Cosmos query."""
+    logger.info(
+        "cosmos %s rows=%d elapsed_ms=%.1f query=%s params=%s",
+        op,
+        count,
+        elapsed_ms,
+        " ".join(query.split()),
+        params or [],
+    )
 
 
 class MarketingRepository:
@@ -20,11 +42,14 @@ class MarketingRepository:
             "FROM c WHERE c.status = 'active'"
         )
         params = [{"name": "@limit", "value": limit}]
-        return list(
+        t0 = time.perf_counter()
+        rows = list(
             self._container.query_items(
                 query=query, parameters=params, enable_cross_partition_query=True
             )
         )
+        _log_query("list_active_campaigns", query, params, count=len(rows), elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def list_campaigns_by_brand(self, brand: str, limit: int = 20) -> list[dict[str, Any]]:
         query = (
@@ -33,16 +58,32 @@ class MarketingRepository:
             "FROM c WHERE LOWER(c.brand) = LOWER(@brand)"
         )
         params = [{"name": "@limit", "value": limit}, {"name": "@brand", "value": brand}]
-        return list(
+        t0 = time.perf_counter()
+        rows = list(
             self._container.query_items(
                 query=query, parameters=params, enable_cross_partition_query=True
             )
         )
+        _log_query("list_campaigns_by_brand", query, params, count=len(rows), elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def get_campaign(self, campaign_id: str) -> dict[str, Any] | None:
+        t0 = time.perf_counter()
         try:
-            return self._container.read_item(item=campaign_id, partition_key=campaign_id)
-        except Exception:
+            item = self._container.read_item(item=campaign_id, partition_key=campaign_id)
+            logger.info(
+                "cosmos get_campaign id=%s found=True elapsed_ms=%.1f",
+                campaign_id,
+                (time.perf_counter() - t0) * 1000,
+            )
+            return item
+        except Exception as exc:
+            logger.info(
+                "cosmos get_campaign id=%s found=False elapsed_ms=%.1f error=%s",
+                campaign_id,
+                (time.perf_counter() - t0) * 1000,
+                exc.__class__.__name__,
+            )
             return None
 
     def search_campaigns(self, text: str, limit: int = 10) -> list[dict[str, Any]]:
@@ -54,11 +95,14 @@ class MarketingRepository:
             "   OR CONTAINS(LOWER(c.brand), LOWER(@q))"
         )
         params = [{"name": "@limit", "value": limit}, {"name": "@q", "value": text}]
-        return list(
+        t0 = time.perf_counter()
+        rows = list(
             self._container.query_items(
                 query=query, parameters=params, enable_cross_partition_query=True
             )
         )
+        _log_query("search_campaigns", query, params, count=len(rows), elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def campaign_performance(self, campaign_id: str) -> dict[str, Any] | None:
         campaign = self.get_campaign(campaign_id)
