@@ -48,7 +48,7 @@ Each document looks like:
 ### 02: Run the seed
 
 ```powershell
-pepsico-seed-marketing
+python -m src.mcp_servers.marketing.seed.seed_cosmos
 ```
 
 Expected log:

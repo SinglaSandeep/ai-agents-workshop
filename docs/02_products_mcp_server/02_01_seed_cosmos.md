@@ -46,10 +46,10 @@ Each document uses `id` as both the document id and the partition key.
 From an activated venv, run:
 
 ```powershell
-pepsico-seed-products
+python -m src.mcp_servers.products.seed.seed_cosmos
 ```
 
-This calls `src/mcp_servers/products/seed/seed_cosmos.py` which:
+This runs `src/mcp_servers/products/seed/seed_cosmos.py` which:
 
 1. Creates the `pepsico` database if it does not exist.
 2. Creates the `products` container if it does not exist (`/id` partition key).
