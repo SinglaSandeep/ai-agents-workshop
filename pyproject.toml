@@ -43,7 +43,12 @@ redteam = [
     "rich>=13.7.0",
 ]
 hosted = [
-    "agent-framework-foundry-hosting>=0.3.0",
+    # NOTE: `agent-framework-foundry-hosting` is only published as a pre-release
+    # at workshop time. The default install (Exercise 00) intentionally omits
+    # this extra so the bootstrap doesn't fail.
+    #
+    # When you reach Exercise 05, install it explicitly with `--pre`:
+    #   pip install --pre "agent-framework-foundry-hosting>=0.3.0a0"
     "mcp>=1.4.0",
 ]
 dev = [

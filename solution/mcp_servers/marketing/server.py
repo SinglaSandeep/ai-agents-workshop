@@ -215,7 +215,19 @@ def campaign_performance(
     return _repo().campaign_performance(campaign_id)
 
 
-app = mcp.http_app(path="/mcp", transport="streamable-http")
+# CORS installed at construction time for browser-based MCP clients.
+from starlette.middleware import Middleware  # noqa: E402
+from starlette.middleware.cors import CORSMiddleware  # noqa: E402
+
+_cors = Middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["mcp-session-id"],
+)
+
+app = mcp.http_app(path="/mcp", transport="streamable-http", middleware=[_cors])
 
 
 def main() -> None:

@@ -30,8 +30,17 @@ parent: 'Exercise 00: Setup & Verify Resources'
 
    ```powershell
    python -m pip install --upgrade pip
-   python -m pip install -e ".[dev,framework,observability,mcp,evals,redteam,hosted]"
+   python -m pip install -e ".[dev,framework,observability,mcp,evals,redteam]"
    ```
+
+   {: .note }
+   > The `hosted` extra is intentionally **not** installed here. The
+   > `agent-framework-foundry-hosting` package is currently only published
+   > as a pre-release on PyPI, so attempting to install it as part of the
+   > default bootstrap fails with
+   > `No matching distribution found for agent-framework-foundry-hosting`.
+   > You will install it explicitly in **Exercise 05** with
+   > `pip install --pre "agent-framework-foundry-hosting>=0.3.0a0"`.
 
    #### Why `-e` (editable)?
 
@@ -63,7 +72,7 @@ parent: 'Exercise 00: Setup & Verify Resources'
    | `dev` | `ruff` | **00** — keep your scaffold edits lint-clean |
    | `mcp` | `mcp`, `fastmcp` | **02** — build the Products MCP server (and **04** for Marketing) |
    | `framework` | `agent-framework-core`, `agent-framework-azure-ai` | **03** — call Foundry agents from Python (and **06**, **07**) |
-   | `hosted` | `agent-framework-foundry-hosting`, `mcp` | **05** — host the Marketing agent on Foundry (`ResponsesHostServer`) |
+   | `hosted` | `mcp` (+ pre-release `agent-framework-foundry-hosting`, installed separately in Exercise 05) | **05** — host the Marketing agent on Foundry (`ResponsesHostServer`) |
    | `observability` | `azure-monitor-opentelemetry`, `opentelemetry-api`/`-sdk`, FastAPI + httpx OTel instrumentors | **11** — chat-app traces to App Insights |
    | `evals` | `azure-ai-evaluation` | **09** — quality + scheduled + continuous evaluations |
    | `redteam` | `azure-ai-evaluation[redteam]`, `rich` | **10** — automated adversarial scan |
@@ -71,8 +80,9 @@ parent: 'Exercise 00: Setup & Verify Resources'
    {: .tip }
    > If you want a leaner first install you can start with just
    > `".[dev,framework,mcp]"` for Exercises 00–04 and add the rest
-   > later (`pip install -e ".[hosted,evals,redteam,observability]"`)
-   > when you reach those modules.
+   > later (`pip install -e ".[evals,redteam,observability]"`)
+   > when you reach those modules. The `hosted` extra is installed
+   > separately in Exercise 05 with the `--pre` flag (see note above).
 
    {: .note }
    > The full install pulls roughly 150 MB of wheels (mostly Azure SDKs

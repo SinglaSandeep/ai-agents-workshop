@@ -171,7 +171,21 @@ def search_products(
 
 
 # Streamable-HTTP ASGI app — what Container Apps will run.
-app = mcp.http_app(path="/mcp", transport="streamable-http")
+# CORS is installed at construction time so browser-based MCP clients
+# (e.g. MCP Inspector in Direct mode) can call the server without going
+# through the proxy.
+from starlette.middleware import Middleware  # noqa: E402
+from starlette.middleware.cors import CORSMiddleware  # noqa: E402
+
+_cors = Middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["mcp-session-id"],
+)
+
+app = mcp.http_app(path="/mcp", transport="streamable-http", middleware=[_cors])
 
 
 def main() -> None:
