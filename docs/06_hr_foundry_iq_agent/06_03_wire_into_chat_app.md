@@ -1,33 +1,33 @@
 ---
-title: '3. Wire the agent into the chat UI'
+title: '3. Talk to the HR agent in DevUI'
 layout: default
 nav_order: 3
 parent: 'Exercise 06: HR Foundry IQ Agent'
 ---
 
-# Task 06.03 — Wire the HR Agent Into the Chat UI
+# Task 06.03 — Talk to the HR Agent in DevUI
 
 ## Introduction
 
-Same drill as Exercises 03 and 05: `run_single_agent` already dispatches by
-mode, so all you need to do is flip `AGENT_MODE`.
+The DevUI launcher already references the HR agent by name
+(`HR_AGENT_NAME=pepsico-hr-agent`), so all you need to do is restart it.
 
 ## Success Criteria
 
-* With `AGENT_MODE=hr`, the chat UI returns grounded HR answers ending with a
+* In DevUI, the **hr** agent returns grounded HR answers ending with a
   `Sources:` line.
 
 ## Key Tasks
 
-### 01: Flip the mode
+### 01: Restart DevUI
 
+```powershell
+python -m src.app.devui_launch
 ```
-AGENT_MODE=hr
-```
-
-Restart uvicorn.
 
 ### 02: Test in the browser
+
+Pick the **hr** agent from the sidebar at <http://127.0.0.1:8080>.
 
 | Prompt | Expected |
 | ------ | -------- |
@@ -36,7 +36,7 @@ Restart uvicorn.
 | *"How many SKUs does Pepsi Cola have?"* | Politely declines — agent only knows HR. |
 
 You now have three working specialist agents, each individually usable from
-the chat UI. The next exercise stitches them together so the user can ask a
+DevUI. The next exercise stitches them together so the user can ask a
 single mixed question.
 
 ## Next

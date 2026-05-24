@@ -25,14 +25,13 @@ You will:
 1. Read a short overview of how Magentic plans and stalls.
 2. Fill in `src/orchestrator/magentic_router.py` so it wraps the three
    specialist Foundry agents and a manager.
-3. Flip `AGENT_MODE=orchestrator` and ask mixed-domain questions.
+3. Run mixed-domain queries through `python -m src.orchestrator.runner`.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    U[User] --> F[FastAPI /chat]
-    F --> M[Magentic Manager]
+    U[User / CLI] --> M[Magentic Manager]
     M --> HR[HR Agent (Foundry IQ)]
     M --> PR[Products Agent (MCP)]
     M --> MK[Marketing Agent (MCP + Bing)]
@@ -45,8 +44,8 @@ flowchart LR
 > - `src/orchestrator/magentic_router.py` no longer raises `NotImplementedError`.
 > - `python -m src.orchestrator.runner --query "What is our PTO policy?"`
 >   returns a real answer.
-> - With `AGENT_MODE=orchestrator` in `.env`, the chat UI returns a planned
->   multi-agent answer for a mixed-domain question.
+> - A mixed-domain question yields a plan with multiple specialists (e.g.
+>   `marketing → hr → response_generator`).
 
 ## Learning Resources
 
@@ -59,4 +58,4 @@ flowchart LR
 | ---- | ----------- |
 | [07.01 — Magentic in 5 minutes](07_01_magentic_overview.md) | The mental model: manager, participants, plan, stall, reset. |
 | [07.02 — Build the orchestrator](07_02_build_orchestrator.md) | Implement `run_query` in `magentic_router.py`. |
-| [07.03 — Run the orchestrator from the chat UI](07_03_wire_orchestrator_into_chat.md) | Flip `AGENT_MODE=orchestrator`. |
+| [07.03 — Run the orchestrator](07_03_wire_orchestrator_into_chat.md) | Use the CLI runner to ask mixed-domain questions. |

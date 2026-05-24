@@ -1,136 +1,93 @@
 ---
-title: '3. Wire the agent into the chat UI'
+title: '3. Talk to the agent in DevUI'
 layout: default
 nav_order: 3
 parent: 'Exercise 03: Products Foundry Agent'
 ---
 
-# Task 03.03 — Wire the Products Agent Into the Chat UI
+# Task 03.03 — Talk to the Products Agent in DevUI
 
 ## Introduction
 
-The chat app from Exercise 01 has an `AGENT_MODE` switch. When `AGENT_MODE=products`
-it tries to call `run_single_agent("products", query)` — but that function
-currently raises `NotImplementedError`.
+In tasks 03.01 and 03.02 you registered the MCP connection and created the
+Products Foundry Prompt Agent. The DevUI launcher from Exercise 01 already
+references this agent by name (`settings.products_agent_name`), so there is
+**no extra wiring** to do — just restart DevUI and the new agent shows up.
 
-In this task you fill in `run_single_agent`, flip the mode in `.env`, restart
-uvicorn, and ask the Products agent real questions from the browser.
+This replaces the old "wire into chat app" task — DevUI is the chat app,
+and `src/app/devui_launch.py` is the only entrypoint.
 
 ## Success Criteria
 
-* `run_single_agent("products", "What Pepsi colas do you have?")` returns a
-  string answer in a Python REPL.
-* With `AGENT_MODE=products` in `.env`, the chat UI returns grounded answers
-  that cite product ids.
+* DevUI lists `products` as a working entity (no "agent not found" error).
+* In the browser, asking the Products agent grounded questions returns
+  answers that cite real product ids.
+* The same questions return the same answers when called via the OpenAI
+  Responses API.
 
 ## Key Tasks
 
-### 01: Implement `run_single_agent`
+### 01: Restart DevUI
 
-Open [src/foundry_agents/run_single_agent.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/run_single_agent.py).
-The skeleton imports `get_settings` and explains the three steps in TODO
-comments.
+If DevUI was already running, stop it (Ctrl+C) and restart so it picks up
+the newly created Foundry agent:
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```python
-"""Run a single Foundry agent and return its final text answer."""
-
-from __future__ import annotations
-
-from src.common.settings import get_settings
-
-
-async def run_single_agent(mode: str, query: str) -> str:
-    settings = get_settings()
-
-    agent_name = {
-        "products": settings.products_agent_name,
-        "marketing": settings.marketing_agent_name,
-        "hr": settings.hr_agent_name,
-    }[mode]
-
-    # Lazy import — only require agent-framework when this code runs.
-    from agent_framework import Agent
-    from agent_framework.azure import AzureAIAgentClient
-    from azure.identity.aio import DefaultAzureCredential
-
-    async with DefaultAzureCredential() as cred:
-        async with AzureAIAgentClient(
-            project_endpoint=settings.azure_ai_project_endpoint,
-            model_deployment_name=settings.azure_ai_model_deployment,
-            credential=cred,
-        ) as client:
-            agent = Agent(
-                client=client,
-                name=mode,
-                agent_reference={"name": agent_name, "type": "agent_reference"},
-            )
-            response = await agent.run(query)
-            return getattr(response, "text", str(response))
+```powershell
+python -m src.app.devui_launch
 ```
 
-</details>
+You should still see all three specs registered. Only `products` will
+actually respond — `marketing` and `hr` come online in Exercises 05 and 06.
 
-### 02: Wire it into `_dispatch`
+### 02: Test in the browser
 
-Open [src/app/main.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/app/main.py). In `_dispatch`, replace the
-`return _not_yet_wired(query, AGENT_MODE)` line inside the
-`AGENT_MODE in {"products", "marketing", "hr"}` branch with the live call.
-
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```python
-    if AGENT_MODE in {"products", "marketing", "hr"}:
-        from src.foundry_agents.run_single_agent import run_single_agent
-
-        answer = await run_single_agent(AGENT_MODE, query)
-        return {
-            "final_answer": answer,
-            "plan": [AGENT_MODE],
-            "transcripts": {AGENT_MODE: answer},
-            "events": [],
-            "mode": AGENT_MODE,
-        }
-```
-
-You can leave the `_not_yet_wired` helper in place — the orchestrator branch
-still uses it until Exercise 07.
-
-</details>
-
-### 03: Flip `AGENT_MODE`
-
-Edit `.env` and add (or change):
-
-```
-AGENT_MODE=products
-```
-
-Restart uvicorn (Ctrl+C, re-run `uvicorn src.app.main:app --reload --port 8000`).
-
-### 04: Test in the browser
-
-Open <http://127.0.0.1:8000> and try prompts like:
+Open <http://127.0.0.1:8080>, pick **products** in the left rail, and try
+prompts like:
 
 * *"What flavors of Lay's chips do you carry?"*
 * *"Tell me about PEP-007."*
 * *"Which beverages are under $5?"*
 
-You should see grounded answers that include real product ids and prices from
-Cosmos. The plan pill underneath should say `products`.
+You should see grounded answers that include real product ids and prices
+from Cosmos. In **developer mode**, the right-hand panel shows every MCP
+tool call the agent made.
+
+### 03: Test via the Responses API
+
+In a second terminal, prove the same agent works headlessly:
+
+```powershell
+curl -X POST http://127.0.0.1:8080/v1/responses `
+  -H "Content-Type: application/json" `
+  -d '{ "metadata": { "entity_id": "products" }, "input": "What is PEP-007?" }'
+```
+
+Or with the OpenAI SDK:
+
+```python
+from openai import OpenAI
+client = OpenAI(base_url="http://127.0.0.1:8080/v1", api_key="not-needed")
+resp = client.responses.create(
+    metadata={"entity_id": "products"},
+    input="Which colas do you carry?",
+)
+print(resp.output[0].content[0].text)
+```
+
+The Responses API is the contract the Foundry-hosted Marketing agent
+(Exercise 05) speaks natively, so any client code you write here will
+transfer cleanly to the cloud-hosted version.
 
 <details markdown="block">
 <summary><strong>Expand this section if the agent answers from memory instead of calling the tool</strong></summary>
 
-* Re-read the `INSTRUCTIONS` block in `create_products_agent.py`. It must say
-  *"Only answer using data returned by the tools"*. If you altered it,
+* Re-read the `INSTRUCTIONS` block in `create_products_agent.py`. It must
+  say *"Only answer using data returned by the tools"*. If you altered it,
   re-run the script to push a new agent version.
-* In the Foundry portal → Agents → your agent → **Playground**, test the same
-  prompt. If you see *"Tool call required"* errors, the MCP connection's
-  managed identity does not have `Invoker` rights on the Container App.
+* In the Foundry portal → Agents → your agent → **Playground**, test the
+  same prompt. If you see *"Tool call required"* errors, the MCP
+  connection's managed identity does not have `Invoker` rights on the
+  Container App.
 
 </details>
 

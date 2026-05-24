@@ -44,8 +44,8 @@ You will:
 3. Run the agent locally with `azd ai agent run` and invoke it with
    `azd ai agent invoke --local`.
 4. Deploy it to Foundry hosted agents with `azd ai agent up`.
-5. Flip `AGENT_MODE=marketing` in the chat app and confirm the orchestrator
-   now calls the hosted agent.
+5. Talk to the hosted agent in the **Agent Framework DevUI** and confirm
+   the orchestrator routes campaign questions to it.
 
 ## Success Criteria
 
@@ -58,8 +58,8 @@ You will:
 >   data from the Marketing MCP server.
 > - `azd ai agent up` succeeds and `azd ai agent show` reports the hosted
 >   agent as healthy.
-> - With `AGENT_MODE=marketing`, the chat UI answers campaign questions from
->   Cosmos+KB and live-web questions via `web_search`.
+> - In DevUI, selecting the **marketing** agent answers campaign questions
+>   from Cosmos+KB and live-web questions via `web_search`.
 
 ## Learning Resources
 
@@ -75,4 +75,4 @@ You will:
 | ---- | ----------- |
 | [05.01 — Seed the Marketing Foundry IQ knowledge base](05_01_seed_marketing_kb.md) | Create the `pepsico-marketing-kb` KB and index marketing briefs. |
 | [05.02 — Build the hosted Marketing agent](05_02_build_hosted_marketing_agent.md) | Implement `marketing_hosted/main.py` and `agent.yaml`. |
-| [05.03 — Run locally, deploy to Foundry, wire into chat](05_03_deploy_and_wire.md) | `azd ai agent run` → `azd ai agent up` → `AGENT_MODE=marketing`. |
+| [05.03 — Run locally, deploy to Foundry, talk to it in DevUI](05_03_deploy_and_wire.md) | `azd ai agent run` → `azd ai agent up` → DevUI. |

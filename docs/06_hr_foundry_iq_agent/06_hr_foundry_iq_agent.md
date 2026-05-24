@@ -22,7 +22,7 @@ You will:
    Foundry IQ knowledge base, and register a project connection — all via
    one Python script.
 2. Create the `pepsico-hr-agent` Prompt Agent that calls the KB.
-3. Flip `AGENT_MODE=hr` and ask HR questions in the chat UI.
+3. Talk to the HR agent in DevUI.
 
 ## Success Criteria
 
@@ -33,8 +33,8 @@ You will:
 >   endpoint.
 > - Foundry agent `pepsico-hr-agent` has one tool: `MCPTool` with
 >   `allowed_tools=["knowledge_base_retrieve"]`.
-> - With `AGENT_MODE=hr`, asking *"What is the PTO policy?"* returns an
->   answer that ends with a `Sources:` line referencing a real seed file.
+> - In DevUI, the **hr** agent answers *"What is the PTO policy?"* with a
+>   reply that ends with a `Sources:` line referencing a real seed file.
 
 ## Learning Resources
 
@@ -47,4 +47,4 @@ You will:
 | ---- | ----------- |
 | [06.01 — Create the HR knowledge base](06_01_create_knowledge_base.md) | Implement `setup_hr_knowledge_base.py`. |
 | [06.02 — Create the HR Prompt Agent](06_02_create_hr_agent.md) | Implement `create_hr_agent.py`. |
-| [06.03 — Wire the agent into the chat UI](06_03_wire_into_chat_app.md) | Flip `AGENT_MODE=hr` and test in the browser. |
+| [06.03 — Talk to the HR agent in DevUI](06_03_wire_into_chat_app.md) | Restart `devui_launch` and ask HR questions. |

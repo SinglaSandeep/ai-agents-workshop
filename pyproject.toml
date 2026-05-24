@@ -25,8 +25,15 @@ mcp = [
     "fastmcp>=2.5.0",
 ]
 framework = [
-    "agent-framework-core>=1.0.0b260107",
-    "agent-framework-azure-ai>=1.0.0b260107",
+    # Pinned to 1.6.0 — last verified working set. `agent-framework-foundry`
+    # provides `FoundryAgent` / `FoundryChatClient` (the modern replacement
+    # for the old `agent_framework.azure.AzureAIAgentClient`).
+    # `agent-framework-orchestrations` and `agent-framework-devui` only ship
+    # pre-releases today, so install with --pre.
+    "agent-framework-core==1.6.0",
+    "agent-framework-foundry==1.6.0",
+    "agent-framework-orchestrations==1.0.0rc2",
+    "agent-framework-devui==1.0.0b260521",
 ]
 observability = [
     "azure-monitor-opentelemetry>=1.6.0",
@@ -56,7 +63,8 @@ dev = [
 ]
 
 [project.scripts]
-pepsico-workshop = "src.app.cli:main"
+pepsico-devui = "src.app.devui_launch:main"
+pepsico-orchestrator = "src.orchestrator.runner:main"
 pepsico-products-mcp = "src.mcp_servers.products.server:main"
 pepsico-marketing-mcp = "src.mcp_servers.marketing.server:main"
 pepsico-seed-products = "src.mcp_servers.products.seed.seed_cosmos:main"

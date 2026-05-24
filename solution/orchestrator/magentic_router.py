@@ -41,7 +41,7 @@ async def run_query(user_query: str) -> OrchestratorResult:
 
     try:
         from agent_framework import Agent
-        from agent_framework.azure import AzureAIAgentClient
+        from agent_framework.foundry import FoundryAgent, FoundryChatClient
         from agent_framework.orchestrations import MagenticBuilder
         from azure.identity.aio import DefaultAzureCredential
     except ImportError as exc:
@@ -50,34 +50,42 @@ async def run_query(user_query: str) -> OrchestratorResult:
         ) from exc
 
     async with DefaultAzureCredential() as cred:
-        async with AzureAIAgentClient(
+        # FoundryChatClient drives the manager agent (no hosted agent_name).
+        # FoundryAgent(agent_name=...) references the hosted specialist agents
+        # by name; their definition (model + instructions + tools) is loaded
+        # from the Foundry project automatically.
+        async with FoundryChatClient(
             project_endpoint=settings.azure_ai_project_endpoint,
-            model_deployment_name=settings.azure_ai_model_deployment,
+            model=settings.azure_ai_model_deployment,
             credential=cred,
         ) as client:
-            hr = Agent(
-                client=client,
+            hr = FoundryAgent(
+                project_endpoint=settings.azure_ai_project_endpoint,
+                agent_name=settings.hr_agent_name,
+                credential=cred,
                 name="hr",
                 description="Answers Pepsico HR policy, benefits, and handbook questions using the Foundry IQ knowledge base.",
-                agent_reference={"name": settings.hr_agent_name, "type": "agent_reference"},
             )
-            products = Agent(
-                client=client,
+            products = FoundryAgent(
+                project_endpoint=settings.azure_ai_project_endpoint,
+                agent_name=settings.products_agent_name,
+                credential=cred,
                 name="products",
                 description="Answers questions about the Pepsico product catalog (SKU, brand, size, calories, price) using the Products MCP server.",
-                agent_reference={"name": settings.products_agent_name, "type": "agent_reference"},
             )
-            marketing = Agent(
-                client=client,
+            marketing = FoundryAgent(
+                project_endpoint=settings.azure_ai_project_endpoint,
+                agent_name=settings.marketing_agent_name,
+                credential=cred,
                 name="marketing",
                 description="Answers questions about Pepsico marketing campaigns (status, KPIs, budgets, ROI) using the Marketing MCP server, and can search the web via Bing for live context.",
-                agent_reference={"name": settings.marketing_agent_name, "type": "agent_reference"},
             )
-            response_generator = Agent(
-                client=client,
+            response_generator = FoundryAgent(
+                project_endpoint=settings.azure_ai_project_endpoint,
+                agent_name=settings.response_agent_name,
+                credential=cred,
                 name="response_generator",
                 description="Synthesises the final user-facing answer from specialist transcripts. Always called last.",
-                agent_reference={"name": settings.response_agent_name, "type": "agent_reference"},
             )
 
             manager = Agent(

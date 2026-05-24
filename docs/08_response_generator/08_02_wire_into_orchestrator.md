@@ -15,27 +15,21 @@ in Foundry, the orchestrator will pick it up automatically.
 
 ## Success Criteria
 
-* Running the chat UI with `AGENT_MODE=orchestrator` ends with a single
-  polished message whose `plan` pill includes `response_generator` as the
-  last step.
+* Running `python -m src.orchestrator.runner` for a multi-specialist
+  question ends with a single polished message whose plan includes
+  `response_generator` as the last step.
 
 ## Key Tasks
 
-### 01: Run the chat UI in orchestrator mode
+### 01: Run the orchestrator
 
+```powershell
+python -m src.orchestrator.runner --query "How does our 2026 SuperBowl Gatorade push compare to our latest hydration product launch, and what HR support is available for the marketing team during launch week?"
 ```
-AGENT_MODE=orchestrator
-```
-
-Restart uvicorn and ask a multi-specialist question, for example:
-
-*"How does our 2026 SuperBowl Gatorade push compare to our latest
-hydration product launch, and what HR support is available for the
-marketing team during launch week?"*
 
 Expected:
 
-* The plan pill shows `marketing → products → hr → response_generator`.
+* The **Plan** line shows `marketing -> products -> hr -> response_generator`.
 * The final reply is the polished single message produced by the Response
   Generator and includes a `Sources:` line.
 

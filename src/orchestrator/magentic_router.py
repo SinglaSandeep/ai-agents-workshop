@@ -40,7 +40,7 @@ async def run_query(user_query: str) -> OrchestratorResult:
     1. Lazy-import ``agent_framework``, ``agent_framework.azure``,
        ``agent_framework.orchestrations.MagenticBuilder``, and
        ``azure.identity.aio.DefaultAzureCredential``.
-    2. Open an ``AzureAIAgentClient`` against ``settings.azure_ai_project_endpoint``.
+    2. Open a ``FoundryChatClient`` (manager) plus ``FoundryAgent`` instances
     3. Wrap each Foundry hosted agent (``hr``, ``products``, ``marketing``,
        ``response_generator``) as an ``Agent(agent_reference={"name": ...})``.
     4. Create a ``manager`` Agent with planning instructions.

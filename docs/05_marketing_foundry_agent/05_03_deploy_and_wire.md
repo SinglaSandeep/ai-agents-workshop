@@ -21,8 +21,9 @@ project, and stream its logs.
   endpoint.
 * `azd ai agent up` returns successfully and `azd ai agent show` lists the
   agent as `Healthy`.
-* The chat UI with `AGENT_MODE=marketing` reaches the **hosted** agent and
-  answers Pepsico campaign + live-web questions.
+* DevUI (`python -m src.app.devui_launch`) reaches the **hosted** agent
+  under the **marketing** entity and answers Pepsico campaign + live-web
+  questions.
 
 ## Key Tasks
 
@@ -66,17 +67,17 @@ Foundry portal → **Agents → pepsico-marketing-agent**. Use the built-in
 Playground to test the same prompts. You should see traces under the
 **Observability** tab.
 
-### 05: Wire into the chat UI
+### 05: Talk to it in DevUI
 
-The orchestrator (Exercise 07) and the simple per-mode dispatcher both look up
-the agent by name. Because we kept `MARKETING_AGENT_NAME=pepsico-marketing-agent`,
-no chat-app code change is needed — flip the mode:
+The DevUI launcher and the orchestrator both look up the agent by name.
+Because we kept `MARKETING_AGENT_NAME=pepsico-marketing-agent`, no
+launcher-code change is needed — restart DevUI:
 
+```powershell
+python -m src.app.devui_launch
 ```
-AGENT_MODE=marketing
-```
 
-Restart uvicorn and test in the browser:
+Select the **marketing** entity in the sidebar and try:
 
 | Prompt | Expected behaviour |
 | ------ | ------------------ |

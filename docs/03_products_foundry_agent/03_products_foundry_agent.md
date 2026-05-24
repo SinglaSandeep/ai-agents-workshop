@@ -27,15 +27,15 @@ You will:
 2. Create a Foundry Prompt Agent with focused instructions and the Products
    `MCPTool` attached.
 3. Implement a small `run_single_agent("products", query)` helper.
-4. Flip `AGENT_MODE=products` in `.env`, uncomment the matching block in
-   `src/app/main.py`, and chat with the agent in the browser.
+4. Talk to the agent in the **Agent Framework DevUI** (`python -m
+   src.app.devui_launch`).
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    U[User browser] --> F[FastAPI /chat]
-    F --> A[Products Foundry Prompt Agent]
+    U[User browser] --> D[DevUI / Responses API]
+    D --> A[Products Foundry Prompt Agent]
     A -->|MCPTool / HTTP| S[Products MCP Server (Container App)]
     S --> C[(Cosmos DB · products)]
 ```
@@ -49,8 +49,8 @@ flowchart LR
 >   (`MCPTool` → that connection).
 > - `python -m src.foundry_agents.create_products_agent` runs without error
 >   and prints the new agent version.
-> - With `AGENT_MODE=products` in `.env`, asking *"What sizes does Pepsi Cola
->   come in?"* in the chat UI returns an answer that cites `PEP-001`.
+> - In DevUI, asking the **products** agent *"What sizes does Pepsi Cola
+>   come in?"* returns an answer that cites `PEP-001`.
 
 ## Learning Resources
 
@@ -64,4 +64,4 @@ flowchart LR
 | ---- | ----------- |
 | [03.01 — Register the MCP project connection](03_01_register_mcp_connection.md) | Add a connection on the Foundry project that authenticates as the project's managed identity. |
 | [03.02 — Create the Products Prompt Agent](03_02_create_products_agent.md) | Implement `create_products_agent.py` and run it. |
-| [03.03 — Wire the agent into the chat UI](03_03_wire_into_chat_app.md) | Implement `run_single_agent("products", …)` and flip `AGENT_MODE=products`. |
+| [03.03 — Talk to the agent in DevUI](03_03_wire_into_chat_app.md) | Implement `run_single_agent("products", …)` and chat with the agent in DevUI. |

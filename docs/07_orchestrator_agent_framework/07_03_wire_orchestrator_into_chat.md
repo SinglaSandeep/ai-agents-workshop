@@ -1,73 +1,61 @@
 ---
-title: '3. Wire the orchestrator into chat'
+title: '3. Run the orchestrator'
 layout: default
 nav_order: 3
 parent: 'Exercise 07: Magentic Orchestrator'
 ---
 
-# Task 07.03 — Run the Magentic Orchestrator From the Chat UI
+# Task 07.03 — Run the Magentic Orchestrator
 
 ## Introduction
 
-The chat app already has an `orchestrator` branch in `_dispatch` that is
-commented out. You uncomment it, flip `AGENT_MODE`, and ask mixed-domain
-questions in the browser.
+The orchestrator runs as a small Python CLI that calls `run_query` from
+`src/orchestrator/magentic_router.py`. There is nothing else to wire up — the
+specialists are already discovered by name from your Foundry project.
 
 ## Success Criteria
 
-* With `AGENT_MODE=orchestrator`, the chat UI shows multiple pill names in
-  the **Plan** row (e.g. `hr → products → response_generator`).
+* `python -m src.orchestrator.runner --query "..."` prints a multi-step plan
+  and a final answer for a mixed-domain question.
 
 ## Key Tasks
 
-### 01: Activate the orchestrator branch in `main.py`
+### 01: Run the orchestrator from the terminal
 
-Open [src/app/main.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/app/main.py) and replace the
-`return _not_yet_wired(...)` line in the `AGENT_MODE == "orchestrator"`
-branch with the live call.
-
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```python
-    if AGENT_MODE == "orchestrator":
-        from src.orchestrator.magentic_router import run_query
-
-        result = await run_query(query)
-        return {
-            "final_answer": result.final_answer,
-            "plan": result.plan,
-            "transcripts": result.transcripts,
-            "events": result.events,
-            "mode": AGENT_MODE,
-        }
-```
-
-</details>
-
-### 02: Flip the mode and restart
-
-```
-AGENT_MODE=orchestrator
-```
+From the workshop root, with `.venv` activated and `.env` populated:
 
 ```powershell
-uvicorn src.app.main:app --reload --port 8000
+python -m src.orchestrator.runner --query "Which active Gatorade campaigns target youth athletes, and what is the PTO policy for marketing managers attending those activations?"
 ```
 
-### 03: Try a mixed-domain prompt
+You should see output like:
 
-In the browser, ask:
+```
+=== Plan ===
+marketing -> hr -> response_generator
 
-> *"Which active Gatorade campaigns target youth athletes, and what is the
-> PTO policy for marketing managers attending those activations?"*
+=== Final Answer ===
+Gatorade is currently running ...
+```
 
-You should see the plan grow to several pills (`marketing → hr →
-response_generator`) and the **Specialist transcripts** disclosure now
-contains entries for each specialist.
+### 02: Inspect the full result (optional)
 
-If the **Final Answer** is just the HR transcript dumped raw, that means the
-Response Generator agent does not exist yet — Exercise 08 fixes that.
+Pass `--json` to dump the plan, specialist transcripts, and raw events:
+
+```powershell
+python -m src.orchestrator.runner --query "What is our PTO policy?" --json
+```
+
+### 03: Try mixed-domain prompts
+
+Good questions to exercise the planner:
+
+* *"List two Pepsi Zero Sugar SKUs and tell me the parental leave policy."*
+* *"Which marketing campaigns mention 'youth athletes', and what training is
+  required before staffing one of those activations?"*
+
+If the **Final Answer** looks like a raw HR transcript, the Response
+Generator agent does not exist yet — Exercise 08 fixes that.
 
 ## Next
 

@@ -155,9 +155,9 @@ Note: we keep the surface **read-only** and return plain `dict`s so the MCP
 server can JSON-serialise the response straight back to the LLM. Each method
 emits one structured log line (e.g.
 `INFO pepsico.mcp.products.cosmos cosmos list_categories rows=9 elapsed_ms=12.3 query=... params=[]`)
-which uvicorn forwards to stdout — pipe the `pepsico.mcp.products.cosmos`
-logger to App Insights in **Exercise 11** for an auditable record of every
-Cosmos query the agent triggers.
+which uvicorn forwards to stdout. Forwarding these logs to Application
+Insights is covered later in **Exercise 11 — Observability**; for now stdout
+is all you need.
 
 </details>
 

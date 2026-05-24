@@ -1,13 +1,4 @@
-"""Read-only Cosmos DB repository for Pepsico marketing campaigns.
-
-You implement this file in **Exercise 04**. Reference solution lives at
-``solution/mcp_servers/marketing/cosmos_repo.py``.
-
-**Observability requirement.** Log every Cosmos query (op name, query text,
-parameters, row count, elapsed ms) at ``INFO`` on the
-``pepsico.mcp.marketing.cosmos`` logger so the agent's data access is
-auditable. Use the ``_log_query`` helper below.
-"""
+"""Read-only Cosmos DB repository for Pepsico marketing campaigns."""
 
 from __future__ import annotations
 
@@ -21,26 +12,10 @@ from src.common.settings import get_settings
 logger = logging.getLogger("pepsico.mcp.marketing.cosmos")
 
 
-def _log_query(
-    op: str,
-    query: str,
-    params: list[dict[str, Any]] | None,
-    *,
-    count: int,
-    elapsed_ms: float,
-) -> None:
-    """Emit one structured log line per Cosmos query.
-
-    TODO (Exercise 04): call this helper at the end of every method below.
-    """
-
+def _log_query(op, query, params, *, count, elapsed_ms):
     logger.info(
         "cosmos %s rows=%d elapsed_ms=%.1f query=%s params=%s",
-        op,
-        count,
-        elapsed_ms,
-        " ".join(query.split()),
-        params or [],
+        op, count, elapsed_ms, " ".join(query.split()), params or [],
     )
 
 
@@ -50,37 +25,76 @@ class MarketingRepository:
         self._container = get_container(settings.cosmos_marketing_container)
 
     def list_active_campaigns(self, limit: int = 20) -> list[dict[str, Any]]:
-        """Return up to ``limit`` campaigns whose ``status == 'active'``."""
-
-        # TODO (Exercise 04): SELECT TOP @limit ... WHERE c.status = 'active'.
-        # Time the query with `time.perf_counter()` and call `_log_query(...)`.
-        raise NotImplementedError
+        query = (
+            "SELECT TOP @limit c.id, c.campaign_name, c.brand, c.status, c.region, "
+            "c.start_date, c.end_date, c.channel, c.target_audience, c.budget_usd "
+            "FROM c WHERE c.status = 'active'"
+        )
+        params = [{"name": "@limit", "value": limit}]
+        t0 = time.perf_counter()
+        rows = list(self._container.query_items(
+            query=query, parameters=params, enable_cross_partition_query=True,
+        ))
+        _log_query("list_active_campaigns", query, params, count=len(rows),
+                   elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def list_campaigns_by_brand(self, brand: str, limit: int = 20) -> list[dict[str, Any]]:
-        """Return campaigns matching the given brand (case-insensitive)."""
-
-        # TODO (Exercise 04): SELECT TOP @limit ... WHERE LOWER(c.brand) = LOWER(@brand).
-        # Log via `_log_query(...)`.
-        raise NotImplementedError
+        query = (
+            "SELECT TOP @limit c.id, c.campaign_name, c.brand, c.status, c.region, "
+            "c.start_date, c.end_date, c.channel, c.target_audience, c.budget_usd "
+            "FROM c WHERE LOWER(c.brand) = LOWER(@brand)"
+        )
+        params = [{"name": "@limit", "value": limit}, {"name": "@brand", "value": brand}]
+        t0 = time.perf_counter()
+        rows = list(self._container.query_items(
+            query=query, parameters=params, enable_cross_partition_query=True,
+        ))
+        _log_query("list_campaigns_by_brand", query, params, count=len(rows),
+                   elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def get_campaign(self, campaign_id: str) -> dict[str, Any] | None:
-        """Look up a single campaign by id (e.g. ``CMP-2026-001``)."""
-
-        # TODO (Exercise 04): `self._container.read_item(...)`, return None on miss.
-        # Emit `logger.info(...)` with the id and whether the item was found.
-        raise NotImplementedError
+        t0 = time.perf_counter()
+        try:
+            item = self._container.read_item(item=campaign_id, partition_key=campaign_id)
+            logger.info("cosmos get_campaign id=%s found=True elapsed_ms=%.1f",
+                        campaign_id, (time.perf_counter() - t0) * 1000)
+            return item
+        except Exception as exc:
+            logger.info("cosmos get_campaign id=%s found=False elapsed_ms=%.1f error=%s",
+                        campaign_id, (time.perf_counter() - t0) * 1000, exc.__class__.__name__)
+            return None
 
     def search_campaigns(self, text: str, limit: int = 10) -> list[dict[str, Any]]:
-        """Free-text CONTAINS search across campaign name, brand, and summary."""
-
-        # TODO (Exercise 04): SELECT TOP @limit ... WHERE CONTAINS(LOWER(...)).
-        # Log via `_log_query(...)`.
-        raise NotImplementedError
+        query = (
+            "SELECT TOP @limit c.id, c.campaign_name, c.brand, c.status, c.region, "
+            "c.start_date, c.end_date, c.channel, c.target_audience, c.summary, c.budget_usd "
+            "FROM c WHERE CONTAINS(LOWER(c.campaign_name), LOWER(@q)) "
+            "   OR CONTAINS(LOWER(c.summary), LOWER(@q)) "
+            "   OR CONTAINS(LOWER(c.brand), LOWER(@q))"
+        )
+        params = [{"name": "@limit", "value": limit}, {"name": "@q", "value": text}]
+        t0 = time.perf_counter()
+        rows = list(self._container.query_items(
+            query=query, parameters=params, enable_cross_partition_query=True,
+        ))
+        _log_query("search_campaigns", query, params, count=len(rows),
+                   elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def campaign_performance(self, campaign_id: str) -> dict[str, Any] | None:
-        """Return KPIs (impressions, clicks, CTR, conversions, spend, ROI) for a campaign."""
-
-        # TODO (Exercise 04): call `self.get_campaign(...)` then project the
-        # KPI fields into a dict. No extra log line needed — `get_campaign`
-        # already emits one.
-        raise NotImplementedError
+        # No extra log line — `get_campaign` already emits one.
+        campaign = self.get_campaign(campaign_id)
+        if not campaign:
+            return None
+        return {
+            "id": campaign["id"],
+            "campaign_name": campaign.get("campaign_name"),
+            "impressions": campaign.get("impressions"),
+            "clicks": campaign.get("clicks"),
+            "ctr": campaign.get("ctr"),
+            "conversions": campaign.get("conversions"),
+            "spend_usd": campaign.get("spend_usd"),
+            "roi": campaign.get("roi"),
+        }
