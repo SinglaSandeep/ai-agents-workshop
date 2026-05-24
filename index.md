@@ -4,15 +4,25 @@ layout: home
 nav_order: 1
 ---
 
-# Pepsico AI Agents Workshop (L300)
+# Pepsico AI Agents Workshop
 
-Welcome! In this workshop you will build an **end-to-end multi-agent Pepsico
-business assistant** on Azure using **Microsoft Foundry**, **Microsoft Agent
-Framework**, **Foundry IQ**, **Foundry Toolbox** (web search +
-code-interpreter), **Model Context Protocol (MCP)** servers on **Azure
-Container Apps**, **Azure Cosmos DB**, and the **Foundry hosted-agents**
-runtime. The final modules add **quality evaluations**, **guardrails**,
-**red teaming**, and **end-to-end observability**.
+In this workshop you will build an **end-to-end multi-agent business
+assistant** on Azure using:
+
+- **Microsoft Foundry**
+- **Microsoft Agent Framework**
+- **Foundry IQ**
+- **Foundry Toolbox** (web search + code-interpreter)
+- **Model Context Protocol (MCP)** servers on **Azure Container Apps**
+- **Azure Cosmos DB**
+- The **Foundry hosted-agents** runtime
+
+The final modules add:
+
+- **Quality evaluations**
+- **Guardrails**
+- **Red teaming**
+- **End-to-end observability**
 
 ## What You Will Build
 
@@ -21,7 +31,7 @@ By the end of the workshop you will have:
 - Two **MCP servers** (Products and Marketing) backed by **Cosmos DB**,
   deployed to **Azure Container Apps**.
 - An **HR specialist agent** in **Microsoft Foundry**, grounded with a
-  **Foundry IQ** knowledge base over Pepsico HR policies.
+  **Foundry IQ** knowledge base over  HR policies.
 - A **Products specialist agent** (Foundry Prompt Agent) that uses the
   Products MCP server as a tool.
 - A **Marketing specialist agent** built on the **Microsoft Agent Framework**
@@ -55,17 +65,40 @@ By the end of the workshop you will have:
 | 11 | [End-to-End Observability](docs/11_observability/11_observability.md) |
 | 12 | [Resource Cleanup](docs/12_cleanup/12_cleanup.md) |
 
-## Audience & Prerequisites
+## Prerequisites
 
-This is a **300-level** workshop. You should be comfortable with:
+This is a **purely hands-on lab**. You do **not** need prior experience with
+Microsoft Foundry, the Microsoft Agent Framework, Foundry IQ, Foundry
+Toolbox, MCP, Azure Container Apps, Cosmos DB, or any of the evaluation /
+red-teaming / observability tooling — every concept is introduced as you
+need it and every step shows the full solution behind an expandable block.
 
-- Python 3.11+ and `pip` / virtual environments
-- Basic Azure concepts (resource groups, RBAC, managed identity)
-- Reading REST and OpenAPI specs
-- Using the Azure portal and the `az` CLI
+What you do need on your laptop before you start:
 
-You do **not** need prior experience with the Microsoft Agent Framework,
-Foundry hosted agents, Foundry IQ, or MCP — you will learn each as you go.
+- **Python 3.11 or newer** with the ability to create a virtual environment
+  (`python -m venv`).
+- **Git** to clone the repository.
+- **Visual Studio Code** (recommended) or any editor you are comfortable with.
+- **PowerShell 7+** (Windows) or **bash / zsh** (macOS / Linux) for the
+  terminal commands shown throughout the workshop.
+- **Docker Desktop** running locally — used to build and run the MCP server
+  containers in Exercises 02 and 04.
+- The **Azure CLI** (`az`) installed and signed in (`az login`). Used to
+  read configuration from your pre-provisioned resources.
+- The **Azure Developer CLI** (`azd`) installed, with the AI extension
+  added via `azd extension install ai` — used from Exercise 05 onwards to
+  deploy the Foundry-hosted Marketing agent.
+- An **Azure subscription** with the workshop resources already provisioned
+  for you by the platform team (Foundry project, Cosmos DB, Azure AI
+  Search, Azure Container Apps environment, Application Insights). You will
+  verify access to all of them in [Exercise 00 — Setup](docs/00_setup/00_setup.md).
+- Network access to `*.azure.com`, `*.openai.azure.com`,
+  `*.cognitiveservices.azure.com`, `*.search.windows.net`,
+  `*.azurecontainerapps.io`, `pypi.org`, `ghcr.io` and `mcr.microsoft.com`
+  (corporate proxies that block these will need an exception).
+
+That is everything. If you can run `python --version`, `docker --version`,
+`az --version` and `azd version` successfully, you are ready to begin.
 
 ## Start Here
 

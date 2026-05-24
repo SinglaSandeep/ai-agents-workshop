@@ -2,6 +2,15 @@ title: Pepsico AI Agents Workshop (L300)
 description: Build an end-to-end multi-agent Pepsico business assistant on Azure with Microsoft Foundry, Microsoft Agent Framework, Foundry IQ, Bing Grounding, MCP servers on Container Apps, and Azure Cosmos DB.
 theme: just-the-docs
 
+# GitHub-Pages-safe plugin: rewrites relative `.md` links to the final
+# `.html` URL so links between exercises don't 404 when published.
+plugins:
+  - jekyll-relative-links
+
+relative_links:
+  enabled: true
+  collections: true
+
 # Keep the reference implementation, tests, and source out of the Pages build
 # so the navigation only shows the workshop docs.
 exclude:
@@ -20,7 +29,7 @@ exclude:
 
 aux_links:
   "Pepsico AI Agents Workshop on GitHub":
-    - "https://github.com/<github-org-or-user>/ai-agents-workshop"
+    - "https://github.com/SinglaSandeep/ai-agents-workshop"
 
 callouts_level: quiet
 callouts:

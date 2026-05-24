@@ -71,4 +71,4 @@ Response Generator agent does not exist yet — Exercise 08 fixes that.
 
 ## Next
 
-Continue to [Exercise 08 — Response Generator + Observability](../08_response_generator_and_observability/08_response_generator_and_observability.md).
+Continue to [Exercise 08 — Response Generator](../08_response_generator/08_response_generator.md).

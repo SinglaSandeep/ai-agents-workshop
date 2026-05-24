@@ -6,3 +6,8 @@ gem "liquid", ">= 4.0.4", "< 5.0" # required for Ruby 3.2 compatibility
 
 gem "just-the-docs", "0.10.1" # pinned to the current release
 # gem "just-the-docs"        # always download the latest release
+
+# Plugin enabled on GitHub Pages so .md links get rewritten to .html.
+group :jekyll_plugins do
+  gem "jekyll-relative-links"
+end
