@@ -163,7 +163,24 @@ az cosmosdb sql role assignment create `
 
 </details>
 
-### 08: Smoke-test the public URL
+### 08: Confirm the Cosmos DB firewall allows the Container App
+
+The Marketing Container App reuses the **same ACA environment** as the
+Products server, so the egress IP you allowlisted in
+[Task 02.04 step 09](../02_products_mcp_server/02_04_deploy_container_app.md#09-allow-the-container-app-through-the-cosmos-db-firewall)
+should already cover this app. Verify:
+
+```powershell
+$APP_IP = az containerapp show -n $APP -g $RG `
+  --query properties.outboundIpAddresses[0] -o tsv
+az cosmosdb show -n $COSMOS_ACCT -g $RG `
+  --query "ipRules[?ipAddressOrRange=='$APP_IP']" -o table
+```
+
+If the table is empty, re-run the firewall merge from Task 02.04 step 09
+with `$APP = "pepsico-marketing-mcp"`.
+
+### 09: Smoke-test the public URL
 
 ```powershell
 $FQDN = az containerapp show -n $APP -g $RG `
@@ -179,7 +196,7 @@ tail the logs:
 az containerapp logs show -n $APP -g $RG --follow
 ```
 
-### 09: Save the URL
+### 10: Save the URL
 
 Add to `.env`:
 

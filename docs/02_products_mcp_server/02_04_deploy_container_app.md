@@ -231,7 +231,42 @@ az cosmosdb sql role assignment create `
 
 </details>
 
-### 09: Smoke-test the public URL
+### 09: Allow the Container App through the Cosmos DB firewall
+
+If the Cosmos account has IP rules enabled (the default for the workshop
+account), you must add the Container App's outbound public IP to the
+allowlist. Otherwise the first tool call will return a `403 Forbidden`
+with an error like *"Request originated from IP ... through public internet.
+This is blocked by your Cosmos DB account firewall settings."*
+
+<details markdown="block">
+<summary><strong>Expand this section to view the solution</strong></summary>
+
+```powershell
+# 1. Discover the Container App's egress IP.
+$APP_IP = az containerapp show -n $APP -g $RG `
+  --query properties.outboundIpAddresses[0] -o tsv
+$APP_IP
+
+# 2. Merge it into the Cosmos firewall (preserves existing rules).
+$EXISTING = az cosmosdb show -n $COSMOS_ACCT -g $RG `
+  --query "join(',', ipRules[].ipAddressOrRange)" -o tsv
+$NEW_RULES = if ($EXISTING) { "$EXISTING,$APP_IP" } else { $APP_IP }
+
+az cosmosdb update -n $COSMOS_ACCT -g $RG `
+  --ip-range-filter $NEW_RULES `
+  --query ipRules -o table
+```
+
+> .note
+> Container Apps shares a small pool of egress IPs across the environment,
+> so the same IP usually works for **both** the Products and Marketing
+> servers. If you later see a `403 Forbidden` from Cosmos after a platform
+> rotation, re-run this step.
+
+</details>
+
+### 10: Smoke-test the public URL
 
 ```powershell
 $FQDN = az containerapp show -n $APP -g $RG `
@@ -248,7 +283,7 @@ healthy. If you get `502` or `503`, tail the logs:
 az containerapp logs show -n $APP -g $RG --follow
 ```
 
-### 10: Save the URL
+### 11: Save the URL
 
 Add to `.env`:
 

@@ -3,16 +3,27 @@
 from __future__ import annotations
 
 from azure.cosmos import CosmosClient
+from azure.identity import DefaultAzureCredential
 
-from .foundry_client import get_credential
 from .settings import get_settings
+
+_credential: DefaultAzureCredential | None = None
+
+
+def _get_credential() -> DefaultAzureCredential:
+    # Local helper so the MCP server containers do not need the
+    # full Foundry SDK (azure-ai-projects) just to talk to Cosmos.
+    global _credential
+    if _credential is None:
+        _credential = DefaultAzureCredential(exclude_interactive_browser_credential=False)
+    return _credential
 
 
 def get_cosmos_client() -> CosmosClient:
     settings = get_settings()
     if not settings.cosmos_endpoint:
         raise RuntimeError("COSMOS_ENDPOINT is not set. See docs/00_setup/00_03_verify_resources.md")
-    return CosmosClient(url=settings.cosmos_endpoint, credential=get_credential())
+    return CosmosClient(url=settings.cosmos_endpoint, credential=_get_credential())
 
 
 def get_container(container_name: str):
