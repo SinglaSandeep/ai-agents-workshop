@@ -36,7 +36,8 @@ if you get stuck.
 Open [src/mcp_servers/products/cosmos_repo.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/mcp_servers/products/cosmos_repo.py).
 The skeleton already imports `get_container` from `src.common.cosmos` and
 selects the products container in `__init__`. You just need to fill in each
-query method.
+query method **and emit one log line per query** via the `_log_query` helper
+on the `pepsico.mcp.products.cosmos` logger so each tool call is auditable.
 
 <details markdown="block">
 <summary><strong>Expand this section to view the solution</strong></summary>
@@ -46,10 +47,21 @@ query method.
 
 from __future__ import annotations
 
+import logging
+import time
 from typing import Any
 
 from src.common.cosmos import get_container
 from src.common.settings import get_settings
+
+logger = logging.getLogger("pepsico.mcp.products.cosmos")
+
+
+def _log_query(op, query, params, *, count, elapsed_ms):
+    logger.info(
+        "cosmos %s rows=%d elapsed_ms=%.1f query=%s params=%s",
+        op, count, elapsed_ms, " ".join(query.split()), params or [],
+    )
 
 
 class ProductsRepository:
@@ -59,12 +71,15 @@ class ProductsRepository:
 
     def list_categories(self) -> list[str]:
         query = "SELECT DISTINCT VALUE c.category FROM c"
-        return [
-            c
-            for c in self._container.query_items(
+        t0 = time.perf_counter()
+        rows = list(
+            self._container.query_items(
                 query=query, enable_cross_partition_query=True
             )
-        ]
+        )
+        _log_query("list_categories", query, None, count=len(rows),
+                   elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def list_products(self, category: str | None = None, limit: int = 20) -> list[dict[str, Any]]:
         if category:
@@ -83,18 +98,32 @@ class ProductsRepository:
                 "c.description, c.calories, c.price_usd FROM c"
             )
             params = [{"name": "@limit", "value": limit}]
-        return list(
+        t0 = time.perf_counter()
+        rows = list(
             self._container.query_items(
                 query=query,
                 parameters=params,
                 enable_cross_partition_query=True,
             )
         )
+        _log_query("list_products", query, params, count=len(rows),
+                   elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 
     def get_product(self, product_id: str) -> dict[str, Any] | None:
+        t0 = time.perf_counter()
         try:
-            return self._container.read_item(item=product_id, partition_key=product_id)
-        except Exception:
+            item = self._container.read_item(item=product_id, partition_key=product_id)
+            logger.info(
+                "cosmos get_product id=%s found=True elapsed_ms=%.1f",
+                product_id, (time.perf_counter() - t0) * 1000,
+            )
+            return item
+        except Exception as exc:
+            logger.info(
+                "cosmos get_product id=%s found=False elapsed_ms=%.1f error=%s",
+                product_id, (time.perf_counter() - t0) * 1000, exc.__class__.__name__,
+            )
             return None
 
     def search_products(self, text: str, limit: int = 10) -> list[dict[str, Any]]:
@@ -109,17 +138,26 @@ class ProductsRepository:
             {"name": "@limit", "value": limit},
             {"name": "@q", "value": text},
         ]
-        return list(
+        t0 = time.perf_counter()
+        rows = list(
             self._container.query_items(
                 query=query,
                 parameters=params,
                 enable_cross_partition_query=True,
             )
         )
+        _log_query("search_products", query, params, count=len(rows),
+                   elapsed_ms=(time.perf_counter() - t0) * 1000)
+        return rows
 ```
 
 Note: we keep the surface **read-only** and return plain `dict`s so the MCP
-server can JSON-serialise the response straight back to the LLM.
+server can JSON-serialise the response straight back to the LLM. Each method
+emits one structured log line (e.g.
+`INFO pepsico.mcp.products.cosmos cosmos list_categories rows=9 elapsed_ms=12.3 query=... params=[]`)
+which uvicorn forwards to stdout — pipe the `pepsico.mcp.products.cosmos`
+logger to App Insights in **Exercise 11** for an auditable record of every
+Cosmos query the agent triggers.
 
 </details>
 
