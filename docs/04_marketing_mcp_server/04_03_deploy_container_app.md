@@ -130,10 +130,15 @@ $APP_PID = az containerapp show -n $APP -g $RG `
 
 $ACR_ID = az acr show -n $ACR -g $RG --query id -o tsv
 
+if (-not $APP_PID -or -not $ACR_ID) {
+    throw "APP_PID or ACR_ID is empty. Re-run step 03 to set `$RG, `$ACR, `$APP, then retry."
+}
+$APP_PID; $ACR_ID
+
 az role assignment create `
   --assignee $APP_PID `
   --role AcrPull `
-  --scope $ACR_ID
+  --scope "$ACR_ID"
 
 az containerapp registry set `
   --name $APP -g $RG `
