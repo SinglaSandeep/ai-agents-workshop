@@ -106,10 +106,11 @@ flowchart LR
 # 1. Enter the repo
 cd ai-agents-workshop
 
-# 2. Create the venv and install the workshop package
+# 2. Create the venv and install pinned dependencies
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev,framework,observability,mcp,evals,redteam]"
+python -m pip install --upgrade pip
+python -m pip install --pre -r requirements.txt
 
 # 3. Configure the environment
 Copy-Item .env.sample .env
