@@ -1,11 +1,20 @@
 """Seed the Pepsico products container in Cosmos DB.
 
 Usage:
-    pepsico-seed-products
-    # or
     python -m src.mcp_servers.products.seed.seed_cosmos
 
-The container is created with `/id` as the partition key if it does not exist.
+Prerequisites:
+    The database and container must already exist. They are created via the
+    Azure control plane (see docs/02_products_mcp_server/02_01_seed_cosmos.md):
+
+        az cosmosdb sql database create \\
+            --account-name <account> --resource-group <rg> --name <db>
+        az cosmosdb sql container create \\
+            --account-name <account> --resource-group <rg> \\
+            --database-name <db> --name <container> --partition-key-path /id
+
+    The Cosmos DB Built-in Data Contributor data-plane role does NOT grant
+    `sqlDatabases/write`, so this script only performs item upserts.
 """
 
 from __future__ import annotations
@@ -13,9 +22,6 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-
-from azure.cosmos import PartitionKey
-from azure.cosmos.exceptions import CosmosResourceExistsError
 
 from src.common.cosmos import get_cosmos_client
 from src.common.settings import get_settings
@@ -29,18 +35,13 @@ def main() -> None:
     settings = get_settings()
     client = get_cosmos_client()
 
-    db = client.create_database_if_not_exists(id=settings.cosmos_database)
-    LOG.info("Using database '%s'", settings.cosmos_database)
-
-    try:
-        container = db.create_container(
-            id=settings.cosmos_products_container,
-            partition_key=PartitionKey(path="/id"),
-        )
-        LOG.info("Created container '%s'", settings.cosmos_products_container)
-    except CosmosResourceExistsError:
-        container = db.get_container_client(settings.cosmos_products_container)
-        LOG.info("Container '%s' already exists", settings.cosmos_products_container)
+    db = client.get_database_client(settings.cosmos_database)
+    container = db.get_container_client(settings.cosmos_products_container)
+    LOG.info(
+        "Seeding database '%s' container '%s'",
+        settings.cosmos_database,
+        settings.cosmos_products_container,
+    )
 
     documents = json.loads(SEED_FILE.read_text(encoding="utf-8"))
     for document in documents:
