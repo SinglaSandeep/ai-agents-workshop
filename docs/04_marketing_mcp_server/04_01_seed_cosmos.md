@@ -45,7 +45,24 @@ Each document looks like:
 }
 ```
 
-### 02: Run the seed
+### 02: Create the container (control plane)
+
+The `pepsico` database already exists from Exercise 02. Create the
+`marketing_campaigns` container via the Azure control plane (the Cosmos data
+plane role cannot create containers):
+
+```powershell
+$account = "<your-cosmos-account-name>"
+$rg      = "<your-resource-group>"
+
+az cosmosdb sql container create `
+  --account-name $account --resource-group $rg `
+  --database-name pepsico --name marketing_campaigns --partition-key-path /id
+```
+
+### 03: Run the seed
+
+From the workshop root with the venv activated:
 
 ```powershell
 python -m src.mcp_servers.marketing.seed.seed_cosmos
@@ -54,15 +71,14 @@ python -m src.mcp_servers.marketing.seed.seed_cosmos
 Expected log:
 
 ```
-INFO Using database 'pepsico'
-INFO Created container 'marketing_campaigns'
-INFO Upserted N campaigns
+INFO Seeding database 'pepsico' container 'marketing_campaigns'
+INFO Upserted 50 campaigns
 ```
 
-### 03: Verify
+### 04: Verify
 
 Open Cosmos **Data Explorer → pepsico → marketing_campaigns → Items**.
-Confirm the documents appear.
+Confirm 50 documents (`CMP-2026-001` …) appear.
 
 ## Next
 
