@@ -5,6 +5,9 @@ __pycache__/
 .ruff_cache/
 .env
 .env.local
+.env-old
+.env.*
+!.env.sample
 *.egg-info/
 build/
 dist/
