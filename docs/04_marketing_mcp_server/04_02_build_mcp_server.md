@@ -33,14 +33,14 @@ because marketing teams care about KPIs:
 Open [src/mcp_servers/marketing/cosmos_repo.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/mcp_servers/marketing/cosmos_repo.py)
 and follow the TODOs. As with the Products repo, every method must emit
 one structured log line via the `_log_query` helper on the
-`pepsico.mcp.marketing.cosmos` logger so each Cosmos query the agent
+`zava.mcp.marketing.cosmos` logger so each Cosmos query the agent
 triggers is auditable.
 
 <details markdown="block">
 <summary><strong>Expand this section to view the solution</strong></summary>
 
 ```python
-"""Read-only Cosmos DB repository for Pepsico marketing campaigns."""
+"""Read-only Cosmos DB repository for Zava marketing campaigns."""
 
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ from typing import Any
 from src.common.cosmos import get_container
 from src.common.settings import get_settings
 
-logger = logging.getLogger("pepsico.mcp.marketing.cosmos")
+logger = logging.getLogger("zava.mcp.marketing.cosmos")
 
 
 def _log_query(op, query, params, *, count, elapsed_ms):
@@ -152,7 +152,7 @@ Open [src/mcp_servers/marketing/server.py](https://github.com/SinglaSandeep/ai-a
 <summary><strong>Expand this section to view the solution</strong></summary>
 
 ```python
-"""Pepsico Marketing MCP server (FastMCP, streamable HTTP transport)."""
+"""Zava Marketing MCP server (FastMCP, streamable HTTP transport)."""
 
 from __future__ import annotations
 
@@ -163,9 +163,9 @@ from fastmcp import FastMCP
 from .cosmos_repo import MarketingRepository
 
 mcp = FastMCP(
-    name="pepsico-marketing",
+    name="Zava-marketing",
     instructions=(
-        "Use these tools to look up Pepsico marketing campaigns. "
+        "Use these tools to look up Zava marketing campaigns. "
         "Prefer `search_campaigns` for natural-language questions, "
         "`list_active_campaigns` for what is running today, and "
         "`campaign_performance` for KPI / ROI questions."
@@ -185,7 +185,7 @@ def list_active_campaigns(limit: int = 20) -> list[dict]:
 
 @mcp.tool
 def list_campaigns_by_brand(brand: str, limit: int = 20) -> list[dict]:
-    """List campaigns by Pepsico brand (e.g. `Gatorade`, `Doritos`, `Pepsi`)."""
+    """List campaigns by Zava brand (e.g. `Gatorade`, `Doritos`, `Pepsi`)."""
     return _repo().list_campaigns_by_brand(brand=brand, limit=limit)
 
 
@@ -224,7 +224,7 @@ if __name__ == "__main__":
 ### 03: Smoke-test locally
 
 ```powershell
-pepsico-marketing-mcp
+zava-marketing-mcp
 # in another terminal
 npx @modelcontextprotocol/inspector
 ```

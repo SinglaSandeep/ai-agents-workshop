@@ -24,7 +24,7 @@ remove. This exercise lists them and shows the safe way to delete each one.
 > - The HR and Marketing Foundry IQ knowledge bases (and their Search indexes)
 >   are removed.
 > - The Cosmos `products` and `marketing_campaigns` containers (and optionally
->   the `pepsico` database) are removed.
+>   the `zava` database) are removed.
 > - The evaluation schedules and continuous-eval rule are removed.
 > - The local `red_team_output/` and `eval_output/` artefacts are deleted.
 
@@ -41,19 +41,19 @@ azd ai agent down
 
 ```powershell
 $RG = $env:AZURE_RESOURCE_GROUP
-az containerapp delete -g $RG -n pepsico-products-mcp --yes
-az containerapp delete -g $RG -n pepsico-marketing-mcp --yes  # if you ever deployed the MCP-only variant
+az containerapp delete -g $RG -n zava-products-mcp --yes
+az containerapp delete -g $RG -n zava-marketing-mcp --yes  # if you ever deployed the MCP-only variant
 ```
 
 ### 03: Delete the Foundry Prompt Agents
 
 In the Foundry portal → **Agents**, delete:
 
-* `pepsico-hr-agent`
-* `pepsico-products-agent`
-* `pepsico-response-generator`
+* `zava-store-ops-agent`
+* `zava-products-agent`
+* `zava-response-generator`
 
-(The `pepsico-marketing-agent` is removed by `azd ai agent down` above.)
+(The `zava-marketing-agent` is removed by `azd ai agent down` above.)
 
 Or via REST:
 
@@ -66,7 +66,7 @@ from src.common.settings import get_settings
 
 s = get_settings()
 project = get_project_client()
-for name in (s.hr_agent_name, s.products_agent_name, s.marketing_agent_name, s.response_agent_name):
+for name in (s.store_ops_agent_name, s.products_agent_name, s.marketing_agent_name, s.response_agent_name):
     try:
         project.agents.delete(agent_name=name)
         print("deleted", name)
@@ -80,10 +80,10 @@ for name in (s.hr_agent_name, s.products_agent_name, s.marketing_agent_name, s.r
 
 In the Foundry portal → **Management center → Connections**, delete:
 
-* `pepsico-products-mcp-conn`
-* `pepsico-marketing-mcp-conn`
-* `pepsico-hr-kb-conn`
-* `pepsico-marketing-kb-conn`
+* `zava-products-mcp-conn`
+* `zava-marketing-mcp-conn`
+* `zava-store-ops-kb-conn`
+* `zava-marketing-kb-conn`
 
 ### 05: Delete the HR + Marketing knowledge bases
 
@@ -92,10 +92,10 @@ $SEARCH = $env:AZURE_SEARCH_ENDPOINT
 $API    = "2025-11-01-preview"
 $TOKEN  = az account get-access-token --resource https://search.azure.com/ --query accessToken -o tsv
 
-foreach ($kb in "pepsico-hr-kb","pepsico-marketing-kb") {
+foreach ($kb in "zava-store-ops-kb","zava-marketing-kb") {
   curl -X DELETE -H "Authorization: Bearer $TOKEN" "$SEARCH/knowledgebases/$kb?api-version=$API"
 }
-foreach ($idx in "pepsico-hr-source","pepsico-marketing-source") {
+foreach ($idx in "zava-store-ops-source","zava-marketing-source") {
   curl -X DELETE -H "Authorization: Bearer $TOKEN" "$SEARCH/indexes/$idx?api-version=$API"
 }
 ```
@@ -110,10 +110,10 @@ Azure Monitor alert, also delete `marketing-quality-low`.
 
 ```powershell
 $COSMOS = "<your-cosmos-account-name>"
-az cosmosdb sql container delete -a $COSMOS -g $RG -d pepsico -n products --yes
-az cosmosdb sql container delete -a $COSMOS -g $RG -d pepsico -n marketing_campaigns --yes
+az cosmosdb sql container delete -a $COSMOS -g $RG -d zava -n products --yes
+az cosmosdb sql container delete -a $COSMOS -g $RG -d zava -n marketing_campaigns --yes
 # optional: delete the database too
-# az cosmosdb sql database delete -a $COSMOS -g $RG -n pepsico --yes
+# az cosmosdb sql database delete -a $COSMOS -g $RG -n zava --yes
 ```
 
 ### 08: Local cleanup (optional)
@@ -128,4 +128,4 @@ Remove-Item .env
 
 ## You are done
 
-Thanks for completing the Pepsico AI Agents Workshop.
+Thanks for completing the Zava AI Agents Workshop.

@@ -22,7 +22,7 @@ project, and stream its logs.
 * `azd ai agent up` returns successfully and `azd ai agent show` lists the
   agent as `Healthy`.
 * DevUI (`python -m src.app.devui_launch`) reaches the **hosted** agent
-  under the **marketing** entity and answers Pepsico campaign + live-web
+  under the **marketing** entity and answers Zava campaign + live-web
   questions.
 
 ## Key Tasks
@@ -59,18 +59,18 @@ azd ai agent monitor -f   # live logs
 `azd ai agent up` builds the Docker image, pushes it to your Foundry-managed
 ACR, and creates/updates the hosted agent. The hosted endpoint is registered
 back into your Foundry project under the agent name in `agent.yaml`
-(`pepsico-marketing-agent`).
+(`zava-marketing-agent`).
 
 ### 04: Verify in Foundry portal
 
-Foundry portal → **Agents → pepsico-marketing-agent**. Use the built-in
+Foundry portal → **Agents → zava-marketing-agent**. Use the built-in
 Playground to test the same prompts. You should see traces under the
 **Observability** tab.
 
 ### 05: Talk to it in DevUI
 
 The DevUI launcher and the orchestrator both look up the agent by name.
-Because we kept `MARKETING_AGENT_NAME=pepsico-marketing-agent`, no
+Because we kept `MARKETING_AGENT_NAME=zava-marketing-agent`, no
 launcher-code change is needed — restart DevUI:
 
 ```powershell
@@ -89,4 +89,4 @@ The plan pill below each answer should read `marketing`.
 
 ## Next
 
-Continue to [Exercise 06 — Create the HR Foundry IQ Agent](../06_hr_foundry_iq_agent/06_hr_foundry_iq_agent.md).
+Continue to [Exercise 06 — Create the Store-Ops Foundry IQ Agent](../06_store_ops_foundry_iq_agent/06_store_ops_foundry_iq_agent.md).

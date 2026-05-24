@@ -5,12 +5,12 @@ nav_order: 3
 has_children: true
 ---
 
-# Exercise 01 — Scaffold the Pepsico Chat App
+# Exercise 01 — Scaffold the Zava Chat App
 
 ## Scenario
 
 Before you build any AI, you want a working **frontend** you can point at every
-new agent. Pepsico has asked for a single chat-style assistant that employees
+new agent. Zava has asked for a single chat-style assistant that employees
 can use to ask HR, product, and marketing questions. In this workshop we use
 the official **Microsoft Agent Framework DevUI** as that frontend — no
 custom HTML/JS to maintain. DevUI auto-generates a chat surface for every

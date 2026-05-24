@@ -1,146 +1,1235 @@
 [
   {
-    "id": "PEP-001",
-    "name": "Pepsi Cola",
-    "brand": "Pepsi",
-    "category": "Beverages",
-    "size": "12 fl oz can",
-    "description": "Classic Pepsi cola with a refreshing crisp taste and signature citrus notes.",
-    "calories": 150,
-    "price_usd": 1.79,
-    "sku": "PEP-COLA-12OZ",
-    "tags": ["cola", "soda", "carbonated"]
+    "id": "ZV-PNT-001",
+    "name": "Premium Interior Paint \u2014 Eggshell White",
+    "category": "paint",
+    "brand": "Zava Pro",
+    "sku": "ZV-PNT-001",
+    "price_usd": 32.99,
+    "unit": "1 gallon",
+    "description": "Low-VOC interior paint, dries in 1 hour, 400 sq ft coverage.",
+    "tags": [
+      "paint",
+      "interior",
+      "white",
+      "low-voc"
+    ],
+    "inventory_by_store": {
+      "seattle": 3,
+      "bellevue": 12,
+      "tacoma": 46,
+      "redmond": 7,
+      "kirkland": 32,
+      "spokane": 28,
+      "everett": 26,
+      "online": 301
+    },
+    "reorder_threshold": 10
   },
   {
-    "id": "PEP-002",
-    "name": "Diet Pepsi",
-    "brand": "Pepsi",
-    "category": "Beverages",
-    "size": "12 fl oz can",
-    "description": "Zero-calorie Diet Pepsi with the same bold cola taste.",
-    "calories": 0,
-    "price_usd": 1.79,
-    "sku": "PEP-DIET-12OZ",
-    "tags": ["cola", "diet", "zero sugar"]
+    "id": "ZV-PNT-002",
+    "name": "Exterior Acrylic Latex \u2014 Slate Gray",
+    "category": "paint",
+    "brand": "Zava Pro",
+    "sku": "ZV-PNT-002",
+    "price_usd": 41.99,
+    "unit": "1 gallon",
+    "description": "Weather-resistant exterior paint with 10-year warranty.",
+    "tags": [
+      "paint",
+      "exterior",
+      "gray",
+      "acrylic"
+    ],
+    "inventory_by_store": {
+      "seattle": 8,
+      "bellevue": 18,
+      "tacoma": 26,
+      "redmond": 42,
+      "kirkland": 44,
+      "spokane": 79,
+      "everett": 18,
+      "online": 293
+    },
+    "reorder_threshold": 25
   },
   {
-    "id": "PEP-003",
-    "name": "Mountain Dew",
-    "brand": "Mountain Dew",
-    "category": "Beverages",
-    "size": "20 fl oz bottle",
-    "description": "Citrus-flavored energy soda with an exhilarating, bold taste.",
-    "calories": 290,
-    "price_usd": 2.29,
-    "sku": "MTD-ORIG-20OZ",
-    "tags": ["citrus", "soda", "energy"]
+    "id": "ZV-PNT-003",
+    "name": "Primer & Sealer \u2014 Stain Blocking",
+    "category": "paint",
+    "brand": "Zava Basics",
+    "sku": "ZV-PNT-003",
+    "price_usd": 24.99,
+    "unit": "1 gallon",
+    "description": "High-hide primer for drywall, wood, and previously painted surfaces.",
+    "tags": [
+      "paint",
+      "primer",
+      "white"
+    ],
+    "inventory_by_store": {
+      "seattle": 11,
+      "bellevue": 43,
+      "tacoma": 72,
+      "redmond": 50,
+      "kirkland": 15,
+      "spokane": 35,
+      "everett": 69,
+      "online": 237
+    },
+    "reorder_threshold": 15
   },
   {
-    "id": "PEP-004",
-    "name": "Gatorade Thirst Quencher - Lemon Lime",
-    "brand": "Gatorade",
-    "category": "Sports Drinks",
-    "size": "32 fl oz bottle",
-    "description": "Hydrating sports drink with electrolytes to replace what athletes lose in sweat.",
-    "calories": 200,
-    "price_usd": 2.49,
-    "sku": "GAT-LL-32OZ",
-    "tags": ["sports", "electrolytes", "hydration"]
+    "id": "ZV-PNT-004",
+    "name": "Ceiling Paint \u2014 Flat White",
+    "category": "paint",
+    "brand": "Zava Basics",
+    "sku": "ZV-PNT-004",
+    "price_usd": 38.99,
+    "unit": "2 gallon",
+    "description": "Splatter-resistant flat ceiling paint, one-coat coverage.",
+    "tags": [
+      "paint",
+      "ceiling",
+      "white",
+      "flat"
+    ],
+    "inventory_by_store": {
+      "seattle": 34,
+      "bellevue": 42,
+      "tacoma": 58,
+      "redmond": 28,
+      "kirkland": 26,
+      "spokane": 63,
+      "everett": 27,
+      "online": 241
+    },
+    "reorder_threshold": 20
   },
   {
-    "id": "PEP-005",
-    "name": "Lay's Classic Potato Chips",
-    "brand": "Lay's",
-    "category": "Snacks",
-    "size": "8 oz bag",
-    "description": "Crispy, golden potato chips with just the right amount of salt.",
-    "calories": 160,
-    "price_usd": 4.49,
-    "sku": "LAYS-CLAS-8OZ",
-    "tags": ["chips", "potato", "salty"]
+    "id": "ZV-PNT-005",
+    "name": "Chalkboard Paint \u2014 Black",
+    "category": "paint",
+    "brand": "Hobby House",
+    "sku": "ZV-PNT-005",
+    "price_usd": 14.99,
+    "unit": "1 quart",
+    "description": "Smooth matte finish for chalk-friendly walls and crafts.",
+    "tags": [
+      "paint",
+      "specialty",
+      "black"
+    ],
+    "inventory_by_store": {
+      "seattle": 48,
+      "bellevue": 20,
+      "tacoma": 73,
+      "redmond": 30,
+      "kirkland": 63,
+      "spokane": 25,
+      "everett": 52,
+      "online": 362
+    },
+    "reorder_threshold": 20
   },
   {
-    "id": "PEP-006",
-    "name": "Doritos Nacho Cheese",
-    "brand": "Doritos",
-    "category": "Snacks",
-    "size": "9.25 oz bag",
-    "description": "Bold tortilla chips bursting with cheesy nacho flavor.",
-    "calories": 150,
-    "price_usd": 4.99,
-    "sku": "DOR-NACHO-9OZ",
-    "tags": ["chips", "tortilla", "cheese"]
+    "id": "ZV-PNT-006",
+    "name": "Deck & Fence Stain \u2014 Cedar",
+    "category": "paint",
+    "brand": "Zava Pro",
+    "sku": "ZV-PNT-006",
+    "price_usd": 36.49,
+    "unit": "1 gallon",
+    "description": "Semi-transparent oil-based stain, UV protection for outdoor wood.",
+    "tags": [
+      "paint",
+      "exterior",
+      "stain",
+      "cedar"
+    ],
+    "inventory_by_store": {
+      "seattle": 39,
+      "bellevue": 23,
+      "tacoma": 20,
+      "redmond": 44,
+      "kirkland": 52,
+      "spokane": 25,
+      "everett": 44,
+      "online": 371
+    },
+    "reorder_threshold": 20
   },
   {
-    "id": "PEP-007",
-    "name": "Cheetos Crunchy",
-    "brand": "Cheetos",
-    "category": "Snacks",
-    "size": "8.5 oz bag",
-    "description": "Crunchy cheese-flavored snack with the irresistible Chester Cheetah twist.",
-    "calories": 160,
-    "price_usd": 4.49,
-    "sku": "CHE-CRUNCH-8OZ",
-    "tags": ["cheese", "snack", "crunchy"]
+    "id": "ZV-PWT-001",
+    "name": "20V Cordless Drill / Driver Kit",
+    "category": "power-tools",
+    "brand": "TorqueMax",
+    "sku": "ZV-PWT-001",
+    "price_usd": 129.0,
+    "unit": "kit",
+    "description": "1/2 in chuck, 2-speed, includes 2 batteries and charger.",
+    "tags": [
+      "power-tools",
+      "cordless",
+      "drill"
+    ],
+    "inventory_by_store": {
+      "seattle": 63,
+      "bellevue": 50,
+      "tacoma": 73,
+      "redmond": 61,
+      "kirkland": 35,
+      "spokane": 2,
+      "everett": 60,
+      "online": 203
+    },
+    "reorder_threshold": 10
   },
   {
-    "id": "PEP-008",
-    "name": "Quaker Oats Old Fashioned",
-    "brand": "Quaker",
-    "category": "Breakfast",
-    "size": "42 oz canister",
-    "description": "100% whole-grain rolled oats for hearty, wholesome breakfasts.",
-    "calories": 150,
-    "price_usd": 6.29,
-    "sku": "QKR-OF-42OZ",
-    "tags": ["oats", "breakfast", "whole grain"]
+    "id": "ZV-PWT-002",
+    "name": "7-1/4 in Circular Saw \u2014 Corded",
+    "category": "power-tools",
+    "brand": "TorqueMax",
+    "sku": "ZV-PWT-002",
+    "price_usd": 89.0,
+    "unit": "each",
+    "description": "15 amp motor, 5500 RPM, laser guide.",
+    "tags": [
+      "power-tools",
+      "saw",
+      "corded"
+    ],
+    "inventory_by_store": {
+      "seattle": 24,
+      "bellevue": 36,
+      "tacoma": 46,
+      "redmond": 35,
+      "kirkland": 74,
+      "spokane": 63,
+      "everett": 49,
+      "online": 386
+    },
+    "reorder_threshold": 20
   },
   {
-    "id": "PEP-009",
-    "name": "Tropicana Pure Premium Orange Juice",
-    "brand": "Tropicana",
-    "category": "Juices",
-    "size": "52 fl oz carton",
-    "description": "100% pure squeezed orange juice, never from concentrate.",
-    "calories": 110,
-    "price_usd": 5.49,
-    "sku": "TRO-PP-52OZ",
-    "tags": ["juice", "orange", "breakfast"]
+    "id": "ZV-PWT-003",
+    "name": "Compact Impact Driver \u2014 18V",
+    "category": "power-tools",
+    "brand": "TorqueMax",
+    "sku": "ZV-PWT-003",
+    "price_usd": 159.0,
+    "unit": "kit",
+    "description": "1500 in-lb torque, brushless motor, belt clip.",
+    "tags": [
+      "power-tools",
+      "impact",
+      "cordless"
+    ],
+    "inventory_by_store": {
+      "seattle": 56,
+      "bellevue": 22,
+      "tacoma": 44,
+      "redmond": 19,
+      "kirkland": 55,
+      "spokane": 66,
+      "everett": 49,
+      "online": 166
+    },
+    "reorder_threshold": 15
   },
   {
-    "id": "PEP-010",
-    "name": "Aquafina Purified Water",
-    "brand": "Aquafina",
-    "category": "Water",
-    "size": "16.9 fl oz bottle (24-pack)",
-    "description": "Pure, refreshing water purified through a 7-step HydRO-7 process.",
-    "calories": 0,
-    "price_usd": 5.99,
-    "sku": "AQF-24PK-17OZ",
-    "tags": ["water", "purified", "hydration"]
+    "id": "ZV-PWT-004",
+    "name": "Random Orbit Sander \u2014 5 in",
+    "category": "power-tools",
+    "brand": "FinishCraft",
+    "sku": "ZV-PWT-004",
+    "price_usd": 64.99,
+    "unit": "each",
+    "description": "Variable speed 7,000\u201312,000 OPM, hook-and-loop disc.",
+    "tags": [
+      "power-tools",
+      "sander"
+    ],
+    "inventory_by_store": {
+      "seattle": 55,
+      "bellevue": 42,
+      "tacoma": 78,
+      "redmond": 65,
+      "kirkland": 73,
+      "spokane": 33,
+      "everett": 48,
+      "online": 185
+    },
+    "reorder_threshold": 15
   },
   {
-    "id": "PEP-011",
-    "name": "Bubly Sparkling Water - Grapefruit",
-    "brand": "Bubly",
-    "category": "Water",
-    "size": "12 fl oz can (8-pack)",
-    "description": "Sparkling water with bright grapefruit flavor and zero calories.",
-    "calories": 0,
-    "price_usd": 4.49,
-    "sku": "BUB-GRPFR-8PK",
-    "tags": ["sparkling", "water", "flavored"]
+    "id": "ZV-PWT-005",
+    "name": "Reciprocating Saw \u2014 12 amp",
+    "category": "power-tools",
+    "brand": "TorqueMax",
+    "sku": "ZV-PWT-005",
+    "price_usd": 99.0,
+    "unit": "each",
+    "description": "Tool-free blade change, orbital action, 1-1/8 in stroke.",
+    "tags": [
+      "power-tools",
+      "saw",
+      "corded"
+    ],
+    "inventory_by_store": {
+      "seattle": 48,
+      "bellevue": 69,
+      "tacoma": 66,
+      "redmond": 61,
+      "kirkland": 43,
+      "spokane": 32,
+      "everett": 80,
+      "online": 276
+    },
+    "reorder_threshold": 15
   },
   {
-    "id": "PEP-012",
-    "name": "SunChips Harvest Cheddar",
-    "brand": "SunChips",
-    "category": "Snacks",
-    "size": "7 oz bag",
-    "description": "Whole grain multigrain snacks with a savory harvest cheddar flavor.",
-    "calories": 140,
+    "id": "ZV-PWT-006",
+    "name": "Wet/Dry Shop Vacuum \u2014 12 gal",
+    "category": "power-tools",
+    "brand": "ShopBuddy",
+    "sku": "ZV-PWT-006",
+    "price_usd": 119.0,
+    "unit": "each",
+    "description": "6 HP, HEPA filter, on-board accessory storage.",
+    "tags": [
+      "power-tools",
+      "vacuum",
+      "cleanup"
+    ],
+    "inventory_by_store": {
+      "seattle": 21,
+      "bellevue": 29,
+      "tacoma": 34,
+      "redmond": 35,
+      "kirkland": 69,
+      "spokane": 23,
+      "everett": 64,
+      "online": 247
+    },
+    "reorder_threshold": 10
+  },
+  {
+    "id": "ZV-HND-001",
+    "name": "16 oz Steel Claw Hammer",
+    "category": "hand-tools",
+    "brand": "GripWell",
+    "sku": "ZV-HND-001",
+    "price_usd": 18.99,
+    "unit": "each",
+    "description": "Forged steel head, hickory handle, balanced for framing.",
+    "tags": [
+      "hand-tools",
+      "hammer"
+    ],
+    "inventory_by_store": {
+      "seattle": 47,
+      "bellevue": 16,
+      "tacoma": 29,
+      "redmond": 49,
+      "kirkland": 58,
+      "spokane": 29,
+      "everett": 52,
+      "online": 261
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-HND-002",
+    "name": "25 ft Tape Measure \u2014 Magnetic Hook",
+    "category": "hand-tools",
+    "brand": "GripWell",
+    "sku": "ZV-HND-002",
+    "price_usd": 22.49,
+    "unit": "each",
+    "description": "1-1/4 in blade, nylon coating, belt clip.",
+    "tags": [
+      "hand-tools",
+      "measuring"
+    ],
+    "inventory_by_store": {
+      "seattle": 73,
+      "bellevue": 15,
+      "tacoma": 48,
+      "redmond": 79,
+      "kirkland": 37,
+      "spokane": 79,
+      "everett": 28,
+      "online": 372
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-HND-003",
+    "name": "10 in Adjustable Wrench",
+    "category": "hand-tools",
+    "brand": "GripWell",
+    "sku": "ZV-HND-003",
+    "price_usd": 16.99,
+    "unit": "each",
+    "description": "Chrome-vanadium steel, knurled thumb wheel, 1-1/8 in jaw capacity.",
+    "tags": [
+      "hand-tools",
+      "wrench"
+    ],
+    "inventory_by_store": {
+      "seattle": 79,
+      "bellevue": 40,
+      "tacoma": 34,
+      "redmond": 62,
+      "kirkland": 35,
+      "spokane": 15,
+      "everett": 56,
+      "online": 275
+    },
+    "reorder_threshold": 20
+  },
+  {
+    "id": "ZV-HND-004",
+    "name": "Screwdriver Set \u2014 12 Piece",
+    "category": "hand-tools",
+    "brand": "GripWell",
+    "sku": "ZV-HND-004",
+    "price_usd": 27.99,
+    "unit": "set",
+    "description": "Phillips and slotted, magnetic tips, cushion grip.",
+    "tags": [
+      "hand-tools",
+      "screwdriver",
+      "set"
+    ],
+    "inventory_by_store": {
+      "seattle": 29,
+      "bellevue": 61,
+      "tacoma": 54,
+      "redmond": 45,
+      "kirkland": 22,
+      "spokane": 45,
+      "everett": 25,
+      "online": 171
+    },
+    "reorder_threshold": 10
+  },
+  {
+    "id": "ZV-HND-005",
+    "name": "Carpenter's Level \u2014 24 in",
+    "category": "hand-tools",
+    "brand": "TrueLine",
+    "sku": "ZV-HND-005",
+    "price_usd": 32.99,
+    "unit": "each",
+    "description": "Aluminum frame, 3 vials, magnetic base.",
+    "tags": [
+      "hand-tools",
+      "level"
+    ],
+    "inventory_by_store": {
+      "seattle": 23,
+      "bellevue": 31,
+      "tacoma": 31,
+      "redmond": 75,
+      "kirkland": 36,
+      "spokane": 48,
+      "everett": 69,
+      "online": 396
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-HND-006",
+    "name": "Utility Knife with 10 Blades",
+    "category": "hand-tools",
+    "brand": "GripWell",
+    "sku": "ZV-HND-006",
+    "price_usd": 9.99,
+    "unit": "each",
+    "description": "Retractable blade, quick-change mechanism.",
+    "tags": [
+      "hand-tools",
+      "knife"
+    ],
+    "inventory_by_store": {
+      "seattle": 40,
+      "bellevue": 54,
+      "tacoma": 66,
+      "redmond": 62,
+      "kirkland": 71,
+      "spokane": 72,
+      "everett": 30,
+      "online": 213
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-GRD-001",
+    "name": "Bypass Pruner \u2014 8 in",
+    "category": "garden",
+    "brand": "Greenline",
+    "sku": "ZV-GRD-001",
+    "price_usd": 24.99,
+    "unit": "each",
+    "description": "High-carbon steel blade, ergonomic grip, sap groove.",
+    "tags": [
+      "garden",
+      "pruner"
+    ],
+    "inventory_by_store": {
+      "seattle": 23,
+      "bellevue": 58,
+      "tacoma": 17,
+      "redmond": 44,
+      "kirkland": 43,
+      "spokane": 15,
+      "everett": 24,
+      "online": 331
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-GRD-002",
+    "name": "Garden Hose \u2014 50 ft",
+    "category": "garden",
+    "brand": "Greenline",
+    "sku": "ZV-GRD-002",
+    "price_usd": 32.99,
+    "unit": "each",
+    "description": "Kink-resistant, 5/8 in diameter, brass fittings.",
+    "tags": [
+      "garden",
+      "hose"
+    ],
+    "inventory_by_store": {
+      "seattle": 44,
+      "bellevue": 23,
+      "tacoma": 19,
+      "redmond": 57,
+      "kirkland": 24,
+      "spokane": 80,
+      "everett": 45,
+      "online": 221
+    },
+    "reorder_threshold": 10
+  },
+  {
+    "id": "ZV-GRD-003",
+    "name": "All-Purpose Potting Mix",
+    "category": "garden",
+    "brand": "Greenline",
+    "sku": "ZV-GRD-003",
+    "price_usd": 9.49,
+    "unit": "1.5 cu ft bag",
+    "description": "Peat moss, perlite, slow-release fertilizer.",
+    "tags": [
+      "garden",
+      "soil"
+    ],
+    "inventory_by_store": {
+      "seattle": 42,
+      "bellevue": 31,
+      "tacoma": 75,
+      "redmond": 46,
+      "kirkland": 75,
+      "spokane": 67,
+      "everett": 39,
+      "online": 174
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-GRD-004",
+    "name": "Round-Point Shovel \u2014 47 in",
+    "category": "garden",
+    "brand": "DigPro",
+    "sku": "ZV-GRD-004",
+    "price_usd": 28.99,
+    "unit": "each",
+    "description": "Fiberglass handle, forged steel head, lifetime warranty.",
+    "tags": [
+      "garden",
+      "shovel"
+    ],
+    "inventory_by_store": {
+      "seattle": 70,
+      "bellevue": 60,
+      "tacoma": 69,
+      "redmond": 67,
+      "kirkland": 74,
+      "spokane": 21,
+      "everett": 27,
+      "online": 165
+    },
+    "reorder_threshold": 10
+  },
+  {
+    "id": "ZV-GRD-005",
+    "name": "Drip Irrigation Starter Kit",
+    "category": "garden",
+    "brand": "AquaFlow",
+    "sku": "ZV-GRD-005",
+    "price_usd": 49.99,
+    "unit": "kit",
+    "description": "50 ft tubing, 20 emitters, timer included.",
+    "tags": [
+      "garden",
+      "irrigation"
+    ],
+    "inventory_by_store": {
+      "seattle": 58,
+      "bellevue": 28,
+      "tacoma": 46,
+      "redmond": 39,
+      "kirkland": 39,
+      "spokane": 72,
+      "everett": 32,
+      "online": 258
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-GRD-006",
+    "name": "LED Solar Path Lights \u2014 8 pack",
+    "category": "garden",
+    "brand": "Greenline",
+    "sku": "ZV-GRD-006",
+    "price_usd": 39.99,
+    "unit": "pack",
+    "description": "Dusk-to-dawn sensor, stainless steel finish.",
+    "tags": [
+      "garden",
+      "lighting",
+      "solar"
+    ],
+    "inventory_by_store": {
+      "seattle": 50,
+      "bellevue": 74,
+      "tacoma": 46,
+      "redmond": 24,
+      "kirkland": 71,
+      "spokane": 27,
+      "everett": 21,
+      "online": 316
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-LMB-001",
+    "name": "2x4x8 ft SPF Stud",
+    "category": "lumber",
+    "brand": "Zava Mill",
+    "sku": "ZV-LMB-001",
     "price_usd": 4.29,
-    "sku": "SUN-HC-7OZ",
-    "tags": ["multigrain", "cheddar", "whole grain"]
+    "unit": "each",
+    "description": "Construction-grade spruce-pine-fir, kiln dried.",
+    "tags": [
+      "lumber",
+      "framing"
+    ],
+    "inventory_by_store": {
+      "seattle": 26,
+      "bellevue": 45,
+      "tacoma": 36,
+      "redmond": 67,
+      "kirkland": 77,
+      "spokane": 76,
+      "everett": 42,
+      "online": 371
+    },
+    "reorder_threshold": 10
+  },
+  {
+    "id": "ZV-LMB-002",
+    "name": "Pressure-Treated 4x4x8 ft Post",
+    "category": "lumber",
+    "brand": "Zava Mill",
+    "sku": "ZV-LMB-002",
+    "price_usd": 18.99,
+    "unit": "each",
+    "description": "Ground-contact rated, .40 CCA treatment.",
+    "tags": [
+      "lumber",
+      "post",
+      "treated"
+    ],
+    "inventory_by_store": {
+      "seattle": 22,
+      "bellevue": 36,
+      "tacoma": 63,
+      "redmond": 15,
+      "kirkland": 64,
+      "spokane": 48,
+      "everett": 73,
+      "online": 223
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-LMB-003",
+    "name": "3/4 in Plywood \u2014 4x8 Sheet",
+    "category": "lumber",
+    "brand": "Zava Mill",
+    "sku": "ZV-LMB-003",
+    "price_usd": 64.99,
+    "unit": "sheet",
+    "description": "ACX grade, sanded one side, for cabinetry and shelving.",
+    "tags": [
+      "lumber",
+      "plywood"
+    ],
+    "inventory_by_store": {
+      "seattle": 77,
+      "bellevue": 34,
+      "tacoma": 39,
+      "redmond": 52,
+      "kirkland": 42,
+      "spokane": 22,
+      "everett": 22,
+      "online": 341
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-LMB-004",
+    "name": "Cedar Fence Board \u2014 1x6x6 ft",
+    "category": "lumber",
+    "brand": "Zava Mill",
+    "sku": "ZV-LMB-004",
+    "price_usd": 6.99,
+    "unit": "each",
+    "description": "Western Red Cedar, dog-eared, naturally rot-resistant.",
+    "tags": [
+      "lumber",
+      "fence",
+      "cedar"
+    ],
+    "inventory_by_store": {
+      "seattle": 22,
+      "bellevue": 21,
+      "tacoma": 76,
+      "redmond": 79,
+      "kirkland": 35,
+      "spokane": 22,
+      "everett": 80,
+      "online": 170
+    },
+    "reorder_threshold": 20
+  },
+  {
+    "id": "ZV-LMB-005",
+    "name": "OSB Sheathing \u2014 7/16 in 4x8",
+    "category": "lumber",
+    "brand": "Zava Mill",
+    "sku": "ZV-LMB-005",
+    "price_usd": 22.99,
+    "unit": "sheet",
+    "description": "Structural panel for roof decking and wall sheathing.",
+    "tags": [
+      "lumber",
+      "sheathing"
+    ],
+    "inventory_by_store": {
+      "seattle": 23,
+      "bellevue": 23,
+      "tacoma": 45,
+      "redmond": 66,
+      "kirkland": 30,
+      "spokane": 46,
+      "everett": 5,
+      "online": 308
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-LMB-006",
+    "name": "Composite Deck Board \u2014 12 ft Gray",
+    "category": "lumber",
+    "brand": "DeckLife",
+    "sku": "ZV-LMB-006",
+    "price_usd": 42.99,
+    "unit": "each",
+    "description": "Capped composite, 25-year fade warranty.",
+    "tags": [
+      "lumber",
+      "decking",
+      "composite"
+    ],
+    "inventory_by_store": {
+      "seattle": 68,
+      "bellevue": 55,
+      "tacoma": 48,
+      "redmond": 41,
+      "kirkland": 55,
+      "spokane": 45,
+      "everett": 48,
+      "online": 251
+    },
+    "reorder_threshold": 10
+  },
+  {
+    "id": "ZV-ELC-001",
+    "name": "14/2 NM-B Romex \u2014 250 ft",
+    "category": "electrical",
+    "brand": "SafeWire",
+    "sku": "ZV-ELC-001",
+    "price_usd": 89.0,
+    "unit": "roll",
+    "description": "Indoor copper electrical cable, 15 amp residential circuits.",
+    "tags": [
+      "electrical",
+      "wire",
+      "romex"
+    ],
+    "inventory_by_store": {
+      "seattle": 53,
+      "bellevue": 73,
+      "tacoma": 55,
+      "redmond": 24,
+      "kirkland": 16,
+      "spokane": 73,
+      "everett": 27,
+      "online": 168
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-ELC-002",
+    "name": "15 Amp Decora Outlet \u2014 White",
+    "category": "electrical",
+    "brand": "SafeWire",
+    "sku": "ZV-ELC-002",
+    "price_usd": 2.49,
+    "unit": "each",
+    "description": "Tamper-resistant, residential grade.",
+    "tags": [
+      "electrical",
+      "outlet"
+    ],
+    "inventory_by_store": {
+      "seattle": 79,
+      "bellevue": 48,
+      "tacoma": 31,
+      "redmond": 59,
+      "kirkland": 23,
+      "spokane": 46,
+      "everett": 62,
+      "online": 222
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-ELC-003",
+    "name": "Smart Wi-Fi Light Switch",
+    "category": "electrical",
+    "brand": "BrightHome",
+    "sku": "ZV-ELC-003",
+    "price_usd": 32.99,
+    "unit": "each",
+    "description": "Works with Alexa & Google, no hub required.",
+    "tags": [
+      "electrical",
+      "smart",
+      "switch"
+    ],
+    "inventory_by_store": {
+      "seattle": 71,
+      "bellevue": 53,
+      "tacoma": 16,
+      "redmond": 53,
+      "kirkland": 28,
+      "spokane": 32,
+      "everett": 48,
+      "online": 179
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-ELC-004",
+    "name": "LED A19 Bulb \u2014 60W Equiv, 4-pack",
+    "category": "electrical",
+    "brand": "BrightHome",
+    "sku": "ZV-ELC-004",
+    "price_usd": 11.99,
+    "unit": "pack",
+    "description": "Soft white 2700K, 800 lumens, 15-year life.",
+    "tags": [
+      "electrical",
+      "bulb",
+      "led"
+    ],
+    "inventory_by_store": {
+      "seattle": 34,
+      "bellevue": 49,
+      "tacoma": 51,
+      "redmond": 41,
+      "kirkland": 58,
+      "spokane": 41,
+      "everett": 48,
+      "online": 279
+    },
+    "reorder_threshold": 10
+  },
+  {
+    "id": "ZV-ELC-005",
+    "name": "GFCI Outlet \u2014 20 Amp",
+    "category": "electrical",
+    "brand": "SafeWire",
+    "sku": "ZV-ELC-005",
+    "price_usd": 18.99,
+    "unit": "each",
+    "description": "Self-test, weather-resistant, for kitchens/baths/outdoors.",
+    "tags": [
+      "electrical",
+      "outlet",
+      "gfci"
+    ],
+    "inventory_by_store": {
+      "seattle": 47,
+      "bellevue": 21,
+      "tacoma": 26,
+      "redmond": 69,
+      "kirkland": 50,
+      "spokane": 20,
+      "everett": 15,
+      "online": 235
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-ELC-006",
+    "name": "Extension Cord \u2014 50 ft Outdoor 12 AWG",
+    "category": "electrical",
+    "brand": "SafeWire",
+    "sku": "ZV-ELC-006",
+    "price_usd": 36.99,
+    "unit": "each",
+    "description": "Heavy-duty, lighted end, 15 amp.",
+    "tags": [
+      "electrical",
+      "extension-cord"
+    ],
+    "inventory_by_store": {
+      "seattle": 48,
+      "bellevue": 35,
+      "tacoma": 71,
+      "redmond": 69,
+      "kirkland": 16,
+      "spokane": 29,
+      "everett": 24,
+      "online": 391
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-PLM-001",
+    "name": "PEX Tubing \u2014 1/2 in x 100 ft Red",
+    "category": "plumbing",
+    "brand": "FlowRight",
+    "sku": "ZV-PLM-001",
+    "price_usd": 42.99,
+    "unit": "roll",
+    "description": "Hot-water rated PEX-B tubing.",
+    "tags": [
+      "plumbing",
+      "pex",
+      "tubing"
+    ],
+    "inventory_by_store": {
+      "seattle": 19,
+      "bellevue": 62,
+      "tacoma": 33,
+      "redmond": 70,
+      "kirkland": 31,
+      "spokane": 20,
+      "everett": 54,
+      "online": 243
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-PLM-002",
+    "name": "Single-Handle Kitchen Faucet \u2014 Brushed Nickel",
+    "category": "plumbing",
+    "brand": "FlowRight",
+    "sku": "ZV-PLM-002",
+    "price_usd": 119.0,
+    "unit": "each",
+    "description": "Pull-down sprayer, ceramic cartridge, lifetime warranty.",
+    "tags": [
+      "plumbing",
+      "faucet",
+      "kitchen"
+    ],
+    "inventory_by_store": {
+      "seattle": 60,
+      "bellevue": 41,
+      "tacoma": 46,
+      "redmond": 28,
+      "kirkland": 60,
+      "spokane": 67,
+      "everett": 34,
+      "online": 386
+    },
+    "reorder_threshold": 10
+  },
+  {
+    "id": "ZV-PLM-003",
+    "name": "Wax Toilet Ring with Flange",
+    "category": "plumbing",
+    "brand": "FlowRight",
+    "sku": "ZV-PLM-003",
+    "price_usd": 5.49,
+    "unit": "each",
+    "description": "Standard 3 in or 4 in toilet flange.",
+    "tags": [
+      "plumbing",
+      "toilet"
+    ],
+    "inventory_by_store": {
+      "seattle": 35,
+      "bellevue": 37,
+      "tacoma": 67,
+      "redmond": 18,
+      "kirkland": 37,
+      "spokane": 57,
+      "everett": 67,
+      "online": 355
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-PLM-004",
+    "name": "Pipe Wrench \u2014 14 in",
+    "category": "plumbing",
+    "brand": "GripWell",
+    "sku": "ZV-PLM-004",
+    "price_usd": 28.99,
+    "unit": "each",
+    "description": "Cast iron, self-cleaning threads.",
+    "tags": [
+      "plumbing",
+      "wrench",
+      "plumbing"
+    ],
+    "inventory_by_store": {
+      "seattle": 49,
+      "bellevue": 35,
+      "tacoma": 28,
+      "redmond": 63,
+      "kirkland": 19,
+      "spokane": 75,
+      "everett": 43,
+      "online": 201
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-PLM-005",
+    "name": "Flexible Supply Line \u2014 3/8 x 20 in",
+    "category": "plumbing",
+    "brand": "FlowRight",
+    "sku": "ZV-PLM-005",
+    "price_usd": 7.49,
+    "unit": "each",
+    "description": "Braided stainless steel, for faucets and toilets.",
+    "tags": [
+      "plumbing",
+      "supply-line"
+    ],
+    "inventory_by_store": {
+      "seattle": 59,
+      "bellevue": 54,
+      "tacoma": 44,
+      "redmond": 43,
+      "kirkland": 18,
+      "spokane": 39,
+      "everett": 66,
+      "online": 234
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-PLM-006",
+    "name": "PVC Cement & Primer Kit",
+    "category": "plumbing",
+    "brand": "FlowRight",
+    "sku": "ZV-PLM-006",
+    "price_usd": 12.99,
+    "unit": "kit",
+    "description": "8 oz each, for schedule 40 PVC pipe joints.",
+    "tags": [
+      "plumbing",
+      "pvc",
+      "adhesive"
+    ],
+    "inventory_by_store": {
+      "seattle": 23,
+      "bellevue": 50,
+      "tacoma": 59,
+      "redmond": 80,
+      "kirkland": 66,
+      "spokane": 57,
+      "everett": 18,
+      "online": 179
+    },
+    "reorder_threshold": 20
+  },
+  {
+    "id": "ZV-HDW-001",
+    "name": "Drywall Screws \u2014 #6 x 1-5/8 in 1 lb",
+    "category": "hardware",
+    "brand": "FastenIt",
+    "sku": "ZV-HDW-001",
+    "price_usd": 6.99,
+    "unit": "1 lb box",
+    "description": "Phillips bugle head, coarse thread, black phosphate.",
+    "tags": [
+      "hardware",
+      "screws",
+      "drywall"
+    ],
+    "inventory_by_store": {
+      "seattle": 37,
+      "bellevue": 48,
+      "tacoma": 19,
+      "redmond": 28,
+      "kirkland": 70,
+      "spokane": 59,
+      "everett": 55,
+      "online": 261
+    },
+    "reorder_threshold": 20
+  },
+  {
+    "id": "ZV-HDW-002",
+    "name": "Deck Screws \u2014 #10 x 3 in 5 lb",
+    "category": "hardware",
+    "brand": "FastenIt",
+    "sku": "ZV-HDW-002",
+    "price_usd": 32.99,
+    "unit": "5 lb box",
+    "description": "Star drive, coated for treated lumber.",
+    "tags": [
+      "hardware",
+      "screws",
+      "deck"
+    ],
+    "inventory_by_store": {
+      "seattle": 64,
+      "bellevue": 39,
+      "tacoma": 47,
+      "redmond": 20,
+      "kirkland": 70,
+      "spokane": 15,
+      "everett": 40,
+      "online": 243
+    },
+    "reorder_threshold": 10
+  },
+  {
+    "id": "ZV-HDW-003",
+    "name": "Construction Adhesive \u2014 10 oz",
+    "category": "hardware",
+    "brand": "BondMax",
+    "sku": "ZV-HDW-003",
+    "price_usd": 5.99,
+    "unit": "tube",
+    "description": "Heavy-duty polyurethane, indoor/outdoor.",
+    "tags": [
+      "hardware",
+      "adhesive"
+    ],
+    "inventory_by_store": {
+      "seattle": 23,
+      "bellevue": 57,
+      "tacoma": 55,
+      "redmond": 30,
+      "kirkland": 53,
+      "spokane": 79,
+      "everett": 54,
+      "online": 320
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-HDW-004",
+    "name": "Concrete Anchor Set \u2014 3/8 x 3 in 25 pack",
+    "category": "hardware",
+    "brand": "FastenIt",
+    "sku": "ZV-HDW-004",
+    "price_usd": 19.99,
+    "unit": "pack",
+    "description": "Wedge anchors for fastening to concrete.",
+    "tags": [
+      "hardware",
+      "anchor",
+      "concrete"
+    ],
+    "inventory_by_store": {
+      "seattle": 56,
+      "bellevue": 66,
+      "tacoma": 52,
+      "redmond": 31,
+      "kirkland": 39,
+      "spokane": 68,
+      "everett": 63,
+      "online": 323
+    },
+    "reorder_threshold": 25
+  },
+  {
+    "id": "ZV-HDW-005",
+    "name": "Cabinet Pull \u2014 5 in Brushed Nickel 10 pack",
+    "category": "hardware",
+    "brand": "ZavaTouch",
+    "sku": "ZV-HDW-005",
+    "price_usd": 24.99,
+    "unit": "pack",
+    "description": "Modern handle pull for kitchen / bath cabinets.",
+    "tags": [
+      "hardware",
+      "cabinet",
+      "pull"
+    ],
+    "inventory_by_store": {
+      "seattle": 53,
+      "bellevue": 66,
+      "tacoma": 15,
+      "redmond": 53,
+      "kirkland": 51,
+      "spokane": 41,
+      "everett": 70,
+      "online": 351
+    },
+    "reorder_threshold": 15
+  },
+  {
+    "id": "ZV-HDW-006",
+    "name": "Entry Lockset \u2014 Keyed Satin Nickel",
+    "category": "hardware",
+    "brand": "SafeGuard",
+    "sku": "ZV-HDW-006",
+    "price_usd": 49.99,
+    "unit": "each",
+    "description": "ANSI Grade 3, 6-pin keyway, 2 keys included.",
+    "tags": [
+      "hardware",
+      "lock",
+      "entry"
+    ],
+    "inventory_by_store": {
+      "seattle": 74,
+      "bellevue": 71,
+      "tacoma": 71,
+      "redmond": 42,
+      "kirkland": 80,
+      "spokane": 75,
+      "everett": 36,
+      "online": 318
+    },
+    "reorder_threshold": 20
   }
 ]

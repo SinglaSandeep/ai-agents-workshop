@@ -26,7 +26,7 @@ def main() -> None:
 
     target_resource_id = os.environ.get(
         "APPINSIGHTS_RESOURCE_ID",
-        f"/subscriptions/{sub_id}/resourceGroups/{rg}/providers/microsoft.insights/components/pepsico-appi",
+        f"/subscriptions/{sub_id}/resourceGroups/{rg}/providers/microsoft.insights/components/zava-appi",
     )
 
     client = MonitorManagementClient(DefaultAzureCredential(), sub_id)

@@ -1,6 +1,6 @@
 """Scaffold — implement per docs/05_marketing_foundry_agent/05_01_seed_marketing_kb.md.
 
-Mirrors `setup_hr_knowledge_base.py` for Pepsico marketing briefs.
+Mirrors `setup_store_ops_knowledge_base.py` for Zava marketing briefs.
 Full reference: solution/foundry_agents/setup_marketing_knowledge_base.py
 """
 from __future__ import annotations

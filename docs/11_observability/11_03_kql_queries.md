@@ -9,7 +9,7 @@ parent: 'Exercise 11: Observability'
 
 ## Introduction
 
-A few small queries cover most day-to-day Pepsico-agents observability work:
+A few small queries cover most day-to-day Zava-agents observability work:
 
 ## Tool calls in the last hour
 
@@ -40,7 +40,7 @@ requests
 
 ```kql
 dependencies
-| where target contains "pepsico-marketing-agent"
+| where target contains "zava-marketing-agent"
 | where success == false
 | project timestamp, name, resultCode, customDimensions
 | order by timestamp desc

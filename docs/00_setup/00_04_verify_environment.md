@@ -24,7 +24,7 @@ parent: 'Exercise 00: Setup & Verify Resources'
    ```
 
    You should see at least the databases that already exist on the account
-   (could be empty `[]` — that's fine, we will create the `pepsico` database
+   (could be empty `[]` — that's fine, we will create the `zava` database
    in Exercise 01).
 
 3. **Confirm Foundry project connectivity**

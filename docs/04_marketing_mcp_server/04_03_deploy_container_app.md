@@ -28,7 +28,7 @@ only need to be created once.
 
 ## Success Criteria
 
-* Container App `pepsico-marketing-mcp` is `Running` on the shared ACA env.
+* Container App `zava-marketing-mcp` is `Running` on the shared ACA env.
 * External HTTPS ingress is enabled on port 8002.
 * The app's system-assigned identity has **AcrPull** on the registry and
   **Cosmos DB Built-in Data Contributor** on the Cosmos account.
@@ -64,8 +64,8 @@ $SUB         = $env:AZURE_SUBSCRIPTION_ID
 $RG          = $env:AZURE_RESOURCE_GROUP
 $LOC         = if ($env:ACA_LOCATION) { $env:ACA_LOCATION } else { "eastus2" }
 $ACR         = $env:ACR_NAME
-$ENV         = if ($env:ACA_ENVIRONMENT) { $env:ACA_ENVIRONMENT } else { "pepsico-aca-env" }
-$APP         = "pepsico-marketing-mcp"
+$ENV         = if ($env:ACA_ENVIRONMENT) { $env:ACA_ENVIRONMENT } else { "zava-aca-env" }
+$APP         = "zava-marketing-mcp"
 $COSMOS_ACCT = $env:COSMOS_ACCOUNT
 
 az account set --subscription $SUB
@@ -83,11 +83,11 @@ and provision them before continuing.
 ```powershell
 az acr build `
   --registry $ACR `
-  --image pepsico-marketing-mcp:latest `
+  --image zava-marketing-mcp:latest `
   --file src/mcp_servers/marketing/Dockerfile `
   .
 
-$IMG = "$ACR.azurecr.io/pepsico-marketing-mcp:latest"
+$IMG = "$ACR.azurecr.io/zava-marketing-mcp:latest"
 $IMG
 ```
 
@@ -112,7 +112,7 @@ az containerapp up `
 ```
 
 When the command finishes, copy the FQDN it prints (looks like
-`pepsico-marketing-mcp.<env-hash>.eastus2.azurecontainerapps.io`).
+`zava-marketing-mcp.<env-hash>.eastus2.azurecontainerapps.io`).
 
 </details>
 
@@ -178,7 +178,7 @@ az cosmosdb show -n $COSMOS_ACCT -g $RG `
 ```
 
 If the table is empty, re-run the firewall merge from Task 02.04 step 09
-with `$APP = "pepsico-marketing-mcp"`.
+with `$APP = "zava-marketing-mcp"`.
 
 ### 09: Smoke-test the public URL
 

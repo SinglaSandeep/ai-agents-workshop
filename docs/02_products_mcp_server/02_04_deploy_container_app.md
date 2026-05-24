@@ -31,7 +31,7 @@ Exercise 00), skip the *Provision* steps and jump straight to
 
 * An ACR (Basic SKU), a Log Analytics workspace, and a Container Apps
   environment exist in the resource group.
-* A Container App named `pepsico-products-mcp` is `Running` on that env.
+* A Container App named `zava-products-mcp` is `Running` on that env.
 * External HTTPS ingress is enabled on port 8001.
 * The app's system-assigned identity has the **Cosmos DB Built-in Data
   Contributor** role on the Cosmos account.
@@ -74,9 +74,9 @@ $SUB         = $env:AZURE_SUBSCRIPTION_ID
 $RG          = $env:AZURE_RESOURCE_GROUP             # e.g. aifounry-rg
 $LOC         = if ($env:ACA_LOCATION) { $env:ACA_LOCATION } else { "eastus2" }
 $ACR         = $env:ACR_NAME                         # globally unique, 5-50 lowercase alphanum
-$LAW         = "pepsico-law"                         # Log Analytics workspace name
-$ENV         = if ($env:ACA_ENVIRONMENT) { $env:ACA_ENVIRONMENT } else { "pepsico-aca-env" }
-$APP         = "pepsico-products-mcp"
+$LAW         = "zava-law"                         # Log Analytics workspace name
+$ENV         = if ($env:ACA_ENVIRONMENT) { $env:ACA_ENVIRONMENT } else { "zava-aca-env" }
+$APP         = "zava-products-mcp"
 $COSMOS_ACCT = $env:COSMOS_ACCOUNT                   # e.g. cosmos-ai-2025
 
 az account set --subscription $SUB
@@ -140,11 +140,11 @@ the source folder. Since ours lives at
 ```powershell
 az acr build `
   --registry $ACR `
-  --image pepsico-products-mcp:latest `
+  --image zava-products-mcp:latest `
   --file src/mcp_servers/products/Dockerfile `
   .
 
-$IMG = "$ACR.azurecr.io/pepsico-products-mcp:latest"
+$IMG = "$ACR.azurecr.io/zava-products-mcp:latest"
 $IMG
 ```
 
@@ -169,7 +169,7 @@ az containerapp up `
 ```
 
 When the command finishes, copy the FQDN it prints (looks like
-`pepsico-products-mcp.<env-hash>.eastus2.azurecontainerapps.io`).
+`zava-products-mcp.<env-hash>.eastus2.azurecontainerapps.io`).
 
 </details>
 

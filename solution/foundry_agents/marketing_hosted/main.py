@@ -34,28 +34,38 @@ logger = logging.getLogger("marketing-hosted-agent")
 PROJECT_ENDPOINT = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
 MODEL_DEPLOYMENT = os.environ["AZURE_AI_MODEL_DEPLOYMENT_NAME"]
 TOOLBOX_NAME = os.environ.get(
-    "CUSTOM_FOUNDRY_AGENT_TOOLBOX_NAME", "pepsico-marketing-tools"
+    "CUSTOM_FOUNDRY_AGENT_TOOLBOX_NAME", "zava-marketing-tools"
 )
 SEARCH_ENDPOINT = os.environ["AZURE_AI_SEARCH_SERVICE_ENDPOINT"]
 KB_NAME = os.environ.get(
-    "AZURE_AI_SEARCH_KNOWLEDGE_BASE_NAME", "pepsico-marketing-kb"
+    "AZURE_AI_SEARCH_KNOWLEDGE_BASE_NAME", "zava-marketing-kb"
 )
 MARKETING_MCP_URL = os.environ["MARKETING_MCP_URL"]
 
-INSTRUCTIONS = """You are the Pepsico Marketing Specialist running inside Microsoft Foundry.
+INSTRUCTIONS = """You are the Zava Marketing Specialist running inside Microsoft Foundry.
+
+Zava is a Pacific Northwest DIY hardware retailer with 7 physical stores
+(seattle, bellevue, tacoma, redmond, kirkland, spokane, everett) plus an
+online fulfillment center. Campaign IDs follow `ZV-CMP-YYYY-NNN`.
 
 You have THREE tools:
 
 1. `marketing_mcp` — authoritative campaign records (status, budget, channels,
-   KPIs) backed by Cosmos DB.
+   KPIs, featured `product_id`s, target `store_id`s, `category_id`) backed by
+   Cosmos DB. Prefer `list_campaigns_by_store` / `list_campaigns_by_category`
+   when the user names a store or category.
 2. `toolbox` — Foundry Toolbox exposing `web_search` and `code_interpreter`.
-   Use `web_search` ONLY for live news / competitor / industry context that is
-   too recent for the model's training data.
+   Use `web_search` ONLY for live news / competitor / weather / industry
+   context that is too recent for the model's training data.
 3. `marketing_kb` — Foundry IQ knowledge base (`knowledge_base_retrieve`) over
-   indexed Pepsico marketing briefs.
+   indexed Zava marketing briefs and **campaign post-mortems**. When the user
+   references a specific store_id or category_id, pass it as a retrieval
+   filter.
 
 Rules:
-- Never make up Pepsico campaign data.
+- Never invent Zava campaign data, SKUs, or stores.
+- Always cite `campaign_id`, `category_id`, `store_id`, or `product_id`
+   when referencing structured data.
 - When you cite the web, always include the URL.
 - End every answer with a line: `Tools used: ...`.
 """
@@ -146,7 +156,7 @@ def main() -> None:
 
     agent = Agent(
         client=chat,
-        name="PepsicoMarketingSpecialist",
+        name="ZavaMarketingSpecialist",
         instructions=INSTRUCTIONS,
         tools=[marketing_mcp, toolbox, kb],
         default_options={"store": False},

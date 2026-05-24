@@ -19,7 +19,7 @@ shipped by the framework team that:
 * loads OpenTelemetry traces when enabled
 
 The launcher lives at [src/app/devui_launch.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/app/devui_launch.py).
-It registers the three Pepsico specialist agents (`products`, `marketing`,
+It registers the three Zava specialist agents (`products`, `marketing`,
 `hr`) by their Foundry-hosted names — exactly the pattern used in the
 reference sample at
 <https://github.com/Azure-Samples/foundry-hosted-agentframework-demos>.
@@ -61,10 +61,10 @@ python -m src.app.devui_launch
 You should see logs ending with:
 
 ```
-INFO pepsico.devui: Registered products -> Foundry agent 'pepsico-products-agent'
-INFO pepsico.devui: Registered marketing -> Foundry agent 'pepsico-marketing-agent'
-INFO pepsico.devui: Registered hr -> Foundry agent 'pepsico-hr-agent'
-INFO pepsico.devui: Launching DevUI on http://127.0.0.1:8080 with 3 agents
+INFO zava.devui: Registered products -> Foundry agent 'zava-products-agent'
+INFO zava.devui: Registered marketing -> Foundry agent 'zava-marketing-agent'
+INFO zava.devui: Registered hr -> Foundry agent 'zava-store-ops-agent'
+INFO zava.devui: Launching DevUI on http://127.0.0.1:8080 with 3 agents
 ```
 
 A browser tab opens automatically at <http://127.0.0.1:8080>.

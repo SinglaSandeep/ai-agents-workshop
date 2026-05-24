@@ -38,7 +38,7 @@ from agent_framework._types import ChatResponse, Message
 from agent_framework_openai._exceptions import OpenAIContentFilterException
 
 CONTENT_FILTER_MESSAGE = (
-    "I can’t help with that request because it violates Pepsico's content "
+    "I can’t help with that request because it violates Zava's content "
     "safety policies. If you have a safer or policy-compliant version of the "
     "question, I can help with that instead."
 )

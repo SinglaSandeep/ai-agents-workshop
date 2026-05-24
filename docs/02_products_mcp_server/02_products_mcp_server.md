@@ -10,7 +10,7 @@ has_children: true
 ## Scenario
 
 The Products Foundry agent (Exercise 03) needs typed, structured access to the
-Pepsico product catalog stored in Azure Cosmos DB. **Model Context Protocol
+Zava DIY product catalog stored in Azure Cosmos DB. **Model Context Protocol
 (MCP)** gives any compliant LLM client — including Foundry's `MCPTool` — a
 strongly-typed JSON-RPC interface to a remote tool server.
 
@@ -21,7 +21,7 @@ and deploy it as a public Azure Container App.
 
 You will:
 
-1. Seed the Cosmos DB `products` container with 12 sample Pepsico SKUs.
+1. Seed the Cosmos DB `products` container with 12 sample Zava SKUs.
 2. Implement a **FastMCP** server in Python that surfaces four tools on top
    of Cosmos DB.
 3. Run the server locally and exercise it with the MCP inspector.
@@ -34,7 +34,7 @@ You will:
 ```mermaid
 flowchart LR
     A[Foundry Products Agent\n(Exercise 03)] -->|MCPTool / HTTP| S[Products MCP Server\nAzure Container Apps]
-    S -->|SDK| C[(Azure Cosmos DB\npepsico / products)]
+    S -->|SDK| C[(Azure Cosmos DB\nzava / products)]
 ```
 
 ## Success Criteria
@@ -42,11 +42,11 @@ flowchart LR
 {: .success }
 > By the end of this exercise:
 >
-> - The Cosmos `pepsico` database exists with a `products` container holding
+> - The Cosmos `zava` database exists with a `products` container holding
 >   12 documents.
-> - `pepsico-products-mcp` runs locally on <http://127.0.0.1:8001/mcp> and the
+> - `zava-products-mcp` runs locally on <http://127.0.0.1:8001/mcp> and the
 >   MCP inspector lists the four tools.
-> - A Container App named `pepsico-products-mcp` is running in your ACA
+> - A Container App named `zava-products-mcp` is running in your ACA
 >   environment with a public ingress URL.
 > - `PRODUCTS_MCP_URL=<...>/mcp` is set in `.env`.
 > - `curl <url>/mcp` returns a 405 (the server is reachable; GET is rejected

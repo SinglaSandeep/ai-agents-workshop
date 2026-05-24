@@ -1,4 +1,4 @@
-"""Launch Agent Framework DevUI with the Pepsico specialist agents.
+"""Launch Agent Framework DevUI with the Zava specialist agents.
 
 Replaces the legacy FastAPI / chat.html frontend. DevUI auto-generates a
 browser UI plus an OpenAI-compatible Responses API at
@@ -9,7 +9,7 @@ browser UI plus an OpenAI-compatible Responses API at
   (``metadata={"entity_id": "<agent_name>"}``)
 
 All three specialists are referenced from Microsoft Foundry by name —
-HR and Products are regular Foundry hosted agents (Exercises 03 and 06),
+Store-Ops and Products are regular Foundry hosted agents (Exercises 03 and 06),
 while Marketing is the Foundry-hosted ``ResponsesHostServer`` container
 deployed in Exercise 05 (registered in Foundry under the same name).
 
@@ -35,7 +35,7 @@ from src.common.settings import get_settings
 
 load_dotenv()
 
-logger = logging.getLogger("pepsico.devui")
+logger = logging.getLogger("zava.devui")
 
 
 def _build_agent(name: str, agent_name: str, description: str, credential: Any) -> Any:
@@ -75,17 +75,17 @@ def main() -> None:
         (
             "products",
             settings.products_agent_name,
-            "Pepsico product catalog (SKU, brand, size, calories, price). Backed by the Products MCP server.",
+            "Zava DIY product catalog (SKU, category, price, per-store inventory). Backed by the Products MCP server.",
         ),
         (
             "marketing",
             settings.marketing_agent_name,
-            "Pepsico marketing campaigns (status, KPIs, budgets, ROI). Backed by the Foundry-hosted Marketing agent + Marketing MCP server.",
+            "Zava marketing campaigns (status, KPIs, budgets, ROI, target stores/categories). Backed by the Foundry-hosted Marketing agent + Marketing MCP + Foundry IQ KB.",
         ),
         (
-            "hr",
-            settings.hr_agent_name,
-            "Pepsico HR policy and benefits. Grounded in the Foundry IQ knowledge base.",
+            "store_ops",
+            settings.store_ops_agent_name,
+            "Zava store operations: per-store manager handbooks, returns, safety, HR, SOPs. Grounded in the Foundry IQ knowledge base (filtered by store_id).",
         ),
     ]
 

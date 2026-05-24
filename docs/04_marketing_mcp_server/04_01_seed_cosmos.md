@@ -15,7 +15,7 @@ script that mirrors the Products seed from Exercise 02.
 
 ## Success Criteria
 
-* The `marketing_campaigns` container exists in the `pepsico` database.
+* The `marketing_campaigns` container exists in the `zava` database.
 * All campaigns from `marketing_seed.json` are upserted.
 
 ## Key Tasks
@@ -47,7 +47,7 @@ Each document looks like:
 
 ### 02: Create the container (control plane)
 
-The `pepsico` database already exists from Exercise 02. Create the
+The `zava` database already exists from Exercise 02. Create the
 `marketing_campaigns` container via the Azure control plane (the Cosmos data
 plane role cannot create containers):
 
@@ -57,7 +57,7 @@ $rg      = "<your-resource-group>"
 
 az cosmosdb sql container create `
   --account-name $account --resource-group $rg `
-  --database-name pepsico --name marketing_campaigns --partition-key-path /id
+  --database-name Zava --name marketing_campaigns --partition-key-path /id
 ```
 
 ### 03: Run the seed
@@ -71,13 +71,13 @@ python -m src.mcp_servers.marketing.seed.seed_cosmos
 Expected log:
 
 ```
-INFO Seeding database 'pepsico' container 'marketing_campaigns'
+INFO Seeding database 'zava' container 'marketing_campaigns'
 INFO Upserted 50 campaigns
 ```
 
 ### 04: Verify
 
-Open Cosmos **Data Explorer → pepsico → marketing_campaigns → Items**.
+Open Cosmos **Data Explorer → Zava → marketing_campaigns → Items**.
 Confirm 50 documents (`CMP-2026-001` …) appear.
 
 ## Next

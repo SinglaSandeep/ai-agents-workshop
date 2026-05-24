@@ -10,7 +10,7 @@ has_children: true
 ## Scenario
 
 A dedicated **Response Generator** agent turns the raw specialist transcripts
-produced by the Magentic orchestrator into one polished Pepsico-voice reply
+produced by the Magentic orchestrator into one polished Zava-voice reply
 with citations. Keeping synthesis separate from the specialists keeps each
 agent simple and the final UX consistent.
 
@@ -18,7 +18,7 @@ agent simple and the final UX consistent.
 
 You will:
 
-1. Implement and create the `pepsico-response-generator` Foundry Prompt Agent
+1. Implement and create the `zava-response-generator` Foundry Prompt Agent
    (no tools — it is a pure synthesiser).
 2. Confirm the orchestrator hands off to it as the last step.
 

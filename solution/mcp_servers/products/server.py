@@ -1,12 +1,13 @@
-"""Pepsico Products MCP server (FastMCP, streamable HTTP transport).
+"""Zava Products MCP server (FastMCP, streamable HTTP transport).
 
 Exposes Cosmos DB-backed, task-oriented tools that let an LLM agent answer
-product-catalog questions for Pepsico's portfolio of beverages and snacks.
+product-catalog and per-store inventory questions for the Zava DIY hardware
+chain.
 
 Run locally:
     uvicorn src.mcp_servers.products.server:app --port 8001
 Or via CLI:
-    pepsico-products-mcp
+    zava-products-mcp
 """
 
 from __future__ import annotations
@@ -20,42 +21,42 @@ from pydantic import Field
 from .cosmos_repo import ProductsRepository
 
 # Server-level instructions are shown to the LLM during tool discovery. Keep
-# them task-oriented (what the agent can accomplish) rather than describing
-# the underlying database. See:
+# them task-oriented rather than describing the underlying database. See:
 # https://microsoft.github.io/mcp-azure-security-guide/adoption/development-best-practices/
 SERVER_INSTRUCTIONS = (
-    "Pepsico Products catalog assistant. Use these tools to answer questions "
-    "about Pepsico's commercial portfolio of beverages and snacks (Pepsi, Mountain Dew, "
-    "Gatorade, Aquafina, Bubly, Lay's, Doritos, Cheetos, Tostitos, Quaker, Tropicana, etc.).\n\n"
+    "Zava Products catalog & inventory assistant. Zava is a Pacific Northwest DIY hardware "
+    "retailer with 7 brick-and-mortar stores (seattle, bellevue, tacoma, redmond, kirkland, "
+    "spokane, everett) plus an online fulfillment center (store_id 'online'). Categories: "
+    "paint, power-tools, hand-tools, garden, lumber, electrical, plumbing, hardware.\n\n"
     "Tool selection guidance:\n"
-    "  • `search_products`  → free-text or fuzzy questions (\"low-calorie sparkling water\", \"spicy chips\").\n"
-    "  • `list_products`   → when the user names a category (Beverages, Snacks, Hydration, etc.).\n"
-    "  • `list_categories` → when you need to know what categories exist before filtering.\n"
-    "  • `get_product`     → when the user supplies an SKU id like `PEP-001` or you already "
-    "have an id from a previous tool call and need full details (calories, price, tags).\n\n"
-    "All tools return structured JSON (no prose). Numeric fields use USD for price and "
-    "kcal for calories. Do NOT invent SKUs — only reference ids returned by these tools."
+    "  • `search_products`    → free-text / natural-language questions ('cordless drill kit').\n"
+    "  • `list_products`      → user names a category_id.\n"
+    "  • `list_categories`    → enumerate available category ids.\n"
+    "  • `get_product`        → fetch one SKU by id (ZV-<CAT>-NNN like ZV-PNT-001).\n"
+    "  • `inventory_by_store` → per-store on-hand for one product (returns the inventory_by_store map).\n"
+    "  • `low_stock_alerts`   → which products are at or below reorder threshold at a given store.\n\n"
+    "All tools return structured JSON. Prices in USD. SKUs follow the pattern ZV-XXX-NNN. "
+    "Do NOT invent SKU ids — only reference ids returned by these tools."
 )
 
-mcp = FastMCP(name="pepsico-products", instructions=SERVER_INSTRUCTIONS)
+mcp = FastMCP(name="zava-products", instructions=SERVER_INSTRUCTIONS)
 
 
 def _repo() -> ProductsRepository:
-    # Lazy-construct so importing the module does not require Cosmos credentials.
+    # Lazy-construct so importing the module doesn't require Cosmos credentials.
     return ProductsRepository()
 
 
 @mcp.tool
 def list_categories() -> list[str]:
-    """List every distinct product category in the Pepsico catalog.
+    """List every distinct product category_id in the Zava catalog.
 
-    Use this tool first when the user asks an open question like \"what kinds of
-    products do you sell?\" or before calling `list_products` if you are unsure
-    which category strings are valid.
+    Use this first when the user asks an open question or before calling
+    `list_products` if you're unsure which category strings are valid.
 
     Returns:
-        Sorted list of category strings, e.g. `[\"Beverages\", \"Hydration\",
-        \"Snacks\", \"Cereals\", \"Juices\"]`. Always non-empty.
+        Sorted list of category id strings, e.g. ``['paint', 'power-tools', 'hardware']``.
+        Always non-empty.
     """
     return _repo().list_categories()
 
@@ -66,40 +67,35 @@ def list_products(
         str | None,
         Field(
             description=(
-                "Optional category filter (case-insensitive). Must match one of the values "
-                "returned by `list_categories` (e.g. 'Beverages', 'Snacks'). "
+                "Optional category_id filter (case-insensitive). Must match one of the values "
+                "returned by `list_categories` (e.g. 'paint', 'power-tools'). "
                 "Omit or pass null to list across all categories."
             ),
-            examples=["Beverages", "Snacks"],
+            examples=["paint", "power-tools", "hardware"],
         ),
     ] = None,
     limit: Annotated[
         int,
-        Field(
-            ge=1,
-            le=100,
-            description="Maximum number of products to return (1–100). Default 20.",
-        ),
+        Field(ge=1, le=100, description="Maximum products to return (1–100). Default 20."),
     ] = 20,
 ) -> list[dict]:
-    """List Pepsico products, optionally filtered by category.
+    """List Zava products, optionally filtered by category_id.
 
-    Use this when the user names a specific product family or category. For
-    fuzzy / natural-language questions (\"something low calorie\"), use
-    `search_products` instead.
+    Use when the user names a specific category. For natural-language
+    questions ('something to paint a fence with'), use `search_products`.
 
-    Each returned record has shape:
+    Each returned record has shape::
+
         {
-          \"id\": \"PEP-001\",
-          \"name\": \"Pepsi Cola\",
-          \"brand\": \"Pepsi\",
-          \"category\": \"Beverages\",
-          \"size\": \"12 oz can (12-pack)\",
-          \"description\": \"...\",
-          \"calories\": 150,
-          \"price_usd\": 6.99,
-          \"sku\": \"...\",
-          \"tags\": [\"cola\", \"caffeinated\"]
+          "id": "ZV-PNT-001",
+          "name": "Premium Interior Paint - Eggshell White",
+          "category": "paint",
+          "brand": "Zava Pro",
+          "sku": "ZV-PNT-001",
+          "unit": "1 gallon",
+          "description": "...",
+          "price_usd": 32.99,
+          "tags": ["paint", "interior", "white"]
         }
 
     Returns an empty list (never an error) if no products match.
@@ -113,22 +109,22 @@ def get_product(
         str,
         Field(
             description=(
-                "Pepsico product id in the format `PEP-###` (e.g. 'PEP-001'). "
+                "Zava product id in the format `ZV-<CAT>-NNN` (e.g. 'ZV-PNT-001'). "
                 "Only use ids returned by another tool — do not guess."
             ),
-            pattern=r"^PEP-\d{3,}$",
-            examples=["PEP-001", "PEP-042"],
+            pattern=r"^ZV-[A-Z]{3}-\d{3,}$",
+            examples=["ZV-PNT-001", "ZV-PWT-003", "ZV-HDW-005"],
         ),
     ],
 ) -> dict | None:
     """Fetch the full record for one product by id.
 
-    Use this when the user references a specific SKU or after another tool
-    returned an id and you need additional fields (calories, price, tags, etc.).
+    Use when the user references a specific SKU or after another tool
+    returned an id and you need additional fields (inventory_by_store,
+    reorder_threshold, tags, etc.).
 
-    Returns the same record shape as `list_products`, or `null` if the id is
-    not found in the catalog. A `null` return is not an error — inform the
-    user the SKU does not exist and ask for clarification.
+    Returns the full record including ``inventory_by_store`` map and
+    ``reorder_threshold``, or ``null`` if the id is not found.
     """
     return _repo().get_product(product_id)
 
@@ -141,33 +137,88 @@ def search_products(
             min_length=2,
             max_length=200,
             description=(
-                "Free-text search query. Matches against product name, brand, "
-                "and description (case-insensitive, substring match). Use the user's "
-                "own keywords; do not over-paraphrase."
+                "Free-text search query. Matches product name, brand, and description "
+                "(case-insensitive substring). Use the user's own keywords."
             ),
-            examples=["sparkling water", "spicy chips", "electrolyte"],
+            examples=["cordless drill", "interior paint white", "deck screws"],
         ),
     ],
     limit: Annotated[
         int,
-        Field(
-            ge=1,
-            le=50,
-            description="Maximum number of matches to return (1–50). Default 10.",
-        ),
+        Field(ge=1, le=50, description="Maximum matches to return (1–50). Default 10."),
     ] = 10,
 ) -> list[dict]:
     """Full-text search across product name, brand, and description.
 
-    This is the **preferred tool** for natural-language product discovery.
-    Examples of good queries: \"zero sugar cola\", \"baked snacks\", \"Gatorade lemon\".
-
-    Returns up to `limit` matching products in the same record shape as
-    `list_products`. Returns an empty list if nothing matches — in that case,
-    suggest the user broaden the query rather than asserting the product does
-    not exist.
+    Preferred tool for natural-language product discovery. Returns up to
+    ``limit`` matches in the same shape as ``list_products``. Empty list
+    means no match — suggest the user broaden the query rather than asserting
+    the product does not exist.
     """
     return _repo().search_products(text=text, limit=limit)
+
+
+@mcp.tool
+def inventory_by_store(
+    product_id: Annotated[
+        str,
+        Field(
+            description="Zava product id (e.g. 'ZV-PNT-001').",
+            pattern=r"^ZV-[A-Z]{3}-\d{3,}$",
+            examples=["ZV-PNT-001"],
+        ),
+    ],
+) -> dict | None:
+    """Return the per-store on-hand inventory map for a single product.
+
+    Use this when the user asks where a product is in stock, or whether a
+    specific store has enough on hand. The response looks like::
+
+        {
+          "id": "ZV-PNT-001",
+          "name": "Premium Interior Paint - Eggshell White",
+          "category": "paint",
+          "reorder_threshold": 15,
+          "inventory_by_store": {
+            "seattle": 3, "bellevue": 12, "tacoma": 28, "redmond": 7,
+            "kirkland": 33, "spokane": 19, "everett": 14, "online": 220
+          }
+        }
+
+    Returns ``null`` if the product id is not found.
+    """
+    return _repo().inventory_by_store(product_id)
+
+
+@mcp.tool
+def low_stock_alerts(
+    store_id: Annotated[
+        str,
+        Field(
+            description=(
+                "Zava store id. One of: seattle, bellevue, tacoma, redmond, kirkland, "
+                "spokane, everett, online."
+            ),
+            examples=["seattle", "bellevue", "online"],
+        ),
+    ],
+    limit: Annotated[
+        int,
+        Field(ge=1, le=100, description="Maximum alerts to return (1–100). Default 50."),
+    ] = 50,
+) -> list[dict]:
+    """List products at ``store_id`` whose on-hand stock is at or below their reorder threshold.
+
+    Use this when the user asks about restock priorities, inventory risk for
+    a specific store, or wants to find out which SKUs are running low. Sorted
+    ascending by on-hand quantity, so the most-urgent rows come first.
+
+    Each result has shape::
+
+        { "id": "ZV-PNT-001", "name": "...", "category": "paint",
+          "store_id": "seattle", "on_hand": 3, "reorder_threshold": 15 }
+    """
+    return _repo().low_stock_alerts(store_id=store_id, limit=limit)
 
 
 # Streamable-HTTP ASGI app — what Container Apps will run.
@@ -189,7 +240,7 @@ app = mcp.http_app(path="/mcp", transport="streamable-http", middleware=[_cors])
 
 
 def main() -> None:
-    """Entry point for `pepsico-products-mcp` console script."""
+    """Entry point for the ``zava-products-mcp`` console script."""
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8001")))

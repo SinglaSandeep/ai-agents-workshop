@@ -2,7 +2,7 @@
 
 Adapted from
 https://github.com/Azure-Samples/foundry-hosted-agentframework-demos/blob/main/scripts/quality_eval.py
-and retargeted at `pepsico-marketing-agent`.
+and retargeted at `zava-marketing-agent`.
 
 Usage:
     python -m solution.evaluations.quality_eval
@@ -34,7 +34,7 @@ TOOL_DEFINITIONS = [
     {
         "name": "marketing_mcp",
         "type": "function",
-        "description": "Authoritative Pepsico campaign records (Cosmos-backed MCP).",
+        "description": "Authoritative Zava campaign records (Cosmos-backed MCP).",
         "parameters": {"type": "object", "properties": {}},
     },
     {

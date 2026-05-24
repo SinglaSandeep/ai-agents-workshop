@@ -1,13 +1,15 @@
-"""Pepsico **Products** MCP server (FastMCP, streamable HTTP transport).
+"""Zava **Products** MCP server (FastMCP, streamable HTTP transport).
 
 You build this file out in **Exercise 02**. When complete, it will expose
-four Cosmos DB-backed MCP tools that the Products Foundry agent (Exercise 03)
+six Cosmos DB-backed MCP tools that the Products Foundry agent (Exercise 03)
 will call:
 
 * ``list_categories()``
 * ``list_products(category=None, limit=20)``
-* ``get_product(product_id)``
+* ``get_product(product_id)``                  — id pattern ``ZV-<CAT>-NNN``
 * ``search_products(text, limit=10)``
+* ``inventory_by_store(product_id)``           — per-store on-hand map
+* ``low_stock_alerts(store_id, limit=50)``     — reorder candidates by store
 
 Run locally (after you complete Exercise 02):
 
@@ -31,26 +33,33 @@ import os
 # Follow Microsoft's MCP development best practices:
 # https://microsoft.github.io/mcp-azure-security-guide/adoption/development-best-practices/
 #
-# Good instructions explain (1) what the server does, (2) the brands/domain
-# in scope, (3) tool-selection guidance, and (4) data format conventions
-# (currency, units, id format). Example:
+# Good instructions explain (1) what the server does, (2) the entities in
+# scope (Zava categories, store ids, ZV-XXX-NNN SKU pattern), (3) tool-
+# selection guidance, and (4) data conventions (USD, store_id values).
+# Example:
 #
 #   mcp = FastMCP(
-#       name="pepsico-products",
+#       name="zava-products",
 #       instructions=(
-#           "Pepsico Products catalog assistant. Use these tools to answer "
-#           "questions about Pepsico beverages and snacks.\n\n"
+#           "Zava Products catalog & inventory assistant. Use these tools "
+#           "to answer questions about Zava DIY products and per-store "
+#           "inventory.\n\n"
 #           "Tool selection:\n"
-#           "  • `search_products`  → free-text questions\n"
-#           "  • `list_products`   → user names a category\n"
-#           "  • `list_categories` → enumerate available categories\n"
-#           "  • `get_product`     → fetch one SKU by id (PEP-###)\n\n"
-#           "Prices in USD, calories in kcal. Do not invent SKU ids."
+#           "  • `search_products`    → free-text questions\n"
+#           "  • `list_products`      → user names a category_id\n"
+#           "  • `list_categories`    → enumerate available categories\n"
+#           "  • `get_product`        → fetch one SKU by id (ZV-XXX-NNN)\n"
+#           "  • `inventory_by_store` → per-store on-hand for a product\n"
+#           "  • `low_stock_alerts`   → reorder candidates by store_id\n\n"
+#           "Prices in USD. Categories: paint, power-tools, hand-tools, "
+#           "garden, lumber, electrical, plumbing, hardware. Stores: "
+#           "seattle, bellevue, tacoma, redmond, kirkland, spokane, "
+#           "everett, online. Do not invent SKU ids."
 #       ),
 #   )
 
 
-# TODO (Exercise 02 / Task 02.02): for each of the four tools, write a
+# TODO (Exercise 02 / Task 02.02): for each of the six tools, write a
 # Python function and decorate it with `@mcp.tool`. The docstring becomes
 # the tool description the LLM sees, and the type hints become the JSON
 # schema. A good tool description tells the LLM (1) what it does in one
@@ -68,19 +77,15 @@ import os
 #
 #   @mcp.tool
 #   def list_categories() -> list[str]:
-#       """List every distinct product category in the catalog.
-#
-#       Use this first if you are unsure which category strings are valid
-#       before calling `list_products`. Always returns a non-empty list.
-#       """
+#       """List every distinct product category_id in the catalog."""
 #       return _repo().list_categories()
 #
 #   @mcp.tool
 #   def get_product(
 #       product_id: Annotated[
 #           str,
-#           Field(pattern=r"^PEP-\d{3,}$", examples=["PEP-001"],
-#                 description="Product id like 'PEP-001'. Do not guess."),
+#           Field(pattern=r"^ZV-[A-Z]{3}-\d{3,}$", examples=["ZV-PNT-001"],
+#                 description="Zava SKU id like 'ZV-PNT-001'. Do not guess."),
 #       ],
 #   ) -> dict | None:
 #       """Fetch one product by id. Returns null if the SKU does not exist."""
@@ -95,7 +100,7 @@ app = None  # replaced in Exercise 02
 
 
 def main() -> None:
-    """Entry point for the ``pepsico-products-mcp`` console script."""
+    """Entry point for the ``zava-products-mcp`` console script."""
 
     import uvicorn
 

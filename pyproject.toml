@@ -1,7 +1,7 @@
 [project]
-name = "pepsico-ai-agents-workshop"
+name = "zava-ai-agents-workshop"
 version = "1.0.0"
-description = "End-to-end multi-agent Pepsico assistant on Azure (Microsoft Foundry, Agent Framework, Foundry IQ, Bing Grounding, MCP on Container Apps, Cosmos DB)."
+description = "End-to-end multi-agent Zava DIY retail assistant on Azure (Microsoft Foundry, Agent Framework, Foundry IQ, Bing Grounding, MCP on Container Apps, Cosmos DB)."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -63,12 +63,12 @@ dev = [
 ]
 
 [project.scripts]
-pepsico-devui = "src.app.devui_launch:main"
-pepsico-orchestrator = "src.orchestrator.runner:main"
-pepsico-products-mcp = "src.mcp_servers.products.server:main"
-pepsico-marketing-mcp = "src.mcp_servers.marketing.server:main"
-pepsico-seed-products = "src.mcp_servers.products.seed.seed_cosmos:main"
-pepsico-seed-marketing = "src.mcp_servers.marketing.seed.seed_cosmos:main"
+zava-devui = "src.app.devui_launch:main"
+zava-orchestrator = "src.orchestrator.runner:main"
+zava-products-mcp = "src.mcp_servers.products.server:main"
+zava-marketing-mcp = "src.mcp_servers.marketing.server:main"
+zava-seed-products = "src.mcp_servers.products.seed.seed_cosmos:main"
+zava-seed-marketing = "src.mcp_servers.marketing.seed.seed_cosmos:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

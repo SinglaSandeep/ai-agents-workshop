@@ -34,12 +34,12 @@ in the portal (or via `az`) and copy its identifier into `.env`.
    az group list --query "[].name" -o tsv
    ```
 
-   Pick the resource group your platform team gave you (typically `pepsico-aiworkshop-rg`).
+   Pick the resource group your platform team gave you (typically `zava-aiworkshop-rg`).
 
 2. **Find the Foundry project**
 
    ```powershell
-   $RG = "pepsico-aiworkshop-rg"
+   $RG = "zava-aiworkshop-rg"
    az resource list -g $RG --resource-type Microsoft.CognitiveServices/accounts/projects -o table
    ```
 
@@ -68,7 +68,7 @@ in the portal (or via `az`) and copy its identifier into `.env`.
    ```
 
    Set `COSMOS_ENDPOINT=https://<account>.documents.azure.com:443/`. The workshop
-   will create the `pepsico` database and the two containers on first seed run
+   will create the `zava` database and the two containers on first seed run
    (Exercises 01 & 02).
 
 6. **Find the Container Apps environment & ACR**

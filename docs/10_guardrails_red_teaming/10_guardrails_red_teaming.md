@@ -41,7 +41,7 @@ You will:
 {: .success }
 > - The hosted Marketing agent returns a friendly refusal for content-filter
 >   blocks rather than an HTTP 500.
-> - At least one custom policy is attached to `pepsico-marketing-agent` in
+> - At least one custom policy is attached to `zava-marketing-agent` in
 >   the Foundry portal.
 > - `python -m solution.red_team.red_team_scan_local` produces a results
 >   JSON with non-zero pass counts in all four risk categories.

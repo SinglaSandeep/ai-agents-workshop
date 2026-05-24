@@ -55,7 +55,7 @@ def trace_span(name: str, **attributes: Any):
             yield None
         return
 
-    tracer = trace.get_tracer("pepsico-ai-agents-workshop")
+    tracer = trace.get_tracer("zava-ai-agents-workshop")
     with tracer.start_as_current_span(name) as span:
         for key, value in attributes.items():
             if value is not None:

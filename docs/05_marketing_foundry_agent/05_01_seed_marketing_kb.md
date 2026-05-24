@@ -17,10 +17,10 @@ the same `knowledge_base_retrieve` MCP tool you already met in Exercise 06.
 
 ## Success Criteria
 
-* Azure AI Search index `pepsico-marketing-source` exists.
-* Foundry IQ knowledge base `pepsico-marketing-kb` exists with that index as
+* Azure AI Search index `zava-marketing-source` exists.
+* Foundry IQ knowledge base `zava-marketing-kb` exists with that index as
   a source.
-* `pepsico-marketing-kb-conn` project connection exists on your Foundry
+* `zava-marketing-kb-conn` project connection exists on your Foundry
   project.
 
 ## Key Tasks
@@ -44,7 +44,7 @@ python -m src.foundry_agents.setup_marketing_knowledge_base
 ```
 
 This creates the AI Search index, uploads the documents (chunked + embedded),
-creates the `pepsico-marketing-kb` knowledge base, and registers the project
+creates the `zava-marketing-kb` knowledge base, and registers the project
 connection used by the hosted agent.
 
 <details markdown="block">
@@ -57,7 +57,7 @@ It mirrors the HR version from Exercise 06 — index → upload → KB → conne
 
 ### 03: Confirm in the portal
 
-Foundry portal → **Knowledge bases** → confirm `pepsico-marketing-kb` lists
+Foundry portal → **Knowledge bases** → confirm `zava-marketing-kb` lists
 the marketing source. Open the KB and run a test query like *"What is the
 goal of the Gatorade 2026 SuperBowl campaign?"*.
 

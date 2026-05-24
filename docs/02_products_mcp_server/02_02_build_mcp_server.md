@@ -37,13 +37,13 @@ Open [src/mcp_servers/products/cosmos_repo.py](https://github.com/SinglaSandeep/
 The skeleton already imports `get_container` from `src.common.cosmos` and
 selects the products container in `__init__`. You just need to fill in each
 query method **and emit one log line per query** via the `_log_query` helper
-on the `pepsico.mcp.products.cosmos` logger so each tool call is auditable.
+on the `zava.mcp.products.cosmos` logger so each tool call is auditable.
 
 <details markdown="block">
 <summary><strong>Expand this section to view the solution</strong></summary>
 
 ```python
-"""Read-only Cosmos DB repository for the Pepsico products catalog."""
+"""Read-only Cosmos DB repository for the Zava products catalog."""
 
 from __future__ import annotations
 
@@ -54,7 +54,7 @@ from typing import Any
 from src.common.cosmos import get_container
 from src.common.settings import get_settings
 
-logger = logging.getLogger("pepsico.mcp.products.cosmos")
+logger = logging.getLogger("zava.mcp.products.cosmos")
 
 
 def _log_query(op, query, params, *, count, elapsed_ms):
@@ -154,7 +154,7 @@ class ProductsRepository:
 Note: we keep the surface **read-only** and return plain `dict`s so the MCP
 server can JSON-serialise the response straight back to the LLM. Each method
 emits one structured log line (e.g.
-`INFO pepsico.mcp.products.cosmos cosmos list_categories rows=9 elapsed_ms=12.3 query=... params=[]`)
+`INFO zava.mcp.products.cosmos cosmos list_categories rows=9 elapsed_ms=12.3 query=... params=[]`)
 which uvicorn forwards to stdout. Forwarding these logs to Application
 Insights is covered later in **Exercise 11 — Observability**; for now stdout
 is all you need.
@@ -175,7 +175,7 @@ Follow the TODOs to:
 <summary><strong>Expand this section to view the solution</strong></summary>
 
 ```python
-"""Pepsico Products MCP server (FastMCP, streamable HTTP transport)."""
+"""Zava Products MCP server (FastMCP, streamable HTTP transport)."""
 
 from __future__ import annotations
 
@@ -186,9 +186,9 @@ from fastmcp import FastMCP
 from .cosmos_repo import ProductsRepository
 
 mcp = FastMCP(
-    name="pepsico-products",
+    name="Zava-products",
     instructions=(
-        "Use these tools to look up Pepsico products in the catalog. "
+        "Use these tools to look up Zava products in the catalog. "
         "Prefer `search_products` for free-text questions and `list_products` "
         "when the user names a specific category (Beverages, Snacks, etc.)."
     ),
@@ -201,19 +201,19 @@ def _repo() -> ProductsRepository:
 
 @mcp.tool
 def list_categories() -> list[str]:
-    """List all distinct product categories available in the Pepsico catalog."""
+    """List all distinct product categories available in the Zava catalog."""
     return _repo().list_categories()
 
 
 @mcp.tool
 def list_products(category: str | None = None, limit: int = 20) -> list[dict]:
-    """List Pepsico products, optionally filtered by category (case-insensitive)."""
+    """List Zava products, optionally filtered by category (case-insensitive)."""
     return _repo().list_products(category=category, limit=limit)
 
 
 @mcp.tool
 def get_product(product_id: str) -> dict | None:
-    """Return the full record for one product by id (e.g. `PEP-001`)."""
+    """Return the full record for one product by id (e.g. `ZV-PNT-001`)."""
     return _repo().get_product(product_id)
 
 

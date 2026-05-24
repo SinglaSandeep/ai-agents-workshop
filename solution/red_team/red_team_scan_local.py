@@ -2,7 +2,7 @@
 
 Adapted from
 https://github.com/Azure-Samples/foundry-hosted-agentframework-demos/blob/main/scripts/red_team_scan_local.py
-and retargeted at the local `azd ai agent run` of `pepsico-marketing-agent`.
+and retargeted at the local `azd ai agent run` of `zava-marketing-agent`.
 
 Usage:
     1. cd src/foundry_agents/marketing_hosted && azd ai agent run

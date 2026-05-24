@@ -35,7 +35,7 @@ Open [src/orchestrator/magentic_router.py](https://github.com/SinglaSandeep/ai-a
 <summary><strong>Expand this section to view the solution</strong></summary>
 
 ```python
-"""Magentic orchestrator that coordinates the Pepsico Foundry agents."""
+"""Magentic orchestrator that coordinates the Zava Foundry agents."""
 
 from __future__ import annotations
 
@@ -74,24 +74,24 @@ async def run_query(user_query: str) -> OrchestratorResult:
         ) as client:
             hr = FoundryAgent(
                 project_endpoint=settings.azure_ai_project_endpoint,
-                agent_name=settings.hr_agent_name,
+                agent_name=settings.store_ops_agent_name,
                 credential=cred,
                 name="hr",
-                description="Answers Pepsico HR policy, benefits, and handbook questions using the Foundry IQ knowledge base.",
+                description="Answers Zava store-ops policy, benefits, and handbook questions using the Foundry IQ knowledge base.",
             )
             products = FoundryAgent(
                 project_endpoint=settings.azure_ai_project_endpoint,
                 agent_name=settings.products_agent_name,
                 credential=cred,
                 name="products",
-                description="Answers questions about the Pepsico product catalog (SKU, brand, size, calories, price) using the Products MCP server.",
+                description="Answers questions about the Zava product catalog (SKU, brand, size, calories, price) using the Products MCP server.",
             )
             marketing = FoundryAgent(
                 project_endpoint=settings.azure_ai_project_endpoint,
                 agent_name=settings.marketing_agent_name,
                 credential=cred,
                 name="marketing",
-                description="Answers questions about Pepsico marketing campaigns (status, KPIs, budgets, ROI) using the Marketing MCP server, and can search the web via Bing for live context.",
+                description="Answers questions about Zava marketing campaigns (status, KPIs, budgets, ROI) using the Marketing MCP server, and can search the web via Bing for live context.",
             )
             response_generator = FoundryAgent(
                 project_endpoint=settings.azure_ai_project_endpoint,
@@ -104,7 +104,7 @@ async def run_query(user_query: str) -> OrchestratorResult:
             manager = Agent(
                 client=client, name="manager",
                 instructions=(
-                    "You coordinate Pepsico specialist agents to answer an employee's question. "
+                    "You coordinate Zava specialist agents to answer an employee's question. "
                     "Plan the smallest set of specialist calls needed to answer fully. "
                     "Always finish by handing the consolidated context to `response_generator` "
                     "so the user sees a single, well-formatted reply."
@@ -149,7 +149,7 @@ async def run_query(user_query: str) -> OrchestratorResult:
 ### 02: Test from the CLI
 
 ```powershell
-python -m src.orchestrator.runner --query "What is the PTO policy at Pepsico?"
+python -m src.orchestrator.runner --query "What is the PTO policy at Zava?"
 ```
 
 You should see a printed plan like `hr -> response_generator` and a final

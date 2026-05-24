@@ -67,12 +67,12 @@ logger = logging.getLogger("marketing-hosted-agent")
 
 PROJECT_ENDPOINT = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
 MODEL_DEPLOYMENT = os.environ["AZURE_AI_MODEL_DEPLOYMENT_NAME"]
-TOOLBOX_NAME = os.environ.get("CUSTOM_FOUNDRY_AGENT_TOOLBOX_NAME", "pepsico-marketing-tools")
+TOOLBOX_NAME = os.environ.get("CUSTOM_FOUNDRY_AGENT_TOOLBOX_NAME", "zava-marketing-tools")
 SEARCH_ENDPOINT = os.environ["AZURE_AI_SEARCH_SERVICE_ENDPOINT"]
-KB_NAME = os.environ.get("AZURE_AI_SEARCH_KNOWLEDGE_BASE_NAME", "pepsico-marketing-kb")
+KB_NAME = os.environ.get("AZURE_AI_SEARCH_KNOWLEDGE_BASE_NAME", "zava-marketing-kb")
 MARKETING_MCP_URL = os.environ["MARKETING_MCP_URL"]
 
-INSTRUCTIONS = """You are the Pepsico Marketing Specialist running inside Microsoft Foundry.
+INSTRUCTIONS = """You are the Zava Marketing Specialist running inside Microsoft Foundry.
 
 You have THREE tools:
 
@@ -83,10 +83,10 @@ You have THREE tools:
    `code_interpreter`. Use `web_search` ONLY for live news / competitor /
    industry context that is too recent for the model's training data.
 3. The `marketing_kb` MCP server (Foundry IQ) which exposes
-   `knowledge_base_retrieve` over indexed Pepsico marketing briefs.
+   `knowledge_base_retrieve` over indexed Zava marketing briefs.
 
 Rules:
-- Never make up Pepsico campaign data. Prefer `marketing_mcp` for structured
+- Never make up Zava campaign data. Prefer `marketing_mcp` for structured
   facts, `marketing_kb` for narrative briefs.
 - When you cite the web, always include the URL.
 - End every answer with: `Tools used: ...`.
@@ -160,7 +160,7 @@ def main() -> None:
 
     agent = Agent(
         client=chat,
-        name="PepsicoMarketingSpecialist",
+        name="ZavaMarketingSpecialist",
         instructions=INSTRUCTIONS,
         tools=[marketing_mcp, toolbox, kb],
         default_options={"store": False},
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
 ```yaml
 kind: hosted
-name: pepsico-marketing-agent
+name: zava-marketing-agent
 protocols:
   - protocol: responses
     version: 1.0.0
@@ -196,9 +196,9 @@ environment_variables:
   - name: AZURE_AI_SEARCH_SERVICE_ENDPOINT
     value: ${AZURE_AI_SEARCH_SERVICE_ENDPOINT}
   - name: AZURE_AI_SEARCH_KNOWLEDGE_BASE_NAME
-    value: pepsico-marketing-kb
+    value: zava-marketing-kb
   - name: CUSTOM_FOUNDRY_AGENT_TOOLBOX_NAME
-    value: pepsico-marketing-tools
+    value: zava-marketing-tools
   - name: MARKETING_MCP_URL
     value: ${MARKETING_MCP_URL}
 ```
@@ -210,7 +210,7 @@ environment_variables:
 ### 03: Create the Foundry Toolbox
 
 In the Foundry portal → **Toolboxes → + New** → name it
-`pepsico-marketing-tools` → add the **Web Search** and **Code Interpreter**
+`zava-marketing-tools` → add the **Web Search** and **Code Interpreter**
 built-in tools → **Save**.
 
 (This is the toolbox the agent reaches over MCP at runtime.)

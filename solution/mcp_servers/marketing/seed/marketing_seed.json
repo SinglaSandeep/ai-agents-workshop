@@ -1,154 +1,626 @@
 [
   {
-    "id": "CMP-2026-001",
-    "campaign_name": "Pepsi 'Made for Moments' Spring 2026",
-    "brand": "Pepsi",
+    "id": "ZV-CMP-2026-001",
+    "name": "Spring Paint Sale 2026",
     "status": "active",
-    "region": "North America",
-    "start_date": "2026-03-01",
+    "category": "paint",
+    "start_date": "2026-04-01",
+    "end_date": "2026-05-31",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-PNT-001",
+      "ZV-PNT-002",
+      "ZV-PNT-005"
+    ],
+    "discount_percent": 20,
+    "channel": [
+      "in-store",
+      "email",
+      "social"
+    ],
+    "target_audience": "DIY homeowners, weekend renovators",
+    "budget_usd": 180000,
+    "spend_usd": 62000,
+    "impressions": 1850000,
+    "clicks": 32000,
+    "roi": null,
+    "kb_brief": "ZV-CMP-2026-001_brief.md"
+  },
+  {
+    "id": "ZV-CMP-2026-002",
+    "name": "Pro Power-Tool Days",
+    "status": "active",
+    "category": "power-tools",
+    "start_date": "2026-03-15",
+    "end_date": "2026-04-15",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "redmond",
+      "kirkland",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-PWT-001",
+      "ZV-PWT-003",
+      "ZV-PWT-006"
+    ],
+    "discount_percent": 15,
+    "channel": [
+      "in-store",
+      "email",
+      "youtube"
+    ],
+    "target_audience": "Contractors, pro tradespeople",
+    "budget_usd": 220000,
+    "spend_usd": 95000,
+    "impressions": 2400000,
+    "clicks": 41000,
+    "roi": null,
+    "kb_brief": "ZV-CMP-2026-002_brief.md"
+  },
+  {
+    "id": "ZV-CMP-2026-003",
+    "name": "Garden Kickoff Weekend",
+    "status": "active",
+    "category": "garden",
+    "start_date": "2026-03-21",
+    "end_date": "2026-03-29",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "redmond",
+      "kirkland",
+      "spokane",
+      "everett"
+    ],
+    "featured_products": [
+      "ZV-GRD-002",
+      "ZV-GRD-003",
+      "ZV-GRD-005"
+    ],
+    "discount_percent": 25,
+    "channel": [
+      "in-store",
+      "social",
+      "radio"
+    ],
+    "target_audience": "Suburban homeowners, garden enthusiasts",
+    "budget_usd": 95000,
+    "spend_usd": 88000,
+    "impressions": 1100000,
+    "clicks": 24000,
+    "roi": null,
+    "kb_brief": "ZV-CMP-2026-003_brief.md"
+  },
+  {
+    "id": "ZV-CMP-2026-004",
+    "name": "Deck-Building Workshop Series",
+    "status": "active",
+    "category": "lumber",
+    "start_date": "2026-04-05",
     "end_date": "2026-06-30",
-    "channel": ["TV", "YouTube", "Instagram"],
-    "target_audience": "Adults 18-34, sports and music fans",
-    "budget_usd": 12500000,
-    "spend_usd": 4200000,
-    "impressions": 185000000,
-    "clicks": 2300000,
-    "ctr": 0.0124,
-    "conversions": 92000,
-    "roi": 2.3,
-    "summary": "Multi-channel campaign tying Pepsi to live music and sporting moments, featuring partnerships with the NFL and Latin Grammy Awards."
+    "stores": [
+      "bellevue",
+      "redmond",
+      "kirkland"
+    ],
+    "featured_products": [
+      "ZV-LMB-002",
+      "ZV-LMB-006",
+      "ZV-HDW-002"
+    ],
+    "discount_percent": 10,
+    "channel": [
+      "in-store",
+      "email"
+    ],
+    "target_audience": "DIY homeowners with outdoor projects",
+    "budget_usd": 45000,
+    "spend_usd": 12000,
+    "impressions": 380000,
+    "clicks": 8200,
+    "roi": null,
+    "kb_brief": "ZV-CMP-2026-004_brief.md"
   },
   {
-    "id": "CMP-2026-002",
-    "campaign_name": "Gatorade 'Fuel Tomorrow' Youth Athletics",
-    "brand": "Gatorade",
+    "id": "ZV-CMP-2026-005",
+    "name": "Smart Home Lighting Bundle",
     "status": "active",
-    "region": "Global",
-    "start_date": "2026-01-15",
-    "end_date": "2026-12-31",
-    "channel": ["TikTok", "Twitch", "School activations"],
-    "target_audience": "Youth athletes 13-22",
-    "budget_usd": 22000000,
-    "spend_usd": 6500000,
-    "impressions": 410000000,
-    "clicks": 5100000,
-    "ctr": 0.0124,
-    "conversions": 215000,
-    "roi": 3.1,
-    "summary": "Brand purpose campaign focused on equitable access to youth sports. Includes grants, athlete spotlights, and a creator program with Gen Z athletes."
+    "category": "electrical",
+    "start_date": "2026-03-01",
+    "end_date": "2026-04-30",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-ELC-003",
+      "ZV-ELC-004"
+    ],
+    "discount_percent": 15,
+    "channel": [
+      "online",
+      "social"
+    ],
+    "target_audience": "Tech-forward homeowners",
+    "budget_usd": 60000,
+    "spend_usd": 38000,
+    "impressions": 920000,
+    "clicks": 19000,
+    "roi": null,
+    "kb_brief": null
   },
   {
-    "id": "CMP-2026-003",
-    "campaign_name": "Doritos 'Crash The Super Bowl' Revival",
-    "brand": "Doritos",
-    "status": "active",
-    "region": "United States",
-    "start_date": "2026-01-05",
-    "end_date": "2026-02-15",
-    "channel": ["TV", "Reddit", "Instagram", "TikTok"],
-    "target_audience": "Adults 18-49",
-    "budget_usd": 8500000,
-    "spend_usd": 8500000,
-    "impressions": 220000000,
-    "clicks": 3100000,
-    "ctr": 0.0141,
-    "conversions": 145000,
-    "roi": 4.6,
-    "summary": "User-generated commercial contest. Winner aired during the Super Bowl LX broadcast. Drove significant earned media and trial of Doritos Dinamita."
-  },
-  {
-    "id": "CMP-2026-004",
-    "campaign_name": "Mountain Dew x Call of Duty Tournament Series",
-    "brand": "Mountain Dew",
-    "status": "active",
-    "region": "North America, EMEA",
-    "start_date": "2026-02-01",
-    "end_date": "2026-08-31",
-    "channel": ["Twitch", "YouTube Gaming", "In-game placements"],
-    "target_audience": "Gamers 18-30",
-    "budget_usd": 6000000,
-    "spend_usd": 1900000,
-    "impressions": 140000000,
-    "clicks": 2700000,
-    "ctr": 0.0193,
-    "conversions": 82000,
-    "roi": 2.9,
-    "summary": "Esports activation with in-game rewards for purchasing specially-marked Mountain Dew packs."
-  },
-  {
-    "id": "CMP-2026-005",
-    "campaign_name": "Quaker 'Stronger Mornings' Heart Health Awareness",
-    "brand": "Quaker",
+    "id": "ZV-CMP-2026-006",
+    "name": "Summer Project BBQ Hardware Promo",
     "status": "planned",
-    "region": "United States",
-    "start_date": "2026-09-01",
-    "end_date": "2026-10-31",
-    "channel": ["TV", "In-store", "Email", "AHA partnership"],
-    "target_audience": "Adults 35-64, health-conscious shoppers",
-    "budget_usd": 4500000,
+    "category": "hardware",
+    "start_date": "2026-06-01",
+    "end_date": "2026-07-04",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "redmond",
+      "kirkland",
+      "spokane",
+      "everett",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-HDW-002",
+      "ZV-HDW-004"
+    ],
+    "discount_percent": 12,
+    "channel": [
+      "in-store",
+      "email",
+      "social"
+    ],
+    "target_audience": "Outdoor DIY weekend warriors",
+    "budget_usd": 70000,
     "spend_usd": 0,
     "impressions": 0,
     "clicks": 0,
-    "ctr": 0.0,
-    "conversions": 0,
-    "roi": 0.0,
-    "summary": "Heart-health-month focused campaign anchored by an American Heart Association partnership and in-pack QR codes leading to recipes and a wellness tracker."
+    "roi": null,
+    "kb_brief": null
   },
   {
-    "id": "CMP-2026-006",
-    "campaign_name": "Lay's 'Smile Bigger' Summer Push",
-    "brand": "Lay's",
-    "status": "active",
-    "region": "Global",
-    "start_date": "2026-05-15",
+    "id": "ZV-CMP-2026-007",
+    "name": "Back-to-School Tool Kit Giveaway",
+    "status": "planned",
+    "category": "hand-tools",
+    "start_date": "2026-08-15",
     "end_date": "2026-09-15",
-    "channel": ["TV", "OOH", "Instagram", "Influencers"],
-    "target_audience": "Families and snackers 18-54",
-    "budget_usd": 9500000,
-    "spend_usd": 2100000,
-    "impressions": 175000000,
-    "clicks": 1800000,
-    "ctr": 0.0103,
-    "conversions": 71000,
-    "roi": 2.7,
-    "summary": "Continuation of the global Smile platform with limited-edition packaging featuring fan-submitted smiles."
+    "stores": [
+      "seattle",
+      "bellevue",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-HND-004",
+      "ZV-HND-002"
+    ],
+    "discount_percent": 0,
+    "channel": [
+      "social",
+      "in-store"
+    ],
+    "target_audience": "Students and new homeowners",
+    "budget_usd": 28000,
+    "spend_usd": 0,
+    "impressions": 0,
+    "clicks": 0,
+    "roi": null,
+    "kb_brief": null
   },
   {
-    "id": "CMP-2026-007",
-    "campaign_name": "Bubly 'Bring The Sparkle' DTC Sampling",
-    "brand": "Bubly",
+    "id": "ZV-CMP-2026-008",
+    "name": "Plumbing-Pro Loyalty Push",
+    "status": "planned",
+    "category": "plumbing",
+    "start_date": "2026-05-01",
+    "end_date": "2026-05-31",
+    "stores": [
+      "tacoma",
+      "everett",
+      "spokane"
+    ],
+    "featured_products": [
+      "ZV-PLM-001",
+      "ZV-PLM-004"
+    ],
+    "discount_percent": 10,
+    "channel": [
+      "email"
+    ],
+    "target_audience": "Independent plumbers",
+    "budget_usd": 18000,
+    "spend_usd": 0,
+    "impressions": 0,
+    "clicks": 0,
+    "roi": null,
+    "kb_brief": null
+  },
+  {
+    "id": "ZV-CMP-2025-101",
+    "name": "Spring Paint Sale 2025",
+    "status": "post-mortem",
+    "category": "paint",
+    "start_date": "2025-04-01",
+    "end_date": "2025-05-31",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-PNT-001",
+      "ZV-PNT-002"
+    ],
+    "discount_percent": 20,
+    "channel": [
+      "in-store",
+      "email",
+      "social"
+    ],
+    "target_audience": "DIY homeowners, weekend renovators",
+    "budget_usd": 160000,
+    "spend_usd": 158400,
+    "impressions": 1620000,
+    "clicks": 29800,
+    "roi": 1.42,
+    "kb_brief": "post_mortem_2025_spring_paint.md"
+  },
+  {
+    "id": "ZV-CMP-2025-102",
+    "name": "Pro Power-Tool Days 2025",
+    "status": "post-mortem",
+    "category": "power-tools",
+    "start_date": "2025-03-15",
+    "end_date": "2025-04-15",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "redmond",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-PWT-001",
+      "ZV-PWT-003"
+    ],
+    "discount_percent": 15,
+    "channel": [
+      "in-store",
+      "email",
+      "youtube"
+    ],
+    "target_audience": "Contractors, pro tradespeople",
+    "budget_usd": 200000,
+    "spend_usd": 196000,
+    "impressions": 2280000,
+    "clicks": 38600,
+    "roi": 2.18,
+    "kb_brief": "post_mortem_2025_pro_power_tools.md"
+  },
+  {
+    "id": "ZV-CMP-2025-103",
+    "name": "Holiday Hardware Gift Guide 2025",
+    "status": "post-mortem",
+    "category": "hardware",
+    "start_date": "2025-11-15",
+    "end_date": "2025-12-24",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "redmond",
+      "kirkland",
+      "spokane",
+      "everett",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-HDW-005",
+      "ZV-HDW-006"
+    ],
+    "discount_percent": 18,
+    "channel": [
+      "online",
+      "social",
+      "email"
+    ],
+    "target_audience": "Gift-givers, last-minute shoppers",
+    "budget_usd": 120000,
+    "spend_usd": 118000,
+    "impressions": 2050000,
+    "clicks": 47000,
+    "roi": 1.85,
+    "kb_brief": null
+  },
+  {
+    "id": "ZV-CMP-2025-104",
+    "name": "Fall Garden Cleanup 2025",
+    "status": "post-mortem",
+    "category": "garden",
+    "start_date": "2025-09-15",
+    "end_date": "2025-10-31",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "redmond",
+      "kirkland",
+      "spokane",
+      "everett"
+    ],
+    "featured_products": [
+      "ZV-GRD-001",
+      "ZV-GRD-004"
+    ],
+    "discount_percent": 20,
+    "channel": [
+      "in-store",
+      "email"
+    ],
+    "target_audience": "Suburban homeowners",
+    "budget_usd": 55000,
+    "spend_usd": 53800,
+    "impressions": 720000,
+    "clicks": 15300,
+    "roi": 1.61,
+    "kb_brief": null
+  },
+  {
+    "id": "ZV-CMP-2025-105",
+    "name": "Bathroom Refresh 2025",
+    "status": "post-mortem",
+    "category": "plumbing",
+    "start_date": "2025-06-01",
+    "end_date": "2025-07-15",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-PLM-002",
+      "ZV-PLM-005"
+    ],
+    "discount_percent": 15,
+    "channel": [
+      "online",
+      "social"
+    ],
+    "target_audience": "Homeowners doing bath remodels",
+    "budget_usd": 70000,
+    "spend_usd": 68500,
+    "impressions": 980000,
+    "clicks": 22000,
+    "roi": 1.32,
+    "kb_brief": null
+  },
+  {
+    "id": "ZV-CMP-2026-009",
+    "name": "Lumber Member Pricing Week",
     "status": "active",
-    "region": "United States",
-    "start_date": "2026-04-01",
-    "end_date": "2026-07-31",
-    "channel": ["DTC eCom", "TikTok", "Sampling kiosks"],
-    "target_audience": "Adults 21-45, sparkling water buyers",
-    "budget_usd": 3200000,
-    "spend_usd": 980000,
-    "impressions": 65000000,
-    "clicks": 940000,
-    "ctr": 0.0145,
-    "conversions": 48000,
-    "roi": 2.1,
-    "summary": "Free 4-can sampler ships to consumers who scan QR codes at participating retailers. Pushes new Watermelon Lime flavor."
+    "category": "lumber",
+    "start_date": "2026-03-20",
+    "end_date": "2026-03-27",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "redmond",
+      "kirkland",
+      "spokane",
+      "everett"
+    ],
+    "featured_products": [
+      "ZV-LMB-001",
+      "ZV-LMB-003"
+    ],
+    "discount_percent": 8,
+    "channel": [
+      "in-store",
+      "email"
+    ],
+    "target_audience": "Pro contractors, frequent buyers",
+    "budget_usd": 35000,
+    "spend_usd": 21000,
+    "impressions": 410000,
+    "clicks": 9700,
+    "roi": null,
+    "kb_brief": null
   },
   {
-    "id": "CMP-2026-008",
-    "campaign_name": "Tropicana 'Sunrise Ritual'",
-    "brand": "Tropicana",
-    "status": "completed",
-    "region": "United States, Canada",
-    "start_date": "2025-09-01",
-    "end_date": "2025-12-31",
-    "channel": ["TV", "Connected TV", "Pinterest"],
-    "target_audience": "Adults 25-54",
-    "budget_usd": 5800000,
-    "spend_usd": 5800000,
-    "impressions": 110000000,
-    "clicks": 1300000,
-    "ctr": 0.0118,
-    "conversions": 56000,
-    "roi": 2.4,
-    "summary": "Repositioning campaign emphasising Tropicana as the cornerstone of a healthy morning routine, supporting the relaunch of the Pure Premium line."
+    "id": "ZV-CMP-2026-010",
+    "name": "Hand-Tool Essentials Promo",
+    "status": "active",
+    "category": "hand-tools",
+    "start_date": "2026-04-01",
+    "end_date": "2026-04-30",
+    "stores": [
+      "online"
+    ],
+    "featured_products": [
+      "ZV-HND-001",
+      "ZV-HND-002",
+      "ZV-HND-003"
+    ],
+    "discount_percent": 10,
+    "channel": [
+      "online",
+      "email"
+    ],
+    "target_audience": "First-time homeowners",
+    "budget_usd": 22000,
+    "spend_usd": 9500,
+    "impressions": 280000,
+    "clicks": 6100,
+    "roi": null,
+    "kb_brief": null
+  },
+  {
+    "id": "ZV-CMP-2026-011",
+    "name": "Smart Plumbing Demo Days",
+    "status": "planned",
+    "category": "plumbing",
+    "start_date": "2026-06-15",
+    "end_date": "2026-06-22",
+    "stores": [
+      "seattle",
+      "bellevue"
+    ],
+    "featured_products": [
+      "ZV-PLM-002"
+    ],
+    "discount_percent": 12,
+    "channel": [
+      "in-store",
+      "social"
+    ],
+    "target_audience": "Kitchen remodelers",
+    "budget_usd": 16000,
+    "spend_usd": 0,
+    "impressions": 0,
+    "clicks": 0,
+    "roi": null,
+    "kb_brief": null
+  },
+  {
+    "id": "ZV-CMP-2026-012",
+    "name": "Pro Day \u2014 Electrical Contractors",
+    "status": "active",
+    "category": "electrical",
+    "start_date": "2026-03-10",
+    "end_date": "2026-03-31",
+    "stores": [
+      "seattle",
+      "tacoma",
+      "spokane"
+    ],
+    "featured_products": [
+      "ZV-ELC-001",
+      "ZV-ELC-005"
+    ],
+    "discount_percent": 12,
+    "channel": [
+      "in-store",
+      "email"
+    ],
+    "target_audience": "Licensed electricians",
+    "budget_usd": 38000,
+    "spend_usd": 27000,
+    "impressions": 490000,
+    "clicks": 11200,
+    "roi": null,
+    "kb_brief": null
+  },
+  {
+    "id": "ZV-CMP-2026-013",
+    "name": "Earth Day Garden Bundle",
+    "status": "planned",
+    "category": "garden",
+    "start_date": "2026-04-22",
+    "end_date": "2026-04-29",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "redmond",
+      "kirkland",
+      "online"
+    ],
+    "featured_products": [
+      "ZV-GRD-003",
+      "ZV-GRD-005"
+    ],
+    "discount_percent": 15,
+    "channel": [
+      "social",
+      "email"
+    ],
+    "target_audience": "Eco-conscious homeowners",
+    "budget_usd": 30000,
+    "spend_usd": 0,
+    "impressions": 0,
+    "clicks": 0,
+    "roi": null,
+    "kb_brief": null
+  },
+  {
+    "id": "ZV-CMP-2025-106",
+    "name": "Winter Storm Prep 2025",
+    "status": "post-mortem",
+    "category": "electrical",
+    "start_date": "2025-11-01",
+    "end_date": "2025-12-15",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "redmond",
+      "kirkland",
+      "spokane",
+      "everett"
+    ],
+    "featured_products": [
+      "ZV-ELC-006"
+    ],
+    "discount_percent": 10,
+    "channel": [
+      "in-store",
+      "email"
+    ],
+    "target_audience": "PNW homeowners",
+    "budget_usd": 25000,
+    "spend_usd": 24500,
+    "impressions": 380000,
+    "clicks": 8800,
+    "roi": 1.47,
+    "kb_brief": null
+  },
+  {
+    "id": "ZV-CMP-2026-014",
+    "name": "DIY Saturday Workshops",
+    "status": "active",
+    "category": "hand-tools",
+    "start_date": "2026-03-01",
+    "end_date": "2026-12-31",
+    "stores": [
+      "seattle",
+      "bellevue",
+      "tacoma",
+      "redmond",
+      "kirkland",
+      "spokane",
+      "everett"
+    ],
+    "featured_products": [
+      "ZV-HND-001",
+      "ZV-HND-005"
+    ],
+    "discount_percent": 0,
+    "channel": [
+      "in-store",
+      "social"
+    ],
+    "target_audience": "New homeowners, hobbyists",
+    "budget_usd": 50000,
+    "spend_usd": 11000,
+    "impressions": 220000,
+    "clicks": 4900,
+    "roi": null,
+    "kb_brief": null
   }
 ]

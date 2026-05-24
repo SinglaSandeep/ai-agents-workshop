@@ -18,7 +18,7 @@ tracing.
 ## Success Criteria
 
 * `GET /health` returns `"observability_enabled": true`.
-* Spans named `pepsico.chat` appear in App Insights → Transaction search.
+* Spans named `zava.chat` appear in App Insights → Transaction search.
 
 ## Key Tasks
 
@@ -35,7 +35,7 @@ Restart uvicorn and confirm `/health` reports `observability_enabled: true`.
 ### 02: Issue some chats
 
 Run a few prompts through the chat UI. Within a minute or two open Application
-Insights → **Investigate → Transaction search** and filter by `pepsico.chat`.
+Insights → **Investigate → Transaction search** and filter by `zava.chat`.
 You should see one event per chat call and child dependency spans for each
 Foundry / Cosmos call.
 

@@ -1,4 +1,4 @@
-"""Seed the Pepsico products container in Cosmos DB.
+"""Seed the Zava products container in Cosmos DB.
 
 Usage:
     python -m src.mcp_servers.products.seed.seed_cosmos

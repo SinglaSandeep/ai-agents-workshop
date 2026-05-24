@@ -24,7 +24,7 @@ reference it by name.
 
 ## Success Criteria
 
-* A connection named `pepsico-products-mcp-conn` exists on your Foundry
+* A connection named `zava-products-mcp-conn` exists on your Foundry
   project (visible in the portal under **Project settings → Connections**).
 * Its target equals the `PRODUCTS_MCP_URL` from your `.env`.
 * `authType` is `ProjectManagedIdentity` and `category` is `RemoteTool`.
@@ -105,9 +105,9 @@ print('  category:', result['properties']['category'])
 Expected output:
 
 ```
-INFO Upserting Foundry project connection pepsico-products-mcp-conn
-Created/updated connection: pepsico-products-mcp-conn
-  target : https://pepsico-products-mcp.<env-hash>.<region>.azurecontainerapps.io/mcp
+INFO Upserting Foundry project connection zava-products-mcp-conn
+Created/updated connection: zava-products-mcp-conn
+  target : https://zava-products-mcp.<env-hash>.<region>.azurecontainerapps.io/mcp
   category: RemoteTool
 ```
 
@@ -116,7 +116,7 @@ Created/updated connection: pepsico-products-mcp-conn
 ### 04: Verify in the Foundry portal
 
 Open https://ai.azure.com → your project → **Project settings →
-Connections**. You should see `pepsico-products-mcp-conn` with:
+Connections**. You should see `zava-products-mcp-conn` with:
 
 * **Type**: `Remote tool` (or `Custom keys`, depending on portal locale)
 * **Target**: matches `PRODUCTS_MCP_URL`
@@ -127,7 +127,7 @@ You can also list it via the CLI:
 ```powershell
 $PROJ = $env:AZURE_AI_PROJECT_RESOURCE_ID
 az rest --method GET `
-  --url "https://management.azure.com$PROJ/connections/pepsico-products-mcp-conn?api-version=2025-10-01-preview" `
+  --url "https://management.azure.com$PROJ/connections/zava-products-mcp-conn?api-version=2025-10-01-preview" `
   --query "{name:name, target:properties.target, category:properties.category, auth:properties.authType}" `
   -o table
 ```

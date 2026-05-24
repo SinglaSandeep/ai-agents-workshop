@@ -1,8 +1,13 @@
-"""Provision the **Marketing** Foundry IQ knowledge base.
+"""Provision the **Zava Marketing** Foundry IQ knowledge base.
 
-Mirrors `setup_hr_knowledge_base.py` but for Pepsico marketing briefs. Run
-once after seeding Cosmos (Exercise 04) so the hosted Marketing agent
-(Exercise 05) has both structured (MCP) and unstructured (IQ) sources.
+Mirrors `setup_store_ops_knowledge_base.py` but for Zava marketing briefs
+and post-mortems. Run once after seeding Cosmos (Exercise 04) so the hosted
+Marketing agent (Exercise 05) has both structured (MCP) and unstructured
+(IQ) sources.
+
+The index includes filterable ``category_id`` and ``store_id`` fields parsed
+from each Markdown file's YAML frontmatter so the agent can scope retrieval
+to a specific category or store.
 
 Run:
     python -m src.foundry_agents.setup_marketing_knowledge_base
@@ -12,6 +17,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 import uuid
 from pathlib import Path
@@ -26,6 +32,22 @@ LOG = logging.getLogger(__name__)
 
 SEARCH_API_VERSION = "2025-11-01-preview"
 MARKETING_DOCS = Path(__file__).resolve().parents[1] / "knowledge_seed" / "marketing"
+
+_FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n(.*)$", re.DOTALL)
+
+
+def _parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
+    m = _FRONTMATTER_RE.match(text)
+    if not m:
+        return {}, text
+    block, body = m.group(1), m.group(2)
+    fields: dict[str, str] = {}
+    for line in block.splitlines():
+        if ":" not in line:
+            continue
+        key, _, value = line.partition(":")
+        fields[key.strip()] = value.strip().strip('"').strip("'")
+    return fields, body
 
 
 def _search_headers() -> dict[str, str]:
@@ -56,6 +78,11 @@ def _create_index(endpoint: str, index_name: str) -> None:
             {"name": "title", "type": "Edm.String", "searchable": True, "filterable": True},
             {"name": "content", "type": "Edm.String", "searchable": True},
             {"name": "source", "type": "Edm.String", "filterable": True},
+            # Zava-specific filterables.
+            {"name": "category_id", "type": "Edm.String", "filterable": True, "facetable": True},
+            {"name": "store_id", "type": "Edm.String", "filterable": True, "facetable": True},
+            {"name": "doc_type", "type": "Edm.String", "filterable": True, "facetable": True},
+            {"name": "campaign_id", "type": "Edm.String", "filterable": True},
         ],
         "semantic": {
             "configurations": [
@@ -76,13 +103,19 @@ def _create_index(endpoint: str, index_name: str) -> None:
 def _upload_documents(endpoint: str, index_name: str) -> int:
     docs = []
     for md_file in sorted(MARKETING_DOCS.glob("*.md")):
+        raw = md_file.read_text(encoding="utf-8")
+        fm, body = _parse_frontmatter(raw)
         docs.append(
             {
                 "@search.action": "mergeOrUpload",
                 "id": uuid.uuid5(uuid.NAMESPACE_DNS, md_file.name).hex,
-                "title": md_file.stem.replace("_", " ").title(),
-                "content": md_file.read_text(encoding="utf-8"),
+                "title": fm.get("title", md_file.stem.replace("_", " ").title()),
+                "content": body,
                 "source": md_file.name,
+                "category_id": fm.get("category_id", "all"),
+                "store_id": fm.get("store_id", "all"),
+                "doc_type": fm.get("doc_type", "brief"),
+                "campaign_id": fm.get("campaign_id", ""),
             }
         )
     if not docs:
@@ -97,7 +130,7 @@ def _upload_documents(endpoint: str, index_name: str) -> int:
 def _create_knowledge_base(endpoint: str, kb_name: str, source_index: str) -> None:
     body = {
         "name": kb_name,
-        "description": "Pepsico marketing briefs, creative one-pagers and post-mortems.",
+        "description": "Zava marketing briefs, creative one-pagers and post-mortems.",
         "knowledgeSources": [
             {
                 "name": source_index,
@@ -106,8 +139,9 @@ def _create_knowledge_base(endpoint: str, kb_name: str, source_index: str) -> No
             }
         ],
         "retrievalInstructions": (
-            "Use these Pepsico marketing briefs to ground campaign narratives. "
-            "Always cite the source document filename."
+            "Use these Zava marketing briefs and post-mortems to ground campaign "
+            "narratives. When the user references a specific store_id or category_id, "
+            "narrow retrieval accordingly. Always cite the source document filename."
         ),
     }
     _put(f"{endpoint}/knowledgebases/{kb_name}?api-version={SEARCH_API_VERSION}", body)

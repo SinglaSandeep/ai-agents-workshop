@@ -39,7 +39,7 @@ You will:
 
 {: .success }
 > - `python -m solution.evaluations.quality_eval` produces a `completed` run
->   and writes `eval_output/quality_eval_output_pepsico-marketing-agent.json`.
+>   and writes `eval_output/quality_eval_output_zava-marketing-agent.json`.
 > - A scheduled quality evaluation appears in the Foundry portal under
 >   **Observability → Evaluations → Schedules**.
 > - A continuous evaluation is active and starts emitting per-trace results.

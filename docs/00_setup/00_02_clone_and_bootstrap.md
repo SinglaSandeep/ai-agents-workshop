@@ -115,7 +115,7 @@ parent: 'Exercise 00: Setup & Verify Resources'
 ## Success criteria
 
 {: .success }
-> - `pip show pepsico-ai-agents-workshop` prints the package metadata
+> - `pip show zava-ai-agents-workshop` prints the package metadata
 > - `python -c "from src.common.settings import get_settings; print(get_settings().model_dump_json(indent=2))"` runs (most values will be empty — you fill them in next)
 > - `az account show` returns the workshop subscription
 

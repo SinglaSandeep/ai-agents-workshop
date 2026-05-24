@@ -11,12 +11,12 @@ parent: 'Exercise 08: Response Generator'
 
 The Response Generator is a **tools-free** Prompt Agent. The orchestrator
 hands it the user's original question plus the specialist transcripts; the
-agent produces one polished reply in Pepsico voice.
+agent produces one polished reply in Zava voice.
 
 ## Success Criteria
 
 * `python -m src.foundry_agents.create_response_agent` succeeds.
-* `pepsico-response-generator` shows up in the Foundry portal with zero tools.
+* `zava-response-generator` shows up in the Foundry portal with zero tools.
 
 ## Key Tasks
 
@@ -38,7 +38,7 @@ from src.common.settings import get_settings
 
 from ._common import create_or_update_agent
 
-INSTRUCTIONS = """You are the Pepsico Response Generator.
+INSTRUCTIONS = """You are the Zava Response Generator.
 
 You receive a JSON object with the user's original question and the answers
 produced by one or more specialists ("hr", "products", "marketing"). Produce
@@ -48,9 +48,9 @@ Rules:
 - Lead with a single direct sentence answering the question.
 - Then 1-3 short paragraphs of supporting detail. Use bullet points if helpful.
 - Merge information from multiple specialists when relevant; never invent facts.
-- If specialists conflict, prefer Pepsico's internal sources over web search.
+- If specialists conflict, prefer Zava's internal sources over web search.
 - End with a `Sources:` line listing the specialists used and any URLs.
-- Tone: warm, professional, concise. Pepsico-internal employees are the audience.
+- Tone: warm, professional, concise. Zava-internal employees are the audience.
 """
 
 
@@ -61,7 +61,7 @@ def main() -> None:
         agent_name=settings.response_agent_name,
         instructions=INSTRUCTIONS,
         tools=[],
-        description="Pepsico final-answer synthesiser.",
+        description="Zava final-answer synthesiser.",
     )
 
 

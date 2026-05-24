@@ -29,10 +29,10 @@ You will:
 
 {: .success }
 > - `GET /health` reports `"observability_enabled": true`.
-> - `pepsico.chat` spans appear in App Insights with child spans for each
+> - `zava.chat` spans appear in App Insights with child spans for each
 >   specialist call.
 > - The hosted Marketing agent shows traces in Foundry portal under
->   **Agents → pepsico-marketing-agent → Observability**.
+>   **Agents → zava-marketing-agent → Observability**.
 > - `azd ai agent monitor -f` streams live logs.
 
 ## Learning Resources

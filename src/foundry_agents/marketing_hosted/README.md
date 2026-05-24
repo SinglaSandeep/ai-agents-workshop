@@ -24,6 +24,6 @@ azd ai agent monitor -f
 | ---- | ------- |
 | `marketing_mcp` MCP | Cosmos-backed campaign records (from Exercise 04) |
 | `toolbox` MCP | Foundry built-ins (`web_search`, `code_interpreter`) |
-| `marketing_kb` MCP | Foundry IQ KB over Pepsico marketing briefs |
+| `marketing_kb` MCP | Foundry IQ KB over Zava marketing briefs |
 
 See [docs/05_marketing_foundry_agent](../../../docs/05_marketing_foundry_agent/05_marketing_foundry_agent.md).

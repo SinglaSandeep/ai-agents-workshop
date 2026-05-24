@@ -1,15 +1,15 @@
-"""Magentic orchestrator that coordinates the Pepsico Foundry agents.
+"""Magentic orchestrator that coordinates the Zava Foundry agents.
 
 You complete this file in **Exercise 07**. It will wrap the four Foundry
-hosted agents (HR, Products, Marketing, Response Generator) as Microsoft
-Agent Framework participants and let the ``MagenticBuilder`` planner decide
-who to call, in what order, and how to synthesise the result.
+hosted agents (Store-Ops, Products, Marketing, Response Generator) as
+Microsoft Agent Framework participants and let the ``MagenticBuilder``
+planner decide who to call, in what order, and how to synthesise the result.
 
 The reference solution is in ``solution/orchestrator/magentic_router.py``.
 
 Run (after you complete Exercise 07):
 
-    python -m src.orchestrator.runner --query "What is our PTO policy?"
+    python -m src.orchestrator.runner --query "Spring Paint Sale at the Seattle store is soft — what now?"
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ class OrchestratorResult:
 
 
 async def run_query(user_query: str) -> OrchestratorResult:
-    """Plan + execute a query across the Pepsico specialist agents.
+    """Plan + execute a query across the Zava specialist agents.
 
     TODO (Exercise 07): implement the Magentic orchestrator.
 
@@ -41,9 +41,12 @@ async def run_query(user_query: str) -> OrchestratorResult:
        ``agent_framework.orchestrations.MagenticBuilder``, and
        ``azure.identity.aio.DefaultAzureCredential``.
     2. Open a ``FoundryChatClient`` (manager) plus ``FoundryAgent`` instances
-    3. Wrap each Foundry hosted agent (``hr``, ``products``, ``marketing``,
-       ``response_generator``) as an ``Agent(agent_reference={"name": ...})``.
-    4. Create a ``manager`` Agent with planning instructions.
+    3. Wrap each Foundry hosted agent (``store_ops``, ``products``,
+       ``marketing``, ``response_generator``) as an
+       ``Agent(agent_reference={"name": ...})``.
+    4. Create a ``manager`` Agent with planning instructions that remind it
+       to flow shared keys (store_id, category_id, product_id, campaign_id)
+       between specialists.
     5. Build a workflow with
        ``MagenticBuilder(participants=[...], manager_agent=manager).build()``.
     6. Iterate ``workflow.run(user_query, stream=True)`` and accumulate the

@@ -16,7 +16,7 @@ async def run_single_agent(mode: str, query: str) -> str:
     agent_name = {
         "products": settings.products_agent_name,
         "marketing": settings.marketing_agent_name,
-        "hr": settings.hr_agent_name,
+        "store_ops": settings.store_ops_agent_name,
     }[mode]
 
     # Lazy import — only require agent-framework when this code runs.

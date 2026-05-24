@@ -11,7 +11,7 @@ has_children: true
 
 The Marketing team wants a specialist that:
 
-1. Reaches authoritative Pepsico campaign data (the Marketing MCP server from
+1. Reaches authoritative Zava campaign data (the Marketing MCP server from
    Exercise 04 plus a Foundry IQ knowledge base of marketing briefs and
    one-pagers).
 2. Can pull in **live web context** (industry news, competitor announcements).
@@ -50,7 +50,7 @@ You will:
 ## Success Criteria
 
 {: .success }
-> - `pepsico-marketing-kb` Foundry IQ knowledge base exists and contains the
+> - `zava-marketing-kb` Foundry IQ knowledge base exists and contains the
 >   seeded marketing briefs.
 > - `azd ai agent run` brings up the agent locally on
 >   `http://localhost:8088/responses`.
@@ -73,6 +73,6 @@ You will:
 
 | Task | Description |
 | ---- | ----------- |
-| [05.01 — Seed the Marketing Foundry IQ knowledge base](05_01_seed_marketing_kb.md) | Create the `pepsico-marketing-kb` KB and index marketing briefs. |
+| [05.01 — Seed the Marketing Foundry IQ knowledge base](05_01_seed_marketing_kb.md) | Create the `zava-marketing-kb` KB and index marketing briefs. |
 | [05.02 — Build the hosted Marketing agent](05_02_build_hosted_marketing_agent.md) | Implement `marketing_hosted/main.py` and `agent.yaml`. |
 | [05.03 — Run locally, deploy to Foundry, talk to it in DevUI](05_03_deploy_and_wire.md) | `azd ai agent run` → `azd ai agent up` → DevUI. |

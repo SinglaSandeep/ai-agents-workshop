@@ -1,4 +1,4 @@
-"""FastAPI chat application for the Pepsico multi-agent assistant."""
+"""FastAPI chat application for the Zava multi-agent assistant."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from src.orchestrator.magentic_router import run_query
 
 load_dotenv()
 
-app = FastAPI(title="Pepsico AI Agents Workshop", version="1.0.0")
+app = FastAPI(title="Zava AI Agents Workshop", version="1.0.0")
 observability_enabled = configure_observability(app)
 _CHAT_HTML = (Path(__file__).with_name("chat.html")).read_text(encoding="utf-8")
 
@@ -30,7 +30,7 @@ def health() -> dict[str, object]:
 
 @app.post("/chat")
 async def chat(request: ChatRequest) -> JSONResponse:
-    with trace_span("pepsico.chat", query=request.query):
+    with trace_span("zava.chat", query=request.query):
         result = await run_query(request.query)
     return JSONResponse(
         {

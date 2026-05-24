@@ -20,7 +20,7 @@ Azure-Samples `foundry-hosted-agentframework-demos` repo.
 | --------------- | ------------------------------- | ---------------- |
 | `products`      | `settings.products_agent_name`  | Exercise 03 |
 | `marketing`     | `settings.marketing_agent_name` | Exercise 05 — Foundry-**hosted** (`ResponsesHostServer`) |
-| `hr`            | `settings.hr_agent_name`        | Exercise 06 |
+| `hr`            | `settings.store_ops_agent_name`        | Exercise 06 |
 
 {: .important }
 > **Hosted vs. Foundry-Prompt-Agent.** The Marketing entity points to a

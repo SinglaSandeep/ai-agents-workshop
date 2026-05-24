@@ -1,12 +1,13 @@
-"""Magentic orchestrator that coordinates the Pepsico Foundry agents.
+"""Magentic orchestrator that coordinates the Zava Foundry agents.
 
 The orchestrator uses **Microsoft Agent Framework** (`agent-framework`) and
-its `MagenticBuilder` planner. The four Foundry hosted agents (HR, Products,
-Marketing, Response Generator) are exposed to the planner as *participants*;
-the planner picks which to call, in what order, and synthesises the trail.
+its `MagenticBuilder` planner. The four Foundry hosted agents (Store-Ops,
+Products, Marketing, Response Generator) are exposed to the planner as
+*participants*; the planner picks which to call, in what order, and
+synthesises the trail.
 
 The participants are not local Python agents — they are **hosted Foundry
-agents** created in Exercises 03-05 and 07. We wrap each one in a thin
+agents** created in Exercises 03-06. We wrap each one in a thin
 `Agent` adaptor that delegates `.run()` to the Foundry Responses API.
 
 Run:
@@ -32,7 +33,7 @@ class OrchestratorResult:
 
 
 async def run_query(user_query: str) -> OrchestratorResult:
-    """Plan + execute a query across the Pepsico specialist agents.
+    """Plan + execute a query across the Zava specialist agents.
 
     Lazy-imports `agent-framework` so the rest of the workshop runs without
     the `framework` extra installed.
@@ -59,26 +60,26 @@ async def run_query(user_query: str) -> OrchestratorResult:
             model=settings.azure_ai_model_deployment,
             credential=cred,
         ) as client:
-            hr = FoundryAgent(
+            store_ops = FoundryAgent(
                 project_endpoint=settings.azure_ai_project_endpoint,
-                agent_name=settings.hr_agent_name,
+                agent_name=settings.store_ops_agent_name,
                 credential=cred,
-                name="hr",
-                description="Answers Pepsico HR policy, benefits, and handbook questions using the Foundry IQ knowledge base.",
+                name="store_ops",
+                description="Answers Zava store-operations questions (per-store handbooks, returns, safety, HR, SOPs) using the Foundry IQ knowledge base; scopes retrieval by store_id.",
             )
             products = FoundryAgent(
                 project_endpoint=settings.azure_ai_project_endpoint,
                 agent_name=settings.products_agent_name,
                 credential=cred,
                 name="products",
-                description="Answers questions about the Pepsico product catalog (SKU, brand, size, calories, price) using the Products MCP server.",
+                description="Answers questions about the Zava DIY product catalog (SKU `ZV-XXX-NNN`, category, price, and per-store inventory) using the Products MCP server.",
             )
             marketing = FoundryAgent(
                 project_endpoint=settings.azure_ai_project_endpoint,
                 agent_name=settings.marketing_agent_name,
                 credential=cred,
                 name="marketing",
-                description="Answers questions about Pepsico marketing campaigns (status, KPIs, budgets, ROI) using the Marketing MCP server, and can search the web via Bing for live context.",
+                description="Answers questions about Zava marketing campaigns (status, KPIs, budgets, ROI, target stores/categories) using the Marketing MCP server, the Foundry IQ knowledge base of briefs/post-mortems, and Bing web_search for live context.",
             )
             response_generator = FoundryAgent(
                 project_endpoint=settings.azure_ai_project_endpoint,
@@ -92,15 +93,16 @@ async def run_query(user_query: str) -> OrchestratorResult:
                 client=client,
                 name="manager",
                 instructions=(
-                    "You coordinate Pepsico specialist agents to answer an employee's question. "
-                    "Plan the smallest set of specialist calls needed to answer fully. "
-                    "Always finish by handing the consolidated context to `response_generator` "
-                    "so the user sees a single, well-formatted reply."
+                    "You coordinate Zava specialist agents to answer a store manager's question. "
+                    "Plan the smallest set of specialist calls needed to answer fully. Pay attention "
+                    "to shared keys (store_id, category_id, product_id, campaign_id) so context flows "
+                    "between specialists. Always finish by handing the consolidated context to "
+                    "`response_generator` so the user sees a single, well-formatted reply."
                 ),
             )
 
             workflow = MagenticBuilder(
-                participants=[hr, products, marketing, response_generator],
+                participants=[store_ops, products, marketing, response_generator],
                 manager_agent=manager,
                 max_round_count=8,
                 max_stall_count=2,

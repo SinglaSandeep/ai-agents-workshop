@@ -16,7 +16,7 @@ the MCP SDK.
 
 ## Success Criteria
 
-* `pepsico-products-mcp` (or `uvicorn src.mcp_servers.products.server:app
+* `zava-products-mcp` (or `uvicorn src.mcp_servers.products.server:app
   --port 8001`) prints `Application startup complete.`
 * The MCP Inspector at <http://localhost:6274> lists the four tools.
 * `list_categories` returns the categories seeded in Task 02.01.
@@ -26,7 +26,7 @@ the MCP SDK.
 ### 01: Start the server
 
 ```powershell
-pepsico-products-mcp
+zava-products-mcp
 ```
 
 You should see uvicorn start on port 8001 and a FastMCP banner log a line per
@@ -55,7 +55,7 @@ In the Inspector sidebar you should see the four tools. Click each in turn:
 | ---- | ---- | -------- |
 | `list_categories` | _none_ | `["Beverages", "Snacks", ...]` |
 | `list_products` | `{ "category": "Beverages" }` | array of 4-5 product dicts |
-| `get_product` | `{ "product_id": "PEP-001" }` | The Pepsi Cola record |
+| `get_product` | `{ "product_id": "ZV-PNT-001" }` | The Pepsi Cola record |
 | `search_products` | `{ "text": "lime" }` | products mentioning "lime" |
 
 <details markdown="block">

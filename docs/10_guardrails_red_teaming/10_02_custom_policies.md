@@ -15,13 +15,13 @@ attach them to many agents. We'll author two:
 1. **No medical advice** — the Marketing agent must not give medical or
    nutrition advice for products containing caffeine, sugar, or sweeteners.
 2. **No naming competitors** — the agent may discuss "competitors" generically
-   but must not compare Pepsico products to a specific competitor brand by name.
+   but must not compare Zava products to a specific competitor brand by name.
 
 ## Success Criteria
 
 * Two custom policies exist under **Foundry portal → Management center →
   Policies → Custom**.
-* Both are attached to `pepsico-marketing-agent`.
+* Both are attached to `zava-marketing-agent`.
 
 ## Key Tasks
 
@@ -32,10 +32,10 @@ Foundry portal → **Management center → Policies → + New custom policy**.
 Use this template for the **no medical advice** policy:
 
 ```
-Name: pepsico-no-medical-advice
+Name: zava-no-medical-advice
 Severity: High
 Trigger: The user asks for medical, nutritional, or dietary advice that goes
-         beyond reading information already on Pepsico product packaging.
+         beyond reading information already on Zava product packaging.
 Action: Block the response and apologise. Suggest the user consult a
          qualified healthcare professional.
 Examples of disallowed queries:
@@ -44,11 +44,11 @@ Examples of disallowed queries:
 ```
 
 Repeat for **no naming competitors** — e.g. block any output that names
-Coca-Cola, Red Bull, etc. when comparing to a Pepsico product.
+Coca-Cola, Red Bull, etc. when comparing to a Zava product.
 
 ### 02: Attach to the Marketing agent
 
-Foundry portal → **Agents → pepsico-marketing-agent → Policies** → attach
+Foundry portal → **Agents → zava-marketing-agent → Policies** → attach
 both new policies → **Save**.
 
 ### 03: Smoke test

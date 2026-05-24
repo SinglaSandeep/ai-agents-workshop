@@ -16,13 +16,13 @@ A **Foundry Prompt Agent** is a server-side, versioned bundle of:
 * a list of `tools`.
 
 You will write a small script that creates (or updates) a new agent version
-named `pepsico-products-agent`, attaching the MCP connection from the previous
+named `zava-products-agent`, attaching the MCP connection from the previous
 task.
 
 ## Success Criteria
 
 * `python -m src.foundry_agents.create_products_agent` runs cleanly.
-* The log line `Created agent 'pepsico-products-agent' version '<id>'` appears.
+* The log line `Created agent 'zava-products-agent' version '<id>'` appears.
 * The agent shows up in the Foundry portal under **Agents** with a single
   `MCPTool`.
 
@@ -40,7 +40,7 @@ The `INSTRUCTIONS` block is already filled in. You just need to implement
 <summary><strong>Expand this section to view the solution</strong></summary>
 
 ```python
-"""Create the Pepsico Products Foundry Prompt Agent."""
+"""Create the Zava Products Foundry Prompt Agent."""
 
 from __future__ import annotations
 
@@ -55,9 +55,9 @@ from ._common import create_or_update_agent
 
 LOG = logging.getLogger(__name__)
 
-INSTRUCTIONS = """You are the Pepsico Products Specialist.
+INSTRUCTIONS = """You are the Zava Products Specialist.
 
-You have access to the `pepsico-products` MCP server which exposes:
+You have access to the `Zava-products` MCP server which exposes:
   - list_categories()
   - list_products(category, limit)
   - get_product(product_id)
@@ -67,7 +67,7 @@ Rules:
 1. Pick the most specific tool for the user's question.
 2. Only answer using data returned by the tools — never invent products,
    SKUs, prices, or sizes.
-3. When you cite a product, include its `id` (e.g. `PEP-001`) and `name`.
+3. When you cite a product, include its `id` (e.g. `ZV-PNT-001`) and `name`.
 4. If the catalog has no match, say so plainly and suggest a related category.
 """
 
@@ -93,7 +93,7 @@ def main() -> None:
 
     # 2. The agent's view of that connection.
     products_tool = MCPTool(
-        server_label="pepsico-products",
+        server_label="Zava-products",
         server_url=settings.products_mcp_url,
         require_approval="never",
         project_connection_id=settings.products_mcp_connection_name,
@@ -103,7 +103,7 @@ def main() -> None:
         agent_name=settings.products_agent_name,
         instructions=INSTRUCTIONS,
         tools=[products_tool],
-        description="Pepsico Products specialist (MCP-backed by Cosmos DB).",
+        description="Zava Products specialist (MCP-backed by Cosmos DB).",
     )
 
 
@@ -122,14 +122,14 @@ python -m src.foundry_agents.create_products_agent
 Expected log lines:
 
 ```
-INFO Upserting Foundry project connection pepsico-products-mcp-conn
-INFO Creating agent version: pepsico-products-agent (model=gpt-4.1-mini, tools=1)
-INFO Created agent 'pepsico-products-agent' version '1'
+INFO Upserting Foundry project connection zava-products-mcp-conn
+INFO Creating agent version: zava-products-agent (model=gpt-4.1-mini, tools=1)
+INFO Created agent 'zava-products-agent' version '1'
 ```
 
 ### 04: Verify in the portal
 
-Open the Foundry portal → your project → **Agents → pepsico-products-agent**.
+Open the Foundry portal → your project → **Agents → zava-products-agent**.
 Confirm:
 
 * Latest version has one tool of type **MCP**.

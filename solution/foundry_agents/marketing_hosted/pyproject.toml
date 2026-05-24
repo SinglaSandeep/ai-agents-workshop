@@ -1,7 +1,7 @@
 [project]
-name = "pepsico-marketing-hosted-agent"
+name = "zava-marketing-hosted-agent"
 version = "0.1.0"
-description = "Foundry-hosted Pepsico Marketing agent (Microsoft Agent Framework)"
+description = "Foundry-hosted Zava Marketing agent (Microsoft Agent Framework)"
 requires-python = ">=3.12"
 dependencies = [
   "agent-framework>=0.3.0",

@@ -16,15 +16,15 @@ every chat call and every MCP tool invocation.
 
 ## Success Criteria
 
-* `pepsico-marketing-agent` shows trace activity in Foundry portal under
-  **Agents → pepsico-marketing-agent → Observability**.
+* `zava-marketing-agent` shows trace activity in Foundry portal under
+  **Agents → zava-marketing-agent → Observability**.
 * `azd ai agent monitor -f` streams logs in real time.
 
 ## Key Tasks
 
 ### 01: View hosted-agent traces in Foundry
 
-Foundry portal → **Agents → pepsico-marketing-agent → Observability** →
+Foundry portal → **Agents → zava-marketing-agent → Observability** →
 filter on the last hour. Expand a trace to see the model call, the three
 MCP tool calls, and any content-filter middleware events.
 
@@ -40,7 +40,7 @@ agent emits (e.g. `logger.info("Using KB MCP at %s", kb_url)`).
 ### 03: Correlate chat-app and hosted-agent traces
 
 The chat app sends an `traceparent` HTTP header on every Foundry call. In
-App Insights, click into a `pepsico.chat` operation and follow the
+App Insights, click into a `zava.chat` operation and follow the
 `operation_Id` — you'll see the matching hosted-agent spans collected from
 the marketing-agent container.
 

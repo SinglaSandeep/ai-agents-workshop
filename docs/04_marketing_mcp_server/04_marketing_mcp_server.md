@@ -28,8 +28,8 @@ You will:
 
 {: .success }
 > - The `marketing_campaigns` container holds at least 5 documents.
-> - `pepsico-marketing-mcp` runs locally on <http://127.0.0.1:8002/mcp>.
-> - A Container App named `pepsico-marketing-mcp` is `Running` with public
+> - `zava-marketing-mcp` runs locally on <http://127.0.0.1:8002/mcp>.
+> - A Container App named `zava-marketing-mcp` is `Running` with public
 >   ingress.
 > - `MARKETING_MCP_URL=https://<fqdn>/mcp` is set in `.env`.
 

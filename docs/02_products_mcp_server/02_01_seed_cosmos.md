@@ -11,11 +11,11 @@ parent: 'Exercise 02: Products MCP Server'
 
 The MCP server you build in the next task is a thin wrapper over a Cosmos DB
 container. Before you can run it, you need data. We ship a JSON file with
-65 representative Pepsico SKUs and a one-shot seed script.
+65 representative Zava SKUs and a one-shot seed script.
 
 ## Success Criteria
 
-* A `pepsico` database exists on your Cosmos DB account.
+* A `zava` database exists on your Cosmos DB account.
 * A `products` container with `/id` partition key exists inside it.
 * 65 documents are upserted into the container.
 
@@ -28,7 +28,7 @@ and look at the document shape:
 
 ```json
 {
-  "id": "PEP-001",
+  "id": "ZV-PNT-001",
   "name": "Pepsi Cola",
   "brand": "Pepsi",
   "category": "Beverages",
@@ -53,11 +53,11 @@ $account = "<your-cosmos-account-name>"
 $rg      = "<your-resource-group>"
 
 az cosmosdb sql database create `
-  --account-name $account --resource-group $rg --name pepsico
+  --account-name $account --resource-group $rg --name zava
 
 az cosmosdb sql container create `
   --account-name $account --resource-group $rg `
-  --database-name pepsico --name products --partition-key-path /id
+  --database-name Zava --name products --partition-key-path /id
 ```
 
 If either resource already exists the command is a no-op.
@@ -74,7 +74,7 @@ This runs `src/mcp_servers/products/seed/seed_cosmos.py` which upserts every
 document from the seed JSON into the existing container. You should see:
 
 ```
-INFO Seeding database 'pepsico' container 'products'
+INFO Seeding database 'zava' container 'products'
 INFO Upserted 65 products
 ```
 
@@ -99,7 +99,7 @@ The most common errors are:
 ### 04: Verify in the portal
 
 Open the Cosmos DB account in the Azure portal → **Data Explorer**. You
-should see `pepsico → products → Items` with 65 documents (`PEP-001` …).
+should see `zava → products → Items` with 48 documents (`ZV-PNT-001` …).
 
 ## Next
 
