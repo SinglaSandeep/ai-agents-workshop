@@ -4,10 +4,12 @@ layout: home
 nav_order: 1
 ---
 
-# Pepsico AI Agents Workshop
+# Zava AI Agents Workshop
 
 In this workshop you will build an **end-to-end multi-agent business
-assistant** on Azure using:
+assistant** for **Zava** — a fictional U.S. Pacific-Northwest DIY / home-
+improvement retailer with 7 brick-and-mortar stores plus an online
+fulfillment center — on Azure using:
 
 - **Microsoft Foundry**
 - **Microsoft Agent Framework**
@@ -29,16 +31,20 @@ The final modules add:
 By the end of the workshop you will have:
 
 - Two **MCP servers** (Products and Marketing) backed by **Cosmos DB**,
-  deployed to **Azure Container Apps**.
-- An **HR specialist agent** in **Microsoft Foundry**, grounded with a
-  **Foundry IQ** knowledge base over  HR policies.
+  deployed to **Azure Container Apps**. Both share `store_id`, `category_id`,
+  `product_id` and `campaign_id` so specialists can join across domains.
+- A **Store-Ops specialist agent** in **Microsoft Foundry**, grounded with a
+  **Foundry IQ** knowledge base over per-store manager handbooks, returns,
+  safety, HR and SOP policies (filterable by `store_id`).
 - A **Products specialist agent** (Foundry Prompt Agent) that uses the
-  Products MCP server as a tool.
+  Products MCP server as a tool (per-store inventory + low-stock alerts).
 - A **Marketing specialist agent** built on the **Microsoft Agent Framework**
   and **hosted on Microsoft Foundry** (`azd ai agent up`), using the
   **Foundry Toolbox** (web search + code interpreter) and a **Foundry IQ**
-  knowledge base of marketing briefs in addition to the Marketing MCP.
-- A **Magentic orchestrator** that plans across the three specialists.
+  knowledge base of marketing briefs and post-mortems in addition to the
+  Marketing MCP.
+- A **Magentic orchestrator** that plans across the three specialists using
+  the shared keys to fan out and join.
 - A **Response Generator** that produces the final answer.
 - **Quality evaluations** (one-shot, scheduled, continuous) on the hosted
   Marketing agent.
@@ -57,7 +63,7 @@ By the end of the workshop you will have:
 | 03 | [Create the Products Foundry Agent](docs/03_products_foundry_agent/03_products_foundry_agent.md) |
 | 04 | [Build & Deploy the Marketing MCP Server](docs/04_marketing_mcp_server/04_marketing_mcp_server.md) |
 | 05 | [Build the **Foundry-hosted** Marketing Agent (Foundry IQ + Web Tool)](docs/05_marketing_foundry_agent/05_marketing_foundry_agent.md) |
-| 06 | [Create the HR Foundry IQ Agent](docs/06_hr_foundry_iq_agent/06_hr_foundry_iq_agent.md) |
+| 06 | [Create the Store-Ops Foundry IQ Agent](docs/06_store_ops_foundry_iq_agent/06_store_ops_foundry_iq_agent.md) |
 | 07 | [Build the Magentic Orchestrator](docs/07_orchestrator_agent_framework/07_orchestrator_agent_framework.md) |
 | 08 | [Add the Response Generator Agent](docs/08_response_generator/08_response_generator.md) |
 | 09 | [Quality Evaluations on the Hosted Marketing Agent](docs/09_evaluations/09_evaluations.md) |
