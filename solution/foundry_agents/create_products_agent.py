@@ -51,8 +51,7 @@ def main() -> None:
         connection_name=settings.products_mcp_connection_name,
         category="RemoteTool",
         target=settings.products_mcp_url,
-        auth_type="ProjectManagedIdentity",
-        audience="https://management.azure.com/",
+        auth_type="None",
         metadata={"ApiType": "MCP"},
     )
 
@@ -68,6 +67,7 @@ def main() -> None:
         agent_name=settings.products_agent_name,
         instructions=INSTRUCTIONS,
         tools=[products_tool],
+        model=settings.azure_ai_model_deployment,
         description="Pepsico Products specialist (MCP-backed by Cosmos DB).",
     )
 
