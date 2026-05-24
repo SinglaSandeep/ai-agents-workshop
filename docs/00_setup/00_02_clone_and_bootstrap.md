@@ -60,7 +60,7 @@ parent: 'Exercise 00: Setup & Verify Resources'
 
    | Extra | Packages it brings in | First exercise that needs it |
    | ----- | --------------------- | ---------------------------- |
-   | `dev` | `pytest`, `pytest-asyncio`, `ruff` | **00** — run the smoke tests + lint as you go |
+   | `dev` | `ruff` | **00** — keep your scaffold edits lint-clean |
    | `mcp` | `mcp`, `fastmcp` | **02** — build the Products MCP server (and **04** for Marketing) |
    | `framework` | `agent-framework-core`, `agent-framework-azure-ai` | **03** — call Foundry agents from Python (and **06**, **07**) |
    | `hosted` | `agent-framework-foundry-hosting`, `mcp` | **05** — host the Marketing agent on Foundry (`ResponsesHostServer`) |

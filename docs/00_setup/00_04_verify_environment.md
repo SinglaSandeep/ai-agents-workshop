@@ -5,20 +5,11 @@ nav_order: 4
 parent: 'Exercise 00: Setup & Verify Resources'
 ---
 
-# Task 00.04 — Run the Smoke Tests and Connectivity Checks
+# Task 00.04 — Run the Connectivity Checks
 
 ## Steps
 
-1. **Run the offline smoke tests**
-
-   ```powershell
-   pytest tests/test_smoke.py -q
-   ```
-
-   All seven tests should pass. They confirm the repo layout is correct and
-   the seed JSON / Markdown files are well-formed.
-
-2. **Confirm settings load**
+1. **Confirm settings load**
 
    ```powershell
    python -c "from src.common.settings import get_settings; import json; print(json.dumps(get_settings().model_dump(), indent=2))"
@@ -26,7 +17,7 @@ parent: 'Exercise 00: Setup & Verify Resources'
 
    Every required value should be populated (anything optional may be blank).
 
-3. **Confirm Cosmos DB connectivity**
+2. **Confirm Cosmos DB connectivity**
 
    ```powershell
    python -c "from src.common.cosmos import get_cosmos_client; print([d['id'] for d in get_cosmos_client().list_databases()])"
@@ -36,7 +27,7 @@ parent: 'Exercise 00: Setup & Verify Resources'
    (could be empty `[]` — that's fine, we will create the `pepsico` database
    in Exercise 01).
 
-4. **Confirm Foundry project connectivity**
+3. **Confirm Foundry project connectivity**
 
    ```powershell
    python -c "from src.common.foundry_client import get_project_client; print([m.name for m in get_project_client().agents.list()])"
@@ -84,7 +75,6 @@ account endpoint.
 ## Success criteria
 
 {: .success }
-> - `pytest tests/test_smoke.py -q` reports `7 passed`
 > - The `Settings` JSON dump shows every variable populated
 > - The Cosmos DB and Foundry connectivity probes both succeed
 

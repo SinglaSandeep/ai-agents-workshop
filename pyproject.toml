@@ -47,8 +47,6 @@ hosted = [
     "mcp>=1.4.0",
 ]
 dev = [
-    "pytest>=8.0.0",
-    "pytest-asyncio>=0.23.0",
     "ruff>=0.6.0",
 ]
 
@@ -62,10 +60,6 @@ pepsico-seed-marketing = "src.mcp_servers.marketing.seed.seed_cosmos:main"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["src*"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-asyncio_mode = "auto"
 
 [tool.ruff]
 line-length = 110

@@ -11,12 +11,11 @@ relative_links:
   enabled: true
   collections: true
 
-# Keep the reference implementation, tests, and source out of the Pages build
+# Keep the reference implementation and source out of the Pages build
 # so the navigation only shows the workshop docs.
 exclude:
   - solution/
   - src/
-  - tests/
   - .venv/
   - .github/
   - Dockerfile

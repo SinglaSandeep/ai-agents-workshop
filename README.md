@@ -148,8 +148,7 @@ ai-agents-workshop/
 │   ├── evaluations/               # Scaffolds — see solution/evaluations/
 │   ├── red_team/                  # Scaffolds — see solution/red_team/
 │   └── orchestrator/
-├── solution/                      # Full reference implementation
-└── tests/
+└── solution/                      # Full reference implementation
 ```
 
 ---

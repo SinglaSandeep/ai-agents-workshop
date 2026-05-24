@@ -31,7 +31,6 @@ Before you can start building agents you need to:
 > - `az account show` returns the workshop subscription.
 > - You have a populated `.env` file at the repo root.
 > - `python -m src.common.settings` runs without errors.
-> - `pytest tests/test_smoke.py -q` passes.
 > - You can list your Foundry project, your Cosmos DB account, your Azure AI
 >   Search service, your Container Apps environment, and your Bing Grounding
 >   connection from the CLI.
@@ -43,7 +42,7 @@ Before you can start building agents you need to:
 | [00.01 — Local prerequisites](00_01_prerequisites.md) | Install Python, Azure CLI, `azd`, VS Code, Git. |
 | [00.02 — Clone and bootstrap the repo](00_02_clone_and_bootstrap.md) | Clone, create venv, install the workshop package, copy `.env`. |
 | [00.03 — Verify pre-provisioned resources](00_03_verify_resources.md) | Find every resource id and populate `.env`. |
-| [00.04 — Verify your environment](00_04_verify_environment.md) | Run the smoke tests and a Cosmos / Foundry connectivity check. |
+| [00.04 — Verify your environment](00_04_verify_environment.md) | Run a Cosmos / Foundry connectivity check. |
 
 ## Architecture you are wiring up
 
