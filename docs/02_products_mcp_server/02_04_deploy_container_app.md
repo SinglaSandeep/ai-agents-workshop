@@ -1,27 +1,41 @@
 ---
-title: '4. Deploy to Azure Container Apps'
+title: '4. (Optional) Deploy to Azure Container Apps'
 layout: default
 nav_order: 4
 parent: 'Exercise 02: Products MCP Server'
 ---
 
-# Task 02.04 — Deploy the Products MCP Server to Azure Container Apps
+# Task 02.04 — (Optional) Deploy the Products MCP Server to Azure Container Apps
+{: .no_toc }
+
+> .note
+> **This module is OPTIONAL.** Exercises 03+ work fine against the **local**
+> `http://127.0.0.1:8001/mcp` URL from Task 02.03. Complete this module only
+> if you plan to host the MCP server out-of-band and want the Foundry agent
+> to reach it over a public HTTPS endpoint. The remaining exercises do not
+> depend on the values produced here.
 
 ## Introduction
 
-The Foundry Products agent (Exercise 03) needs a public URL to reach the MCP
-server, so you will containerise the server and run it on the
-**pre-provisioned** Azure Container Apps environment.
+This task walks you through everything required to host the Products MCP
+server on Azure Container Apps **from scratch** — creating the Azure
+Container Registry (Basic SKU), a Log Analytics workspace, the Container
+Apps environment, building the image, deploying the app, and wiring up the
+managed identity it uses to read Cosmos DB.
 
-`az containerapp up` is the simplest path — it builds the image with Buildah,
-pushes it to your ACR, and creates / updates the Container App and ingress
-in one command.
+If your environment already has these resources pre-provisioned (e.g. from
+Exercise 00), skip the *Provision* steps and jump straight to
+[*05: Build the image*](#05-build-and-push-the-image-to-acr).
 
 ## Success Criteria
 
-* A Container App named `pepsico-products-mcp` is `Running` in your ACA env.
-* The app has external HTTP ingress on port 8001.
-* `curl https://<fqdn>/mcp` returns HTTP 405 (POST-only endpoint).
+* An ACR (Basic SKU), a Log Analytics workspace, and a Container Apps
+  environment exist in the resource group.
+* A Container App named `pepsico-products-mcp` is `Running` on that env.
+* External HTTPS ingress is enabled on port 8001.
+* The app's system-assigned identity has the **Cosmos DB Built-in Data
+  Contributor** role on the Cosmos account.
+* `curl -I https://<fqdn>/mcp` returns `HTTP/1.1 405 Method Not Allowed`.
 * `PRODUCTS_MCP_URL=https://<fqdn>/mcp` is saved in `.env`.
 
 ## Key Tasks
@@ -36,43 +50,122 @@ Key things to notice:
   to ship the rest of the workshop into the container).
 * The startup command runs `uvicorn` against `src.mcp_servers.products.server:app`.
 
-### 02: Confirm your environment variables
+### 02: Hydrate your shell from `.env`
 
-You must have these set in your shell (or `.env`) from Exercise 00:
+The `az` CLI reads from the **process environment** (`$env:*`).
+PowerShell does **not** auto-load `.env` — the Python app does that via
+`python-dotenv`, but `az` does not. Run this once per shell session from
+the repo root:
 
 ```powershell
-$RG  = $env:AZURE_RESOURCE_GROUP
-$ACR = $env:ACR_NAME
-$ENV = $env:ACA_ENVIRONMENT
-$LOC = $env:ACA_LOCATION
-
-$RG; $ACR; $ENV; $LOC
+Get-Content .env | Where-Object { $_ -and $_ -notmatch '^\s*#' } | ForEach-Object {
+    $name, $value = $_ -split '=', 2
+    if ($name -and $value) {
+        [Environment]::SetEnvironmentVariable($name.Trim(), $value.Trim().Trim('"'), 'Process')
+    }
+}
 ```
 
-### 03: Deploy with `az containerapp up`
+### 03: Pick names and capture core values
+
+```powershell
+# --- pick / confirm these names (must be globally unique where noted) ---
+$SUB         = $env:AZURE_SUBSCRIPTION_ID
+$RG          = $env:AZURE_RESOURCE_GROUP             # e.g. aifounry-rg
+$LOC         = if ($env:ACA_LOCATION) { $env:ACA_LOCATION } else { "eastus2" }
+$ACR         = $env:ACR_NAME                         # globally unique, 5-50 lowercase alphanum
+$LAW         = "pepsico-law"                         # Log Analytics workspace name
+$ENV         = if ($env:ACA_ENVIRONMENT) { $env:ACA_ENVIRONMENT } else { "pepsico-aca-env" }
+$APP         = "pepsico-products-mcp"
+$COSMOS_ACCT = $env:COSMOS_ACCOUNT                   # e.g. cosmos-ai-2025
+
+az account set --subscription $SUB
+$SUB; $RG; $LOC; $ACR; $LAW; $ENV; $APP; $COSMOS_ACCT
+```
+
+All eight lines must be non-empty before continuing.
+
+### 04: Provision ACR + Log Analytics + ACA environment
+
+Skip this step if your workshop environment already has these resources.
 
 <details markdown="block">
 <summary><strong>Expand this section to view the solution</strong></summary>
 
-From the repo root:
+```powershell
+# 0. Register required providers (idempotent, takes a few minutes the first time).
+az provider register --namespace Microsoft.App
+az provider register --namespace Microsoft.OperationalInsights
+az provider register --namespace Microsoft.ContainerRegistry
+
+# 1. Resource group (skip if it exists).
+az group create -n $RG -l $LOC
+
+# 2. ACR (Basic SKU, admin disabled — we use managed identity instead).
+az acr create `
+  --resource-group $RG `
+  --name $ACR `
+  --sku Basic `
+  --admin-enabled false
+
+# 3. Log Analytics workspace (required for ACA env logs).
+az monitor log-analytics workspace create `
+  --resource-group $RG `
+  --workspace-name $LAW `
+  --location $LOC
+
+$LAW_ID = az monitor log-analytics workspace show `
+  -g $RG -n $LAW --query customerId -o tsv
+$LAW_KEY = az monitor log-analytics workspace get-shared-keys `
+  -g $RG -n $LAW --query primarySharedKey -o tsv
+
+# 4. Container Apps environment.
+az containerapp env create `
+  --name $ENV `
+  --resource-group $RG `
+  --location $LOC `
+  --logs-workspace-id  $LAW_ID `
+  --logs-workspace-key $LAW_KEY
+```
+
+</details>
+
+### 05: Build and push the image to ACR
+
+`az containerapp up --source .` only looks for a Dockerfile at the root of
+the source folder. Since ours lives at
+`src/mcp_servers/products/Dockerfile`, build the image first with
+`az acr build` (which accepts `--file`).
 
 ```powershell
-$APP = "pepsico-products-mcp"
+az acr build `
+  --registry $ACR `
+  --image pepsico-products-mcp:latest `
+  --file src/mcp_servers/products/Dockerfile `
+  .
 
+$IMG = "$ACR.azurecr.io/pepsico-products-mcp:latest"
+$IMG
+```
+
+### 06: Deploy the Container App
+
+<details markdown="block">
+<summary><strong>Expand this section to view the solution</strong></summary>
+
+```powershell
 az containerapp up `
   --name $APP `
   --resource-group $RG `
   --location $LOC `
   --environment $ENV `
-  --registry-server "$ACR.azurecr.io" `
-  --source . `
+  --image $IMG `
   --target-port 8001 `
   --ingress external `
   --env-vars `
     COSMOS_ENDPOINT=$env:COSMOS_ENDPOINT `
     COSMOS_DATABASE=$env:COSMOS_DATABASE `
-    COSMOS_PRODUCTS_CONTAINER=$env:COSMOS_PRODUCTS_CONTAINER `
-  --dockerfile src/mcp_servers/products/Dockerfile
+    COSMOS_PRODUCTS_CONTAINER=$env:COSMOS_PRODUCTS_CONTAINER
 ```
 
 When the command finishes, copy the FQDN it prints (looks like
@@ -80,52 +173,84 @@ When the command finishes, copy the FQDN it prints (looks like
 
 </details>
 
-### 04: Assign managed identity + Cosmos role
+### 07: Grant the app pull rights on ACR
 
-The Container App needs a managed identity that has the
-**Cosmos DB Built-in Data Contributor** role on the Cosmos account.
+If ACR admin is disabled (recommended), give the Container App's
+system-assigned identity the **AcrPull** role on the registry so it can
+pull the image on cold-start.
 
 <details markdown="block">
 <summary><strong>Expand this section to view the solution</strong></summary>
 
 ```powershell
-$COSMOS_ACCT = "<your-cosmos-account-name>"
-
-# 1. Enable the system-assigned identity.
+# 1. Enable the system-assigned identity (idempotent).
 az containerapp identity assign `
   --name $APP -g $RG --system-assigned
 
-# 2. Grab its principalId.
-$PID = az containerapp show -n $APP -g $RG `
+$APP_PID = az containerapp show -n $APP -g $RG `
   --query identity.principalId -o tsv
 
-# 3. Grant the data-plane role.
+$ACR_ID = az acr show -n $ACR -g $RG --query id -o tsv
+
+# 2. Grant AcrPull.
+az role assignment create `
+  --assignee $APP_PID `
+  --role AcrPull `
+  --scope $ACR_ID
+
+# 3. Tell the Container App to use that identity when pulling.
+az containerapp registry set `
+  --name $APP -g $RG `
+  --server "$ACR.azurecr.io" `
+  --identity system
+```
+
+</details>
+
+### 08: Grant the app Cosmos data-plane access
+
+The Container App needs the **Cosmos DB Built-in Data Contributor** role
+on the Cosmos account to query data with `DefaultAzureCredential`.
+
+<details markdown="block">
+<summary><strong>Expand this section to view the solution</strong></summary>
+
+```powershell
 az cosmosdb sql role assignment create `
   --account-name $COSMOS_ACCT -g $RG `
   --scope "/" `
-  --principal-id $PID `
+  --principal-id $APP_PID `
   --role-definition-id "00000000-0000-0000-0000-000000000002"
 ```
 
 </details>
 
-### 05: Smoke-test the public URL
+### 09: Smoke-test the public URL
 
 ```powershell
-$FQDN = az containerapp show -n $APP -g $RG --query properties.configuration.ingress.fqdn -o tsv
+$FQDN = az containerapp show -n $APP -g $RG `
+  --query properties.configuration.ingress.fqdn -o tsv
+
 curl -I "https://$FQDN/mcp"
 ```
 
 A `HTTP/1.1 405 Method Not Allowed` is the correct response — MCP expects
-POST, not GET. The 405 confirms TLS and DNS work.
+POST, not GET. The 405 confirms DNS, TLS, and the container are all
+healthy. If you get `502` or `503`, tail the logs:
 
-### 06: Save the URL
+```powershell
+az containerapp logs show -n $APP -g $RG --follow
+```
+
+### 10: Save the URL
 
 Add to `.env`:
 
 ```
 PRODUCTS_MCP_URL=https://<fqdn>/mcp
 ```
+
+…and re-hydrate the shell (Task 02) so subsequent exercises pick it up.
 
 ## Next
 
