@@ -20,7 +20,7 @@ remove. This exercise lists them and shows the safe way to delete each one.
 > - The Products MCP Container App is removed.
 > - The Foundry Prompt Agents you created are removed.
 > - The Foundry project connections you registered are removed.
-> - The HR and Marketing Foundry IQ knowledge bases (and their Search indexes)
+> - The Store Ops and Marketing Foundry IQ knowledge bases (and their Search indexes)
 >   are removed.
 > - The Cosmos `products` and `marketing_campaigns` containers (and optionally
 >   the `zava` database) are removed.
@@ -58,7 +58,7 @@ In the Foundry portal → **Management center → Connections**, delete:
 * `zava-store-ops-kb-conn`
 * `zava-marketing-kb-conn`
 
-### 04: Delete the HR + Marketing knowledge bases
+### 04: Delete the Store Ops + Marketing knowledge bases
 
 ```powershell
 $SEARCH = $env:AZURE_SEARCH_ENDPOINT

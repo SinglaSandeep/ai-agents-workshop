@@ -37,7 +37,7 @@ python -m src.app.devui_launch
 ```
 
 You should still see all three specs registered. Only `products` will
-actually respond — `marketing` and `hr` come online in Exercises 05 and 06.
+actually respond — `marketing` and `store_ops` come online in Exercises 05 and 06.
 
 ### 02: Test in the browser
 

@@ -32,7 +32,7 @@ You will:
 ```mermaid
 flowchart LR
     U[User / CLI] --> M[Magentic Manager]
-    M --> HR[HR Agent (Foundry IQ)]
+    M --> SO[Store Ops Agent (Foundry IQ)]
     M --> PR[Products Agent (MCP)]
     M --> MK[Marketing Agent (MCP + Bing)]
     M --> RG[Response Generator (Ex 08)]
@@ -45,7 +45,7 @@ flowchart LR
 > - `python -m src.orchestrator.runner --query "What is our PTO policy?"`
 >   returns a real answer.
 > - A mixed-domain question yields a plan with multiple specialists (e.g.
->   `marketing → hr → response_generator`).
+>   `marketing → store_ops → response_generator`).
 
 ## Learning Resources
 

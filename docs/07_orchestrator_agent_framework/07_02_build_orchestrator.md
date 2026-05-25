@@ -38,9 +38,9 @@ Open [src/orchestrator/magentic_router.py](https://github.com/SinglaSandeep/ai-a
 python -m src.orchestrator.runner --query "What is the PTO policy at Zava?"
 ```
 
-You should see a printed plan like `hr -> response_generator` and a final
+You should see a printed plan like `store_ops -> response_generator` and a final
 answer. If the Response Generator does not exist yet, you might see
-`hr` only and the answer will be the raw HR transcript — that is OK for now.
+`store_ops` only and the answer will be the raw store-ops transcript — that is OK for now.
 
 ## Next
 

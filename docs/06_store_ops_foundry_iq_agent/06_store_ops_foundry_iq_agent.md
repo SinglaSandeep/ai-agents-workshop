@@ -22,7 +22,7 @@ You will:
    Foundry IQ knowledge base, and register a project connection — all via
    one Python script.
 2. Create the `zava-store-ops-agent` Prompt Agent that calls the KB.
-3. Talk to the HR agent in DevUI.
+3. Talk to the Store Ops agent in DevUI.
 
 ## Success Criteria
 
@@ -33,7 +33,7 @@ You will:
 >   endpoint.
 > - Foundry agent `zava-store-ops-agent` has one tool: `MCPTool` with
 >   `allowed_tools=["knowledge_base_retrieve"]`.
-> - In DevUI, the **hr** agent answers *"What is the PTO policy?"* with a
+> - In DevUI, the **store_ops** agent answers *"What is the PTO policy?"* with a
 >   reply that ends with a `Sources:` line referencing a real seed file.
 
 ## Learning Resources
@@ -47,4 +47,4 @@ You will:
 | ---- | ----------- |
 | [06.01 — Create the Store-Ops knowledge base](06_01_create_knowledge_base.md) | Implement `setup_store_ops_knowledge_base.py`. |
 | [06.02 — Create the Store-Ops Prompt Agent](06_02_create_store_ops_agent.md) | Implement `create_store_ops_agent.py`. |
-| [06.03 — Talk to the HR agent in DevUI](06_03_wire_into_chat_app.md) | Restart `devui_launch` and ask HR questions. |
+| [06.03 — Talk to the Store Ops agent in DevUI](06_03_wire_into_chat_app.md) | Restart `devui_launch` and ask store-ops questions. |

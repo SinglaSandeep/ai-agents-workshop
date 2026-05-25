@@ -29,7 +29,7 @@ python -m src.orchestrator.runner --query "How does our 2026 SuperBowl Gatorade 
 
 Expected:
 
-* The **Plan** line shows `marketing -> products -> hr -> response_generator`.
+* The **Plan** line shows `marketing -> products -> store_ops -> response_generator`.
 * The final reply is the polished single message produced by the Response
   Generator and includes a `Sources:` line.
 

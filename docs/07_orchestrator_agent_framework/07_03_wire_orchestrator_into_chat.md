@@ -32,7 +32,7 @@ You should see output like:
 
 ```
 === Plan ===
-marketing -> hr -> response_generator
+marketing -> store_ops -> response_generator
 
 === Final Answer ===
 Gatorade is currently running ...
@@ -54,7 +54,7 @@ Good questions to exercise the planner:
 * *"Which marketing campaigns mention 'youth athletes', and what training is
   required before staffing one of those activations?"*
 
-If the **Final Answer** looks like a raw HR transcript, the Response
+If the **Final Answer** looks like a raw store-ops transcript, the Response
 Generator agent does not exist yet — Exercise 08 fixes that.
 
 ## Next

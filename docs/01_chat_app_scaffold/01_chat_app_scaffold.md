@@ -36,7 +36,7 @@ In this exercise you will:
 >
 > - `python -m src.app.devui_launch` starts cleanly on port 8080.
 > - <http://127.0.0.1:8080> shows the DevUI chat surface with three agents
->   listed (`products`, `marketing`, `hr`).
+>   listed (`products`, `marketing`, `store_ops`).
 > - You understand that DevUI is the **only** UI in this workshop and that
 >   every new Foundry agent shows up there with no extra wiring.
 > - You can hit the Responses API at `POST /v1/responses` with `curl` or

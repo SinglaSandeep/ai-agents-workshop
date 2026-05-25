@@ -20,7 +20,7 @@ shipped by the framework team that:
 
 The launcher lives at [src/app/devui_launch.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/app/devui_launch.py).
 It registers the three Zava specialist agents (`products`, `marketing`,
-`hr`) by their Foundry agent names — exactly the pattern used in the
+`store_ops`) by their Foundry agent names — exactly the pattern used in the
 reference sample at
 <https://github.com/Azure-Samples/foundry-hosted-agentframework-demos>.
 
@@ -34,7 +34,7 @@ reference sample at
 
 * `python -m src.app.devui_launch` starts DevUI on port 8080 with no errors.
 * You can browse to <http://127.0.0.1:8080> and see the DevUI chat surface.
-* The left rail lists the three agents — `products`, `marketing`, `hr`.
+* The left rail lists the three agents — `products`, `marketing`, `store_ops`.
 
 ## Key Tasks
 

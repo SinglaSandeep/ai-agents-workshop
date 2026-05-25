@@ -9,7 +9,7 @@ parent: 'Exercise 06: Store-Ops Foundry IQ Agent'
 
 ## Introduction
 
-The HR agent has a single MCP tool — the `knowledge_base_retrieve` operation
+The Store Ops agent has a single MCP tool — the `knowledge_base_retrieve` operation
 exposed by the Foundry IQ knowledge base you created in the previous task.
 By limiting `allowed_tools` you make sure the model cannot call any other
 admin operations on the Search service.

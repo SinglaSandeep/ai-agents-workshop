@@ -20,13 +20,13 @@ Azure-Samples `foundry-hosted-agentframework-demos` repo.
 | --------------- | ------------------------------- | ---------------- |
 | `products`      | `settings.products_agent_name`  | Exercise 03 |
 | `marketing`     | `settings.marketing_agent_name` | Exercise 05 — Foundry-**hosted** (`ResponsesHostServer`) |
-| `hr`            | `settings.store_ops_agent_name`        | Exercise 06 |
+| `store_ops`     | `settings.store_ops_agent_name` | Exercise 06 |
 
 {: .important }
 > **Hosted vs. Foundry-Prompt-Agent.** The Marketing entity points to a
 > *hosted* agent — a container packaged with
 > `agent_framework_foundry_hosting.ResponsesHostServer` and deployed to the
-> Foundry Agent Service (Exercise 05). The Products and HR entities point to
+> Foundry Agent Service (Exercise 05). The Products and Store Ops entities point to
 > *Foundry Prompt Agents* — declarative agents defined via
 > `azure-ai-projects` (Exercises 03 and 06). DevUI calls all three through
 > the same `FoundryAgent(agent_name=...)` shim, so they look identical from
@@ -68,7 +68,7 @@ Leave DevUI running and try the OpenAI Python SDK against it:
 from openai import OpenAI
 client = OpenAI(base_url="http://127.0.0.1:8080/v1", api_key="not-needed")
 resp = client.responses.create(
-    metadata={"entity_id": "hr"},          # any of "products" / "marketing" / "hr"
+    metadata={"entity_id": "store_ops"},   # any of "products" / "marketing" / "store_ops"
     input="What is the PTO policy?",
 )
 print(resp.output[0].content[0].text)
