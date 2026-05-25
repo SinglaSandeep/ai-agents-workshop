@@ -47,7 +47,7 @@ async def run_query(user_query: str) -> OrchestratorResult:
         from azure.identity.aio import DefaultAzureCredential
     except ImportError as exc:
         raise RuntimeError(
-            'Install the framework extra: pip install -e ".[framework]"'
+        'Install the framework extra: pip install -e ".[framework]"'
         ) from exc
 
     async with DefaultAzureCredential() as cred:
@@ -55,83 +55,83 @@ async def run_query(user_query: str) -> OrchestratorResult:
         # FoundryAgent(agent_name=...) references the hosted specialist agents
         # by name; their definition (model + instructions + tools) is loaded
         # from the Foundry project automatically.
-        async with FoundryChatClient(
+        client = FoundryChatClient(
             project_endpoint=settings.azure_ai_project_endpoint,
             model=settings.azure_ai_model_deployment,
             credential=cred,
-        ) as client:
-            store_ops = FoundryAgent(
-                project_endpoint=settings.azure_ai_project_endpoint,
-                agent_name=settings.store_ops_agent_name,
-                credential=cred,
-                name="store_ops",
-                description="Answers Zava store-operations questions (per-store handbooks, returns, safety, HR, SOPs) using the Foundry IQ knowledge base; scopes retrieval by store_id.",
-            )
-            products = FoundryAgent(
-                project_endpoint=settings.azure_ai_project_endpoint,
-                agent_name=settings.products_agent_name,
-                credential=cred,
-                name="products",
-                description="Answers questions about the Zava DIY product catalog (SKU `ZV-XXX-NNN`, category, price, and per-store inventory) using the Products MCP server.",
-            )
-            marketing = FoundryAgent(
-                project_endpoint=settings.azure_ai_project_endpoint,
-                agent_name=settings.marketing_agent_name,
-                credential=cred,
-                name="marketing",
-                description="Answers questions about Zava marketing campaigns (status, KPIs, budgets, ROI, target stores/categories) using the Marketing MCP server, the Foundry IQ knowledge base of briefs/post-mortems, and Bing web_search for live context.",
-            )
-            response_generator = FoundryAgent(
-                project_endpoint=settings.azure_ai_project_endpoint,
-                agent_name=settings.response_agent_name,
-                credential=cred,
-                name="response_generator",
-                description="Synthesises the final user-facing answer from specialist transcripts. Always called last.",
-            )
+        )
+        store_ops = FoundryAgent(
+            project_endpoint=settings.azure_ai_project_endpoint,
+            agent_name=settings.store_ops_agent_name,
+            credential=cred,
+            name="store_ops",
+            description="Answers Zava store-operations questions (per-store handbooks, returns, safety, HR, SOPs) using the Foundry IQ knowledge base; scopes retrieval by store_id.",
+        )
+        products = FoundryAgent(
+            project_endpoint=settings.azure_ai_project_endpoint,
+            agent_name=settings.products_agent_name,
+            credential=cred,
+            name="products",
+            description="Answers questions about the Zava DIY product catalog (SKU `ZV-XXX-NNN`, category, price, and per-store inventory) using the Products MCP server.",
+        )
+        marketing = FoundryAgent(
+            project_endpoint=settings.azure_ai_project_endpoint,
+            agent_name=settings.marketing_agent_name,
+            credential=cred,
+            name="marketing",
+            description="Answers questions about Zava marketing campaigns (status, KPIs, budgets, ROI, target stores/categories) using the Marketing MCP server, the Foundry IQ knowledge base of briefs/post-mortems, and Bing web_search for live context.",
+        )
+        response_generator = FoundryAgent(
+            project_endpoint=settings.azure_ai_project_endpoint,
+            agent_name=settings.response_agent_name,
+            credential=cred,
+            name="response_generator",
+            description="Synthesises the final user-facing answer from specialist transcripts. Always called last.",
+        )
 
-            manager = Agent(
-                client=client,
-                name="manager",
-                instructions=(
-                    "You coordinate Zava specialist agents to answer a store manager's question. "
-                    "Plan the smallest set of specialist calls needed to answer fully. Pay attention "
-                    "to shared keys (store_id, category_id, product_id, campaign_id) so context flows "
-                    "between specialists. Always finish by handing the consolidated context to "
-                    "`response_generator` so the user sees a single, well-formatted reply."
-                ),
-            )
+        manager = Agent(
+            client=client,
+            name="manager",
+            instructions=(
+                "You coordinate Zava specialist agents to answer a store manager's question. "
+                "Plan the smallest set of specialist calls needed to answer fully. Pay attention "
+                "to shared keys (store_id, category_id, product_id, campaign_id) so context flows "
+                "between specialists. Always finish by handing the consolidated context to "
+                "`response_generator` so the user sees a single, well-formatted reply."
+            ),
+        )
 
-            workflow = MagenticBuilder(
-                participants=[store_ops, products, marketing, response_generator],
-                manager_agent=manager,
-                max_round_count=8,
-                max_stall_count=2,
-                max_reset_count=1,
-            ).build()
+        workflow = MagenticBuilder(
+            participants=[store_ops, products, marketing, response_generator],
+            manager_agent=manager,
+            max_round_count=8,
+            max_stall_count=2,
+            max_reset_count=1,
+        ).build()
 
-            result = OrchestratorResult(final_answer="")
-            async for event in workflow.run(user_query, stream=True):
-                etype = getattr(event, "type", "")
-                if etype == "magentic_orchestrator":
-                    data = getattr(event, "data", None)
-                    if data is not None:
-                        kind = getattr(getattr(data, "event_type", ""), "name", str(data))
-                        result.events.append({"type": "manager", "kind": kind})
-                        LOG.info("manager %s", kind)
-                elif etype == "agent_response":
-                    data = event.data
-                    name = getattr(data, "agent_name", "?")
-                    text = getattr(data, "text", "") or ""
-                    result.transcripts[name] = text
-                    result.plan.append(name)
-                    if name == "response_generator":
-                        result.final_answer = text
-                elif etype == "output":
-                    if not result.final_answer:
-                        result.final_answer = getattr(event.data, "text", "")
+        result = OrchestratorResult(final_answer="")
+        async for event in workflow.run(user_query, stream=True):
+            etype = getattr(event, "type", "")
+            if etype == "magentic_orchestrator":
+                data = getattr(event, "data", None)
+                if data is not None:
+                    kind = getattr(getattr(data, "event_type", ""), "name", str(data))
+                    result.events.append({"type": "manager", "kind": kind})
+                    LOG.info("manager %s", kind)
+            elif etype == "agent_response":
+                data = event.data
+                name = getattr(data, "agent_name", "?")
+                text = getattr(data, "text", "") or ""
+                result.transcripts[name] = text
+                result.plan.append(name)
+                if name == "response_generator":
+                    result.final_answer = text
+            elif etype == "output":
+                if not result.final_answer:
+                    result.final_answer = getattr(event.data, "text", "")
 
-            if not result.final_answer and result.transcripts:
-                # Fallback if the manager forgot to call response_generator
-                result.final_answer = next(reversed(result.transcripts.values()))
+        if not result.final_answer and result.transcripts:
+            # Fallback if the manager forgot to call response_generator
+            result.final_answer = next(reversed(result.transcripts.values()))
 
-            return result
+        return result
