@@ -24,52 +24,6 @@ agent produces one polished reply in Zava voice.
 
 Open [src/foundry_agents/create_response_agent.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/create_response_agent.py).
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```python
-"""Create the Response Generator Foundry Prompt Agent (no tools)."""
-
-from __future__ import annotations
-
-import logging
-
-from src.common.settings import get_settings
-
-from ._common import create_or_update_agent
-
-INSTRUCTIONS = """You are the Zava Response Generator.
-
-You receive a JSON object with the user's original question and the answers
-produced by one or more specialists ("hr", "products", "marketing"). Produce
-the final reply for the user.
-
-Rules:
-- Lead with a single direct sentence answering the question.
-- Then 1-3 short paragraphs of supporting detail. Use bullet points if helpful.
-- Merge information from multiple specialists when relevant; never invent facts.
-- If specialists conflict, prefer Zava's internal sources over web search.
-- End with a `Sources:` line listing the specialists used and any URLs.
-- Tone: warm, professional, concise. Zava-internal employees are the audience.
-"""
-
-
-def main() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    settings = get_settings()
-    create_or_update_agent(
-        agent_name=settings.response_agent_name,
-        instructions=INSTRUCTIONS,
-        tools=[],
-        description="Zava final-answer synthesiser.",
-    )
-
-
-if __name__ == "__main__":
-    main()
-```
-
-</details>
 
 ### 02: Run it
 

@@ -20,7 +20,7 @@ shipped by the framework team that:
 
 The launcher lives at [src/app/devui_launch.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/app/devui_launch.py).
 It registers the three Zava specialist agents (`products`, `marketing`,
-`hr`) by their Foundry-hosted names — exactly the pattern used in the
+`hr`) by their Foundry agent names — exactly the pattern used in the
 reference sample at
 <https://github.com/Azure-Samples/foundry-hosted-agentframework-demos>.
 
@@ -43,33 +43,6 @@ reference sample at
 In a terminal, from the `ai-agents-workshop` folder, activate your virtual
 environment and launch DevUI:
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-python -m src.app.devui_launch
-```
-
-On macOS / Linux:
-
-```bash
-source .venv/bin/activate
-python -m src.app.devui_launch
-```
-
-You should see logs ending with:
-
-```
-INFO zava.devui: Registered products -> Foundry agent 'zava-products-agent'
-INFO zava.devui: Registered marketing -> Foundry agent 'zava-marketing-agent'
-INFO zava.devui: Registered hr -> Foundry agent 'zava-store-ops-agent'
-INFO zava.devui: Launching DevUI on http://127.0.0.1:8080 with 3 agents
-```
-
-A browser tab opens automatically at <http://127.0.0.1:8080>.
-
-</details>
 
 {: .tip }
 > Override the port via an environment variable before launching:
@@ -111,9 +84,9 @@ resp = client.responses.create(
 print(resp.output[0].content[0].text)
 ```
 
-This is the **same** Responses API shape the deployed Foundry-hosted
-Marketing agent exposes (Exercise 05), so any client code you write here
-will continue to work against the cloud deployment.
+This is the **same** Responses API shape every Foundry Prompt Agent
+exposes, so any client code you write here keeps working against the
+registered agents in the cloud.
 
 Leave the DevUI server running — every subsequent exercise re-uses the same
 browser tab for testing.

@@ -2,7 +2,7 @@
 title: '1. Seed the Marketing Foundry IQ KB'
 layout: default
 nav_order: 1
-parent: 'Exercise 05: Marketing Hosted Agent (Foundry IQ + Web Tool)'
+parent: 'Exercise 05: Marketing Prompt Agent (Foundry IQ + Code Interpreter)'
 ---
 
 # Task 05.01 — Seed the Marketing Foundry IQ Knowledge Base
@@ -45,15 +45,8 @@ python -m src.foundry_agents.setup_marketing_knowledge_base
 
 This creates the AI Search index, uploads the documents (chunked + embedded),
 creates the `zava-marketing-kb` knowledge base, and registers the project
-connection used by the hosted agent.
+connection used by the Marketing agent.
 
-<details markdown="block">
-<summary><strong>Expand to view the solution implementation</strong></summary>
-
-See [solution/foundry_agents/setup_marketing_knowledge_base.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/solution/foundry_agents/setup_marketing_knowledge_base.py).
-It mirrors the HR version from Exercise 06 — index → upload → KB → connection.
-
-</details>
 
 ### 03: Confirm in the portal
 
@@ -63,4 +56,4 @@ goal of the Gatorade 2026 SuperBowl campaign?"*.
 
 ## Next
 
-Continue to [05.02 — Build the hosted Marketing agent](05_02_build_hosted_marketing_agent.md).
+Continue to [05.02 — Build the Marketing Prompt Agent](05_02_build_hosted_marketing_agent.md).

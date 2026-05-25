@@ -1,13 +1,9 @@
 """Seed the Zava marketing_campaigns container in Cosmos DB.
 
 Usage:
+    zava-seed-marketing
+    # or
     python -m src.mcp_servers.marketing.seed.seed_cosmos
-
-Prerequisites:
-    The database and container must already exist. They are created via the
-    Azure control plane (see docs/04_marketing_mcp_server/04_01_seed_cosmos.md).
-    The Cosmos DB Built-in Data Contributor data-plane role does NOT grant
-    `sqlDatabases/write`, so this script only performs item upserts.
 """
 
 from __future__ import annotations
@@ -15,6 +11,9 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
+
+from azure.cosmos import PartitionKey
+from azure.cosmos.exceptions import CosmosResourceExistsError
 
 from src.common.cosmos import get_cosmos_client
 from src.common.settings import get_settings
@@ -28,13 +27,18 @@ def main() -> None:
     settings = get_settings()
     client = get_cosmos_client()
 
-    db = client.get_database_client(settings.cosmos_database)
-    container = db.get_container_client(settings.cosmos_marketing_container)
-    LOG.info(
-        "Seeding database '%s' container '%s'",
-        settings.cosmos_database,
-        settings.cosmos_marketing_container,
-    )
+    db = client.create_database_if_not_exists(id=settings.cosmos_database)
+    LOG.info("Using database '%s'", settings.cosmos_database)
+
+    try:
+        container = db.create_container(
+            id=settings.cosmos_marketing_container,
+            partition_key=PartitionKey(path="/id"),
+        )
+        LOG.info("Created container '%s'", settings.cosmos_marketing_container)
+    except CosmosResourceExistsError:
+        container = db.get_container_client(settings.cosmos_marketing_container)
+        LOG.info("Container '%s' already exists", settings.cosmos_marketing_container)
 
     documents = json.loads(SEED_FILE.read_text(encoding="utf-8"))
     for document in documents:

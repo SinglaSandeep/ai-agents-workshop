@@ -1,48 +1,48 @@
 ---
-title: '2. Hosted-agent traces'
+title: '2. Foundry agent traces'
 layout: default
 nav_order: 2
 parent: 'Exercise 11: Observability'
 ---
 
-# Task 11.02 — Hosted-Agent Traces
+# Task 11.02 — Foundry Agent Traces
 
 ## Introduction
 
-Foundry automatically injects `APPLICATIONINSIGHTS_CONNECTION_STRING` into the
-hosted-agent container at runtime. Our `marketing_hosted/main.py` already
-calls `enable_instrumentation()` so the agent emits OpenTelemetry traces for
-every chat call and every MCP tool invocation.
+Every Foundry Prompt Agent (Products, Marketing, Store-Ops, Response) emits
+**server-side traces** automatically — model calls, tool calls (including
+MCP tools and the Code Interpreter), token counts, latency. You don't
+configure anything on the agent itself; everything is in the Foundry portal.
 
 ## Success Criteria
 
-* `zava-marketing-agent` shows trace activity in Foundry portal under
+* `zava-marketing-agent` shows trace activity in the Foundry portal under
   **Agents → zava-marketing-agent → Observability**.
-* `azd ai agent monitor -f` streams logs in real time.
+* You can drill from a chat-app trace in App Insights into the matching
+  agent run in Foundry.
 
 ## Key Tasks
 
-### 01: View hosted-agent traces in Foundry
+### 01: View agent traces in Foundry
 
 Foundry portal → **Agents → zava-marketing-agent → Observability** →
-filter on the last hour. Expand a trace to see the model call, the three
-MCP tool calls, and any content-filter middleware events.
+filter on the last hour. Expand a trace to see the model call and each
+tool call (Marketing MCP, Code Interpreter, Marketing KB MCP).
 
-### 02: Stream logs with azd
+Repeat for the other agents — `zava-products-agent`,
+`zava-store-ops-agent`, `zava-response-agent`.
 
-```powershell
-azd ai agent monitor -f
-```
+### 02: Filter by `agent_run_id`
 
-You'll see one stdout line per request along with any logger output the
-agent emits (e.g. `logger.info("Using KB MCP at %s", kb_url)`).
+Each trace surfaces an `agent_run_id`. The chat app logs it when the
+orchestrator calls the agent, so you can paste an ID from App Insights into
+the Foundry trace search and jump straight to that run.
 
-### 03: Correlate chat-app and hosted-agent traces
+### 03: Correlate chat-app and agent traces
 
 The chat app sends an `traceparent` HTTP header on every Foundry call. In
-App Insights, click into a `zava.chat` operation and follow the
-`operation_Id` — you'll see the matching hosted-agent spans collected from
-the marketing-agent container.
+App Insights, open a `zava.chat` operation and follow the `operation_Id` —
+the matching agent runs show up linked under the same operation.
 
 ## Next
 

@@ -29,7 +29,7 @@ Two layered patterns:
 ### 01: Register the daily quality schedule
 
 ```powershell
-python -m solution.evaluations.scheduled_eval
+python -m src.evaluations.scheduled_eval
 ```
 
 What it does: creates a daily-cadence schedule that re-runs `quality_eval.py`'s
@@ -38,7 +38,7 @@ evaluation definition against the latest agent version.
 ### 02: Enable continuous evaluation
 
 ```powershell
-python -m solution.evaluations.continuous_eval
+python -m src.evaluations.continuous_eval
 ```
 
 What it does: creates a continuous-evaluation rule that samples ~10% of live
@@ -48,7 +48,7 @@ Relevance evaluators. Results stream into Application Insights.
 ### 03: (Optional) Wire an alert
 
 ```powershell
-python -m solution.evaluations.continuous_eval_alert
+python -m src.evaluations.continuous_eval_alert
 ```
 
 Creates an Azure Monitor metric alert that fires when the rolling

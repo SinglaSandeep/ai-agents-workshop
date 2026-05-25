@@ -78,23 +78,6 @@ INFO Seeding database 'zava' container 'products'
 INFO Upserted 65 products
 ```
 
-<details markdown="block">
-<summary><strong>Expand this section if the seed script errors</strong></summary>
-
-The most common errors are:
-
-* **`COSMOS_ENDPOINT is not set`** — finish Exercise 00 first, and make sure
-  you run the command from the workshop root (so `.env` is in the CWD).
-* **`403 Forbidden` on `POST /dbs` or `POST /colls`** — you skipped Task 02
-  above; the data-plane role cannot create databases or containers. Run the
-  two `az cosmosdb sql` commands and re-run the seed.
-* **`403 Forbidden` on `POST .../docs/`** — your user is missing the
-  `Cosmos DB Built-in Data Contributor` role. See the troubleshooting block
-  in [Task 00.04](../00_setup/00_04_verify_environment.md).
-* **`HttpResponseError: ServiceUnavailable`** — Cosmos throttling; rerun the
-  script after 30 seconds.
-
-</details>
 
 ### 04: Verify in the portal
 

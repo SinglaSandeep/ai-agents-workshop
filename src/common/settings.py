@@ -33,6 +33,10 @@ class Settings(BaseSettings):
 
     # ---- Foundry IQ / Azure AI Search --------------------------------------
     azure_search_endpoint: str = Field(default="", alias="AZURE_SEARCH_ENDPOINT")
+    # Optional admin API key. When set, setup scripts use key-based auth
+    # instead of AAD bearer tokens (useful when the Search service is
+    # configured with `authOptions: apiKeyOnly`).
+    azure_search_api_key: str = Field(default="", alias="AZURE_SEARCH_API_KEY")
     # Store-ops KB (replaces the former HR KB). Index includes a filterable
     # `store_id` field so the store-ops agent can scope retrieval to a
     # single Zava store.

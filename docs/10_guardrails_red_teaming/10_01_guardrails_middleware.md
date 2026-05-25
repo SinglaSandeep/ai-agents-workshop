@@ -1,86 +1,53 @@
 ---
-title: '1. Guardrails middleware'
+title: '1. Content safety overview'
 layout: default
 nav_order: 1
 parent: 'Exercise 10: Guardrails & Red Teaming'
 ---
 
-# Task 10.01 — Add the Content-Filter Middleware
+# Task 10.01 — Foundry Content Safety on a Prompt Agent
 
 ## Introduction
 
-Microsoft Foundry already applies model-side content safety. When a prompt
-or response gets blocked, the underlying SDK raises
-`OpenAIContentFilterException`. Without a guardrail, that surfaces to the
-caller as a 500 error. A tiny **Agent Framework middleware** catches the
-exception and returns a friendly refusal instead.
+Microsoft Foundry applies model-side **content safety** to every Prompt
+Agent automatically: prompts and completions are screened across the
+*violence*, *hate*, *sexual* and *self-harm* categories, and disallowed
+content is blocked with a clean refusal — no custom middleware required.
+
+This is a major simplification over the hosted-agent path, where you had to
+wrap your agent in a Python middleware (`OpenAIContentFilterException` →
+friendly refusal) to keep blocked content from becoming an HTTP 500.
 
 ## Success Criteria
 
-* The Marketing hosted agent returns a friendly refusal for clearly disallowed
-  prompts and stays healthy.
+* You can demonstrate, in the Foundry Playground, that the Marketing agent
+  produces a clean refusal for an obviously disallowed prompt.
 
 ## Key Tasks
 
-### 01: Implement the middleware
+### 01: Confirm content-safety is on
 
-Open [src/foundry_agents/marketing_hosted/middleware.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/foundry_agents/marketing_hosted/middleware.py).
+Foundry portal → **Agents → zava-marketing-agent → Configuration**. Under
+the model deployment you'll see the active **content filter** profile (the
+default `Standard` filter is applied unless you opt in to a custom one).
 
-<details markdown="block">
-<summary><strong>Expand for the solution</strong></summary>
+### 02: Trigger a refusal in the Playground
 
-```python
-"""Content-filter middleware for the hosted Marketing agent."""
-from collections.abc import Awaitable, Callable
+Foundry portal → **Agents → zava-marketing-agent → Playground**. Send a
+clearly disallowed prompt (e.g., a request to draft instructions for
+self-harm). The agent should respond with a short refusal rather than an
+error.
 
-from agent_framework._middleware import ChatContext
-from agent_framework._types import ChatResponse, Message
-from agent_framework_openai._exceptions import OpenAIContentFilterException
+### 03: (Optional) Tighten the filter
 
-CONTENT_FILTER_MESSAGE = (
-    "I can’t help with that request because it violates Zava's content "
-    "safety policies. If you have a safer or policy-compliant version of the "
-    "question, I can help with that instead."
-)
+If your tenant policy requires a stricter filter, create a custom
+content-filter profile in the Foundry portal (**Content filters → + New**)
+and attach it to your model deployment. Re-test in the Playground.
 
-
-async def content_filter_middleware(
-    context: ChatContext,
-    call_next: Callable[[], Awaitable[None]],
-) -> None:
-    try:
-        await call_next()
-    except OpenAIContentFilterException:
-        context.result = ChatResponse(
-            messages=Message("assistant", [CONTENT_FILTER_MESSAGE]),
-            finish_reason="stop",
-        )
-```
-
-</details>
-
-### 02: Wire it into the agent
-
-In `main.py`, pass it to the `FoundryChatClient`:
-
-```python
-chat = FoundryChatClient(
-    project_endpoint=PROJECT_ENDPOINT,
-    model=MODEL_DEPLOYMENT,
-    credential=credential,
-    middleware=[content_filter_middleware],
-)
-```
-
-### 03: Redeploy and test
-
-```powershell
-cd src/foundry_agents/marketing_hosted
-azd ai agent up
-azd ai agent invoke "<an obviously disallowed prompt>"
-```
-
-You should see the friendly refusal text rather than an HTTP error.
+> **Why no Python middleware here?** Prompt Agents run server-side inside
+> Foundry — there is no Python process for you to wrap. Anything you want
+> to enforce above the model lives in the **Custom shared policies** layer
+> from Task 10.02.
 
 ## Next
 

@@ -1,70 +1,198 @@
 """Provision the **Zava store-ops** Foundry IQ knowledge base.
 
-You implement this script in **Exercise 06 / Task 06.01**. The reference
-implementation does three things, in order:
+This script does three things:
 
 1. Uploads the Markdown files under ``src/knowledge_seed/store_ops/`` to an
    Azure AI Search **index** named ``STORE_OPS_KB_SOURCE_ID``. The index
-   includes a **filterable ``store_id`` field** parsed from each file's
-   YAML frontmatter so retrieval can be scoped to a single Zava store.
+   includes a **filterable ``store_id`` field** parsed from each Markdown
+   file's YAML frontmatter — so the store-ops agent (or the orchestrator)
+   can scope retrieval to a single Zava store like ``seattle``.
 2. Wraps the index in a **Foundry IQ knowledge base** named
    ``STORE_OPS_KB_NAME``.
 3. Registers a **project connection** named ``STORE_OPS_KB_CONNECTION_NAME``
-   so the store-ops Foundry agent (Task 06.02) can call it over MCP via
-   the project's managed identity.
-
-Pre-requisites:
-
-* ``AZURE_SEARCH_ENDPOINT``, ``AZURE_AI_PROJECT_RESOURCE_ID``, and the
-  ``STORE_OPS_KB_*`` variables filled in ``.env``.
-* Your user (or the Foundry project's managed identity) has the
-  ``Search Service Contributor`` and ``Search Index Data Contributor``
-  roles on the Search service.
+   so the Foundry agent can reach the knowledge base over MCP via the
+   project's managed identity.
 
 Run:
-
     python -m src.foundry_agents.setup_store_ops_knowledge_base
-
-Reference solution: ``solution/foundry_agents/setup_store_ops_knowledge_base.py``.
 """
 
 from __future__ import annotations
 
+import json
 import logging
+import re
+import time
+import uuid
 from pathlib import Path
 
-# TODO (Exercise 06 / Task 06.01): import the helpers you will need.
-#   import json, re, time, uuid, requests
-#   from azure.identity import get_bearer_token_provider
-#   from src.common.foundry_client import get_credential, upsert_project_connection
-#   from src.common.settings import get_settings
+import requests
+from azure.identity import get_bearer_token_provider
+
+from src.common.foundry_client import get_credential, upsert_project_connection
+from src.common.settings import get_settings
 
 LOG = logging.getLogger(__name__)
 
 SEARCH_API_VERSION = "2025-11-01-preview"
 STORE_OPS_DOCS = Path(__file__).resolve().parents[1] / "knowledge_seed" / "store_ops"
 
+_FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n(.*)$", re.DOTALL)
+
+
+def _parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
+    """Parse a minimal YAML-style ``---`` frontmatter block.
+
+    Supports scalar string values like ``store_id: seattle``. Returns
+    ``({}, text)`` if no frontmatter is present.
+    """
+    m = _FRONTMATTER_RE.match(text)
+    if not m:
+        return {}, text
+    block, body = m.group(1), m.group(2)
+    fields: dict[str, str] = {}
+    for line in block.splitlines():
+        if ":" not in line:
+            continue
+        key, _, value = line.partition(":")
+        fields[key.strip()] = value.strip().strip('"').strip("'")
+    return fields, body
+
+
+def _search_headers() -> dict[str, str]:
+    cred = get_credential()
+    token = get_bearer_token_provider(cred, "https://search.azure.com/.default")()
+    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+
+def _put(url: str, body: dict) -> dict:
+    r = requests.put(url, headers=_search_headers(), json=body, timeout=60)
+    if not r.ok:
+        raise RuntimeError(f"PUT {url} failed: {r.status_code} {r.text}")
+    return r.json() if r.text else {}
+
+
+def _post(url: str, body: dict) -> dict:
+    r = requests.post(url, headers=_search_headers(), json=body, timeout=60)
+    if not r.ok:
+        raise RuntimeError(f"POST {url} failed: {r.status_code} {r.text}")
+    return r.json() if r.text else {}
+
+
+def _create_or_update_index(endpoint: str, index_name: str) -> None:
+    body = {
+        "name": index_name,
+        "fields": [
+            {"name": "id", "type": "Edm.String", "key": True, "filterable": True},
+            {"name": "title", "type": "Edm.String", "searchable": True, "filterable": True},
+            {"name": "content", "type": "Edm.String", "searchable": True},
+            {"name": "source", "type": "Edm.String", "filterable": True},
+            # Zava-specific filterables — every store-ops Markdown carries
+            # a `store_id` frontmatter value (use 'all' for chain-wide policies).
+            {"name": "store_id", "type": "Edm.String", "filterable": True, "facetable": True},
+            {"name": "doc_type", "type": "Edm.String", "filterable": True, "facetable": True},
+        ],
+        "semantic": {
+            "configurations": [
+                {
+                    "name": "default",
+                    "prioritizedFields": {
+                        "titleField": {"fieldName": "title"},
+                        "prioritizedContentFields": [{"fieldName": "content"}],
+                    },
+                }
+            ]
+        },
+    }
+    _put(f"{endpoint}/indexes/{index_name}?api-version={SEARCH_API_VERSION}", body)
+    LOG.info("Index '%s' ready", index_name)
+
+
+def _upload_documents(endpoint: str, index_name: str) -> int:
+    docs = []
+    for md_file in sorted(STORE_OPS_DOCS.glob("*.md")):
+        raw = md_file.read_text(encoding="utf-8")
+        fm, body = _parse_frontmatter(raw)
+        docs.append(
+            {
+                "@search.action": "mergeOrUpload",
+                "id": uuid.uuid5(uuid.NAMESPACE_DNS, md_file.name).hex,
+                "title": fm.get("title", md_file.stem.replace("_", " ").title()),
+                "content": body,
+                "source": md_file.name,
+                "store_id": fm.get("store_id", "all"),
+                "doc_type": fm.get("doc_type", "policy"),
+            }
+        )
+    if not docs:
+        raise RuntimeError(f"No markdown files found under {STORE_OPS_DOCS}")
+    url = f"{endpoint}/indexes/{index_name}/docs/index?api-version={SEARCH_API_VERSION}"
+    _post(url, {"value": docs})
+    LOG.info("Uploaded %d store-ops docs to index '%s'", len(docs), index_name)
+    time.sleep(3)
+    return len(docs)
+
+
+def _create_or_update_knowledge_base(endpoint: str, kb_name: str, source_index: str) -> None:
+    body = {
+        "name": kb_name,
+        "description": "Zava store operations: store-manager handbooks, returns, safety, HR, SOPs.",
+        "knowledgeSources": [
+            {
+                "name": source_index,
+                "kind": "searchIndex",
+                "searchIndexParameters": {"indexName": source_index},
+            }
+        ],
+        "retrievalInstructions": (
+            "When answering store-operations questions, prefer information from the "
+            "Zava store-ops knowledge base. When the user references a specific "
+            "store (e.g., 'Seattle'), narrow retrieval to that store_id and to "
+            "'all' (chain-wide policies). Always cite the source document filename."
+        ),
+    }
+    _put(f"{endpoint}/knowledgebases/{kb_name}?api-version={SEARCH_API_VERSION}", body)
+    LOG.info("Knowledge base '%s' ready", kb_name)
+
+
+def _register_project_connection(search_endpoint: str, kb_name: str, connection_name: str) -> None:
+    mcp_target = f"{search_endpoint}/knowledgebases/{kb_name}/mcp?api-version={SEARCH_API_VERSION}"
+    upsert_project_connection(
+        connection_name=connection_name,
+        category="RemoteTool",
+        target=mcp_target,
+        auth_type="ProjectManagedIdentity",
+        audience="https://search.azure.com/",
+        metadata={"ApiType": "Azure"},
+    )
+    LOG.info("Foundry project connection '%s' -> %s", connection_name, mcp_target)
+
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+    settings = get_settings()
 
-    # TODO (Exercise 06 / Task 06.01):
-    #
-    # 1. Read settings, ensure AZURE_SEARCH_ENDPOINT is set.
-    # 2. Create / update the Search index with fields:
-    #      id, title (filterable), content, source (filterable),
-    #      store_id (filterable, facetable), doc_type (filterable, facetable).
-    # 3. Parse each Markdown file's YAML frontmatter (--- ... ---) and pull
-    #    out store_id, doc_type, title. Default store_id to 'all'.
-    # 4. Upload every Markdown file under STORE_OPS_DOCS to the index.
-    # 5. Create / update the Foundry IQ knowledge base wrapping that index.
-    # 6. Register the project connection pointing at
-    #       f"{endpoint}/knowledgebases/{kb_name}/mcp?api-version={SEARCH_API_VERSION}"
-    #    with category="RemoteTool", audience="https://search.azure.com/".
+    if not settings.azure_search_endpoint:
+        raise RuntimeError("AZURE_SEARCH_ENDPOINT is required.")
 
-    raise NotImplementedError(
-        "setup_store_ops_knowledge_base is not implemented yet — "
-        "complete Exercise 06 / Task 06.01."
+    endpoint = settings.azure_search_endpoint.rstrip("/")
+    index_name = settings.store_ops_kb_source_id
+    kb_name = settings.store_ops_kb_name
+
+    _create_or_update_index(endpoint, index_name)
+    _upload_documents(endpoint, index_name)
+    _create_or_update_knowledge_base(endpoint, kb_name, index_name)
+    _register_project_connection(endpoint, kb_name, settings.store_ops_kb_connection_name)
+
+    print(
+        json.dumps(
+            {
+                "search_index": index_name,
+                "knowledge_base": kb_name,
+                "project_connection": settings.store_ops_kb_connection_name,
+            },
+            indent=2,
+        )
     )
 
 

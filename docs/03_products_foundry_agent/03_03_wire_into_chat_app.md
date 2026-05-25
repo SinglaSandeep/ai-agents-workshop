@@ -74,22 +74,10 @@ resp = client.responses.create(
 print(resp.output[0].content[0].text)
 ```
 
-The Responses API is the contract the Foundry-hosted Marketing agent
+The Responses API is the contract every Foundry Prompt Agent
 (Exercise 05) speaks natively, so any client code you write here will
 transfer cleanly to the cloud-hosted version.
 
-<details markdown="block">
-<summary><strong>Expand this section if the agent answers from memory instead of calling the tool</strong></summary>
-
-* Re-read the `INSTRUCTIONS` block in `create_products_agent.py`. It must
-  say *"Only answer using data returned by the tools"*. If you altered it,
-  re-run the script to push a new agent version.
-* In the Foundry portal → Agents → your agent → **Playground**, test the
-  same prompt. If you see *"Tool call required"* errors, the MCP
-  connection's managed identity does not have `Invoker` rights on the
-  Container App.
-
-</details>
 
 ## Next
 

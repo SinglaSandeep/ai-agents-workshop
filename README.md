@@ -47,7 +47,7 @@ and `campaign_id`.
 | ----------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Store-Ops   | Per-store manager handbooks, returns, safety, HR, SOPs (Markdown, filtered by `store_id`)             | **Foundry IQ** knowledge base                                                                                               |
 | Products    | Zava DIY product catalog + per-store inventory in **Azure Cosmos DB** (SKU pattern `ZV-<CAT>-NNN`)    | **Products MCP Server** (Container App)                                                                                     |
-| Marketing   | Zava campaigns in Cosmos + briefs/post-mortems in Foundry IQ + live web                               | **Marketing MCP** + **Foundry IQ KB** + **Foundry Toolbox** (web search, code interpreter), all wrapped in a **Foundry-hosted** agent |
+| Marketing   | Zava campaigns in Cosmos + briefs/post-mortems in Foundry IQ                                          | **Marketing MCP** + **Foundry IQ KB** + **Code Interpreter**, wired into a **Foundry Prompt Agent**                          |
 
 ---
 
@@ -59,17 +59,15 @@ flowchart LR
     W --> O[Magentic Orchestrator<br/>Microsoft Agent Framework]
     O --> SO[Store-Ops Agent<br/>Foundry Prompt Agent + Foundry IQ]
     O --> PR[Products Agent<br/>Foundry Prompt Agent + MCP Tool]
-    O --> MK[Marketing Agent<br/>Foundry-HOSTED Agent<br/>Agent Framework]
+    O --> MK[Marketing Agent<br/>Foundry Prompt Agent + MCP + Code Interpreter]
     O --> RG[Response Generator<br/>Foundry Prompt Agent]
     SO  --> AIS[(Azure AI Search<br/>Store-Ops Foundry IQ KB)]
     PR  -->|MCP| PMCP[Products MCP Server<br/>Azure Container Apps]
     MK  -->|MCP| MMCP[Marketing MCP Server<br/>Azure Container Apps]
     MK  -->|MCP| MKB[(Marketing Foundry IQ KB)]
-    MK  -->|MCP| TB[Foundry Toolbox<br/>web_search + code_interpreter]
     PMCP --> COS[(Cosmos DB<br/>products container)]
     MMCP --> COS2[(Cosmos DB<br/>marketing container)]
     W --> OBS[App Insights / OpenTelemetry]
-    MK --> OBS
 ```
 
 ---
@@ -83,14 +81,14 @@ flowchart LR
 | 02 | [Products MCP Server](docs/02_products_mcp_server/02_products_mcp_server.md) | FastMCP server seeded from Cosmos, running locally and on Container Apps. |
 | 03 | [Products Foundry Agent + wire in](docs/03_products_foundry_agent/03_products_foundry_agent.md) | Products agent reachable from the chat UI. |
 | 04 | [Marketing MCP Server](docs/04_marketing_mcp_server/04_marketing_mcp_server.md) | Second FastMCP server for marketing campaigns. |
-| 05 | [Foundry-hosted Marketing Agent (Foundry IQ + Web Tool)](docs/05_marketing_foundry_agent/05_marketing_foundry_agent.md) | Microsoft Agent Framework agent deployed via `azd ai agent up`, with Marketing MCP + Foundry IQ KB + Foundry Toolbox tools. |
+| 05 | [Marketing Prompt Agent (Foundry IQ + Code Interpreter)](docs/05_marketing_foundry_agent/05_marketing_foundry_agent.md) | Foundry Prompt Agent wiring Marketing MCP + Foundry IQ KB + Code Interpreter. |
 | 06 | [Store-Ops Foundry IQ Agent + wire in](docs/06_store_ops_foundry_iq_agent/06_store_ops_foundry_iq_agent.md) | Per-store-filtered knowledge-base-grounded agent. |
 | 07 | [Magentic Orchestrator](docs/07_orchestrator_agent_framework/07_orchestrator_agent_framework.md) | Routes/plans across all three specialists using shared keys. |
 | 08 | [Response Generator Agent](docs/08_response_generator/08_response_generator.md) | Final-answer synthesiser. |
-| 09 | [Quality Evaluations](docs/09_evaluations/09_evaluations.md) | One-shot, scheduled, and continuous evals on the hosted Marketing agent. |
+| 09 | [Quality Evaluations](docs/09_evaluations/09_evaluations.md) | One-shot, scheduled, and continuous evals on the Marketing agent. |
 | 10 | [Guardrails & Red Teaming](docs/10_guardrails_red_teaming/10_guardrails_red_teaming.md) | Content-filter middleware + custom policies + automated red-team scan. |
-| 11 | [End-to-End Observability](docs/11_observability/11_observability.md) | OpenTelemetry → App Insights and Foundry traces for chat app **and** hosted agent. |
-| 12 | [Resource Cleanup](docs/12_cleanup/12_cleanup.md) | Remove container apps, hosted agents, KBs, eval schedules, connections you created. |
+| 11 | [End-to-End Observability](docs/11_observability/11_observability.md) | OpenTelemetry → App Insights and Foundry traces for the chat app and registered agents. |
+| 12 | [Resource Cleanup](docs/12_cleanup/12_cleanup.md) | Remove container apps, agent versions, KBs, eval schedules, connections you created. |
 
 ---
 
@@ -99,8 +97,7 @@ flowchart LR
 > Full prerequisites are in [Exercise 00](docs/00_setup/00_setup.md). The minimum:
 
 > No local Docker / container runtime is required — Container Apps deploys
-> use ACR Tasks (cloud build) and the hosted Marketing agent is built by
-> `azd ai agent up` against your Foundry account.
+> use ACR Tasks (cloud build).
 
 ```powershell
 # 1. Enter the repo
@@ -120,10 +117,7 @@ Copy-Item .env.sample .env
 az login
 az account set --subscription "<your-subscription-id>"
 
-# 5. Install the azd AI extension (needed from Exercise 05 onward)
-azd extension install ai
-
-# 6. Run the chat app right away (Exercise 01) — it will stub answers
+# 5. Run the chat app right away (Exercise 01) — it will stub answers
 uvicorn src.app.main:app --reload --port 8000
 ```
 
@@ -142,7 +136,7 @@ ai-agents-workshop/
 │   ├── 02_products_mcp_server/
 │   ├── 03_products_foundry_agent/
 │   ├── 04_marketing_mcp_server/
-│   ├── 05_marketing_foundry_agent/      # Foundry-hosted agent (IQ + Web tool)
+│   ├── 05_marketing_foundry_agent/      # Marketing Prompt Agent (IQ + Code Interpreter)
 │   ├── 06_store_ops_foundry_iq_agent/
 │   ├── 07_orchestrator_agent_framework/
 │   ├── 08_response_generator/
@@ -155,7 +149,6 @@ ai-agents-workshop/
 │   ├── mcp_servers/products/
 │   ├── mcp_servers/marketing/
 │   ├── foundry_agents/
-│   │   └── marketing_hosted/      # Microsoft Agent Framework hosted-agent code
 │   ├── knowledge_seed/{store_ops,marketing}/
 │   ├── evaluations/               # Scaffolds — see solution/evaluations/
 │   ├── red_team/                  # Scaffolds — see solution/red_team/

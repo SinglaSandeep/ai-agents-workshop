@@ -1,77 +1,59 @@
 ---
-title: '3. Deploy & wire into chat'
+title: '3. Register, run, wire into chat'
 layout: default
 nav_order: 3
-parent: 'Exercise 05: Marketing Hosted Agent (Foundry IQ + Web Tool)'
+parent: 'Exercise 05: Marketing Prompt Agent (Foundry IQ + Code Interpreter)'
 ---
 
-# Task 05.03 — Run Locally, Deploy to Foundry, Wire Into the Chat UI
+# Task 05.03 — Register the Agent and Talk to It
 
 ## Introduction
 
-The Azure Developer CLI ships an `azd ai` extension that knows how to
-package an `agent.yaml` into a hosted-agent image, deploy it to your Foundry
-project, and stream its logs.
+Registering a Foundry Prompt Agent is one Python command. After that, the
+chat app, DevUI, and orchestrator all pick it up by name
+(`MARKETING_AGENT_NAME`, default `zava-marketing-agent`).
 
 ## Success Criteria
 
-* `azd ai agent run` boots the agent locally on
-  `http://localhost:8088/responses`.
-* `azd ai agent invoke --local "..."` answers questions over the local
-  endpoint.
-* `azd ai agent up` returns successfully and `azd ai agent show` lists the
-  agent as `Healthy`.
-* DevUI (`python -m src.app.devui_launch`) reaches the **hosted** agent
-  under the **marketing** entity and answers Zava campaign + live-web
-  questions.
+* `python -m src.foundry_agents.create_marketing_agent` succeeds.
+* The agent shows up in the Foundry portal under **Agents**.
+* DevUI talks to the agent under the **marketing** entity.
 
 ## Key Tasks
 
-### 01: Install the azd AI extension (one-time)
+### 01: Register / update the agent
 
 ```powershell
-azd extension install ai
-azd ai --help
+python -m src.foundry_agents.create_marketing_agent
 ```
 
-### 02: Run the agent locally
+This calls `project.agents.create_version(...)` on your Foundry project
+with the model, instructions, and tool list. It is **idempotent** — re-run
+it any time you tweak instructions, tools, or the model.
+
+### 02: Quick sanity check
+
+`run_single_agent` lets you fire a one-shot turn at any of the registered
+agents from the terminal:
 
 ```powershell
-cd src/foundry_agents/marketing_hosted
-azd ai agent run
+python -m src.foundry_agents.run_single_agent marketing `
+  "What active Gatorade campaigns target youth athletes?"
 ```
 
-In another terminal:
+You should see the tool calls in the trace and a grounded answer with a
+trailing `Tools used: ...` line.
 
-```powershell
-azd ai agent invoke --local "What is the ROI of CMP-2026-001?"
-azd ai agent invoke --local "Any recent news on Gatorade's 2026 campaigns?"
-```
-
-### 03: Deploy to Foundry
-
-```powershell
-azd ai agent up
-azd ai agent show
-azd ai agent monitor -f   # live logs
-```
-
-`azd ai agent up` builds the Docker image, pushes it to your Foundry-managed
-ACR, and creates/updates the hosted agent. The hosted endpoint is registered
-back into your Foundry project under the agent name in `agent.yaml`
-(`zava-marketing-agent`).
-
-### 04: Verify in Foundry portal
+### 03: Verify in Foundry portal
 
 Foundry portal → **Agents → zava-marketing-agent**. Use the built-in
-Playground to test the same prompts. You should see traces under the
-**Observability** tab.
+Playground to test the same prompts. The **Tools** tab should list the
+Marketing MCP, Code Interpreter, and the Marketing KB MCP.
 
-### 05: Talk to it in DevUI
+### 04: Talk to it in DevUI
 
-The DevUI launcher and the orchestrator both look up the agent by name.
-Because we kept `MARKETING_AGENT_NAME=zava-marketing-agent`, no
-launcher-code change is needed — restart DevUI:
+The DevUI launcher and the orchestrator both look up the agent by name, so
+no launcher-code change is needed:
 
 ```powershell
 python -m src.app.devui_launch
@@ -83,7 +65,8 @@ Select the **marketing** entity in the sidebar and try:
 | ------ | ------------------ |
 | *"What active Gatorade campaigns target youth athletes?"* | Calls the **Marketing MCP** tool. |
 | *"Summarise the 2025 SuperBowl post-mortem."* | Calls the **Marketing KB** (`knowledge_base_retrieve`). |
-| *"Any news on Pepsi's most recent SuperBowl spot?"* | Calls Foundry Toolbox **web_search**; cites URLs. |
+| *"Add up the budgets of the active 2026 campaigns."* | Calls the MCP, then **Code Interpreter** to total. |
+| *"What's the latest news on Pepsi's SuperBowl spot?"* | Politely declines (no web tool) and offers KB/MCP. |
 
 The plan pill below each answer should read `marketing`.
 

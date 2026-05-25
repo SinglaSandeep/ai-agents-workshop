@@ -10,51 +10,35 @@ parent: 'Exercise 10: Guardrails & Red Teaming'
 ## Introduction
 
 `azure-ai-evaluation[redteam]` ships a `RedTeam` orchestrator that generates
-adversarial prompts across configurable risk categories and attack strategies
-and replays them against a callback target. We'll run it against the
-**locally running** hosted Marketing agent (`azd ai agent run`).
-
-> Hosted-cloud red teaming for hosted agents is not yet GA for this scenario.
-> Use the local flow for now; once cloud support lands, the same script can
-> point at the deployed `/responses` endpoint.
+adversarial prompts across configurable risk categories and attack
+strategies and replays them against a callback target. We'll point it at the
+registered Marketing Foundry Prompt Agent.
 
 ## Success Criteria
 
-* `python -m solution.red_team.red_team_scan_local` writes a results JSON.
+* `python -m src.red_team.red_team_scan_local` writes a results JSON.
 * The rendered summary shows non-zero passed counts in all four risk
   categories.
 
 ## Key Tasks
 
-### 01: Run the local hosted agent
+### 01: Make sure the agent is registered
 
 ```powershell
-cd src/foundry_agents/marketing_hosted
-azd ai agent run
+python -m src.foundry_agents.create_marketing_agent
 ```
 
-Leave this running. It exposes `http://localhost:8088/responses`.
+(Skip if you already did this in Exercise 05.)
 
 ### 02: Implement `red_team/red_team_scan_local.py`
 
 Open [src/red_team/red_team_scan_local.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/red_team/red_team_scan_local.py).
 
-<details markdown="block">
-<summary><strong>Expand for the solution</strong></summary>
-
-See [solution/red_team/red_team_scan_local.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/solution/red_team/red_team_scan_local.py).
-It builds a `RedTeam` configured with `Violence`, `HateUnfairness`, `Sexual`
-and `SelfHarm` risk categories and the `Baseline`, `Url`, and `Tense` attack
-strategies, invokes the agent over local HTTP, and prints a rich summary.
-
-</details>
 
 ### 03: Run the scan
 
-In a second terminal:
-
 ```powershell
-python -m solution.red_team.red_team_scan_local
+python -m src.red_team.red_team_scan_local
 ```
 
 Expected: a `red_team_output/local_redteam_output_<timestamp>/` directory
@@ -63,7 +47,7 @@ containing `results.json`, plus a console table.
 ### 04: Show previous results
 
 ```powershell
-python -m solution.red_team.red_team_scan_local --show-results
+python -m src.red_team.red_team_scan_local --show-results
 ```
 
 ## Next

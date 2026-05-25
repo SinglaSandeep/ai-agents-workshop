@@ -9,9 +9,7 @@ parent: 'Exercise 00: Setup & Verify Resources'
 
 You need the following tools on your machine. **No local container runtime
 is required** — the MCP server images in Exercises 02 and 04 are built in
-the cloud by Azure Container Registry, and the hosted Marketing agent
-image in Exercise 05 is built by `azd ai agent up` against your Foundry
-account.
+the cloud by Azure Container Registry.
 
 | Tool | Minimum version | Purpose |
 | ---- | --------------- | ------- |
@@ -19,7 +17,6 @@ account.
 | **pip / venv** | (bundled) | Package management |
 | **Git** | 2.40 | Cloning the workshop repo |
 | **Azure CLI (`az`)** | 2.61 | Authentication + Container Apps deploys (cloud build) |
-| **Azure Developer CLI (`azd`)** | 1.10 | Hosted-agent deploys (`azd ai agent up`, from Exercise 05) |
 | **Visual Studio Code** | latest | Editor (any IDE works; VS Code is recommended) |
 | **PowerShell 7** (Windows) or **bash** (mac/Linux) | — | Terminal |
 
@@ -52,25 +49,14 @@ account.
    az provider register --namespace Microsoft.OperationalInsights
    ```
 
-3. **Install the Azure Developer CLI (`azd`) + AI extension**
-
-   ```powershell
-   winget install --id Microsoft.Azd
-   azd version
-   azd extension install ai
-   ```
-
-   You will use `azd ai agent run`, `azd ai agent invoke` and
-   `azd ai agent up` from Exercise 05 onwards.
-
-4. **Install Git and VS Code** (skip if already installed)
+3. **Install Git and VS Code** (skip if already installed)
 
    ```powershell
    winget install --id Git.Git
    winget install --id Microsoft.VisualStudioCode
    ```
 
-5. **VS Code extensions (recommended)**
+4. **VS Code extensions (recommended)**
 
    - Python
    - Azure Account
@@ -82,15 +68,12 @@ account.
 {: .success }
 > - `python --version` ≥ 3.11
 > - `az --version` ≥ 2.61
-> - `azd version` ≥ 1.10
-> - `azd extension list` shows the **ai** extension
 > - VS Code opens
 
 > {: .note }
 > Docker Desktop is **not** required for this workshop. `az containerapp
 > up --source .` automatically uses an **ACR Task** (cloud build) when no
-> local Docker daemon is detected, and `azd ai agent up` builds the
-> hosted-agent image inside the Foundry environment.
+> local Docker daemon is detected.
 
 ## Next
 

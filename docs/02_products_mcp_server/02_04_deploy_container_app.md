@@ -89,46 +89,6 @@ All eight lines must be non-empty before continuing.
 
 Skip this step if your workshop environment already has these resources.
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-# 0. Register required providers (idempotent, takes a few minutes the first time).
-az provider register --namespace Microsoft.App
-az provider register --namespace Microsoft.OperationalInsights
-az provider register --namespace Microsoft.ContainerRegistry
-
-# 1. Resource group (skip if it exists).
-az group create -n $RG -l $LOC
-
-# 2. ACR (Basic SKU, admin disabled — we use managed identity instead).
-az acr create `
-  --resource-group $RG `
-  --name $ACR `
-  --sku Basic `
-  --admin-enabled false
-
-# 3. Log Analytics workspace (required for ACA env logs).
-az monitor log-analytics workspace create `
-  --resource-group $RG `
-  --workspace-name $LAW `
-  --location $LOC
-
-$LAW_ID = az monitor log-analytics workspace show `
-  -g $RG -n $LAW --query customerId -o tsv
-$LAW_KEY = az monitor log-analytics workspace get-shared-keys `
-  -g $RG -n $LAW --query primarySharedKey -o tsv
-
-# 4. Container Apps environment.
-az containerapp env create `
-  --name $ENV `
-  --resource-group $RG `
-  --location $LOC `
-  --logs-workspace-id  $LAW_ID `
-  --logs-workspace-key $LAW_KEY
-```
-
-</details>
 
 ### 05: Build and push the image to ACR
 
@@ -150,28 +110,6 @@ $IMG
 
 ### 06: Deploy the Container App
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-az containerapp up `
-  --name $APP `
-  --resource-group $RG `
-  --location $LOC `
-  --environment $ENV `
-  --image $IMG `
-  --target-port 8001 `
-  --ingress external `
-  --env-vars `
-    COSMOS_ENDPOINT=$env:COSMOS_ENDPOINT `
-    COSMOS_DATABASE=$env:COSMOS_DATABASE `
-    COSMOS_PRODUCTS_CONTAINER=$env:COSMOS_PRODUCTS_CONTAINER
-```
-
-When the command finishes, copy the FQDN it prints (looks like
-`zava-products-mcp.<env-hash>.eastus2.azurecontainerapps.io`).
-
-</details>
 
 ### 07: Grant the app pull rights on ACR
 
@@ -179,57 +117,12 @@ If ACR admin is disabled (recommended), give the Container App's
 system-assigned identity the **AcrPull** role on the registry so it can
 pull the image on cold-start.
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-# 1. Enable the system-assigned identity (idempotent).
-az containerapp identity assign `
-  --name $APP -g $RG --system-assigned
-
-$APP_PID = az containerapp show -n $APP -g $RG `
-  --query identity.principalId -o tsv
-
-$ACR_ID = az acr show -n $ACR -g $RG --query id -o tsv
-
-# Sanity-check: both must be non-empty before continuing.
-if (-not $APP_PID -or -not $ACR_ID) {
-    throw "APP_PID or ACR_ID is empty. Re-run step 03 to set `$RG, `$ACR, `$APP, then retry."
-}
-$APP_PID; $ACR_ID
-
-# 2. Grant AcrPull.
-az role assignment create `
-  --assignee $APP_PID `
-  --role AcrPull `
-  --scope "$ACR_ID"
-
-# 3. Tell the Container App to use that identity when pulling.
-az containerapp registry set `
-  --name $APP -g $RG `
-  --server "$ACR.azurecr.io" `
-  --identity system
-```
-
-</details>
 
 ### 08: Grant the app Cosmos data-plane access
 
 The Container App needs the **Cosmos DB Built-in Data Contributor** role
 on the Cosmos account to query data with `DefaultAzureCredential`.
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-az cosmosdb sql role assignment create `
-  --account-name $COSMOS_ACCT -g $RG `
-  --scope "/" `
-  --principal-id $APP_PID `
-  --role-definition-id "00000000-0000-0000-0000-000000000002"
-```
-
-</details>
 
 ### 09: Allow the Container App through the Cosmos DB firewall
 
@@ -239,32 +132,6 @@ allowlist. Otherwise the first tool call will return a `403 Forbidden`
 with an error like *"Request originated from IP ... through public internet.
 This is blocked by your Cosmos DB account firewall settings."*
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-# 1. Discover the Container App's egress IP.
-$APP_IP = az containerapp show -n $APP -g $RG `
-  --query properties.outboundIpAddresses[0] -o tsv
-$APP_IP
-
-# 2. Merge it into the Cosmos firewall (preserves existing rules).
-$EXISTING = az cosmosdb show -n $COSMOS_ACCT -g $RG `
-  --query "join(',', ipRules[].ipAddressOrRange)" -o tsv
-$NEW_RULES = if ($EXISTING) { "$EXISTING,$APP_IP" } else { $APP_IP }
-
-az cosmosdb update -n $COSMOS_ACCT -g $RG `
-  --ip-range-filter $NEW_RULES `
-  --query ipRules -o table
-```
-
-> .note
-> Container Apps shares a small pool of egress IPs across the environment,
-> so the same IP usually works for **both** the Products and Marketing
-> servers. If you later see a `403 Forbidden` from Cosmos after a platform
-> rotation, re-run this step.
-
-</details>
 
 ### 10: Smoke-test the public URL
 

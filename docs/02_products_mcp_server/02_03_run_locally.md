@@ -58,16 +58,6 @@ In the Inspector sidebar you should see the four tools. Click each in turn:
 | `get_product` | `{ "product_id": "ZV-PNT-001" }` | The Pepsi Cola record |
 | `search_products` | `{ "text": "lime" }` | products mentioning "lime" |
 
-<details markdown="block">
-<summary><strong>Expand this section if Inspector cannot connect</strong></summary>
-
-* Make sure the server is actually running and bound to `127.0.0.1:8001`.
-* `curl -X POST http://127.0.0.1:8001/mcp` should return a JSON-RPC error
-  (because it expects a real MCP payload) but never a connection error.
-* If the Inspector keeps saying *"transport not supported"* you accidentally
-  selected `SSE` or `stdio`. Switch to `Streamable HTTP`.
-
-</details>
 
 ## Next
 

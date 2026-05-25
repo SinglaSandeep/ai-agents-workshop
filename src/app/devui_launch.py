@@ -80,7 +80,7 @@ def main() -> None:
         (
             "marketing",
             settings.marketing_agent_name,
-            "Zava marketing campaigns (status, KPIs, budgets, ROI, target stores/categories). Backed by the Foundry-hosted Marketing agent + Marketing MCP + Foundry IQ KB.",
+            "Zava marketing campaigns (status, KPIs, budgets, ROI, target stores/categories). Backed by the Marketing Foundry Prompt Agent + Marketing MCP + Foundry IQ KB.",
         ),
         (
             "store_ops",

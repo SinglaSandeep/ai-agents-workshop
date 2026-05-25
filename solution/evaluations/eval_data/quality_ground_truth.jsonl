@@ -1,8 +1,0 @@
-{"query": "What is the budget of CMP-2026-001?", "ground_truth": "USD 18M, with 60% TV, 30% social, 10% in-arena."}
-{"query": "Which campaign targets youth athletes for Gatorade?", "ground_truth": "CMP-2026-001 — the Q1 2026 Gatorade SuperBowl campaign targeting youth athletes ages 13-22."}
-{"query": "What is the goal of the 2026 Doritos refresh?", "ground_truth": "Launch the Doritos Bold Reset flavor refresh and grow Gen-Z weekly buyers by 8%."}
-{"query": "Summarise the 2025 SuperBowl post-mortem.", "ground_truth": "Hero spot beat awareness target at +9% recall; TikTok activation overdelivered; OTT spend underperformed and the Spanish-language cutdown shipped late. Recommendations: lock multilingual delivery 14 days early, shift OTT budget to TikTok and in-arena, bring measurement partner in at brief stage."}
-{"query": "List the KPIs for the Doritos Bold Reset campaign.", "ground_truth": "+8% lift in weekly Gen-Z buyers, 50M+ paid+organic video views, 25 Twitch creators with 5M concurrent stream impressions."}
-{"query": "What channels does CMP-2026-001 use?", "ground_truth": "TV (SuperBowl spot), Instagram Reels, TikTok, and in-arena LED."}
-{"query": "What is Pepsi's most recent SuperBowl spot?", "ground_truth": "Should be answered via web_search; expect a current URL citation."}
-{"query": "What recommendations should the 2026 plan adopt from 2025 learnings?", "ground_truth": "Lock the multilingual cutdown delivery 14 days before air; reallocate OTT budget into TikTok creator and in-arena LED; bring measurement partner in at brief stage."}

@@ -76,42 +76,6 @@ and read `upsert_project_connection`. Key things to notice:
 Run this one-shot Python snippet from the repo root inside your venv —
 it imports the helper and registers the connection in your project.
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-python -c @"
-from src.common.foundry_client import upsert_project_connection
-from src.common.settings import get_settings
-
-settings = get_settings()
-if not settings.products_mcp_url:
-    raise SystemExit('PRODUCTS_MCP_URL is empty. Finish Exercise 02 first.')
-
-result = upsert_project_connection(
-    connection_name=settings.products_mcp_connection_name,
-    category='RemoteTool',
-    target=settings.products_mcp_url,
-    auth_type='ProjectManagedIdentity',
-    audience='https://management.azure.com/',
-    metadata={'ApiType': 'MCP'},
-)
-print('Created/updated connection:', result['name'])
-print('  target :', result['properties']['target'])
-print('  category:', result['properties']['category'])
-"@
-```
-
-Expected output:
-
-```
-INFO Upserting Foundry project connection zava-products-mcp-conn
-Created/updated connection: zava-products-mcp-conn
-  target : https://zava-products-mcp.<env-hash>.<region>.azurecontainerapps.io/mcp
-  category: RemoteTool
-```
-
-</details>
 
 ### 04: Verify in the Foundry portal
 

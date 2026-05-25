@@ -93,75 +93,12 @@ $IMG
 
 ### 05: Deploy the Container App
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-az containerapp up `
-  --name $APP `
-  --resource-group $RG `
-  --location $LOC `
-  --environment $ENV `
-  --image $IMG `
-  --target-port 8002 `
-  --ingress external `
-  --env-vars `
-    COSMOS_ENDPOINT=$env:COSMOS_ENDPOINT `
-    COSMOS_DATABASE=$env:COSMOS_DATABASE `
-    COSMOS_MARKETING_CONTAINER=$env:COSMOS_MARKETING_CONTAINER
-```
-
-When the command finishes, copy the FQDN it prints (looks like
-`zava-marketing-mcp.<env-hash>.eastus2.azurecontainerapps.io`).
-
-</details>
 
 ### 06: Grant the app pull rights on ACR
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-az containerapp identity assign `
-  --name $APP -g $RG --system-assigned
-
-$APP_PID = az containerapp show -n $APP -g $RG `
-  --query identity.principalId -o tsv
-
-$ACR_ID = az acr show -n $ACR -g $RG --query id -o tsv
-
-if (-not $APP_PID -or -not $ACR_ID) {
-    throw "APP_PID or ACR_ID is empty. Re-run step 03 to set `$RG, `$ACR, `$APP, then retry."
-}
-$APP_PID; $ACR_ID
-
-az role assignment create `
-  --assignee $APP_PID `
-  --role AcrPull `
-  --scope "$ACR_ID"
-
-az containerapp registry set `
-  --name $APP -g $RG `
-  --server "$ACR.azurecr.io" `
-  --identity system
-```
-
-</details>
 
 ### 07: Grant the app Cosmos data-plane access
 
-<details markdown="block">
-<summary><strong>Expand this section to view the solution</strong></summary>
-
-```powershell
-az cosmosdb sql role assignment create `
-  --account-name $COSMOS_ACCT -g $RG `
-  --scope "/" `
-  --principal-id $APP_PID `
-  --role-definition-id "00000000-0000-0000-0000-000000000002"
-```
-
-</details>
 
 ### 08: Confirm the Cosmos DB firewall allows the Container App
 
