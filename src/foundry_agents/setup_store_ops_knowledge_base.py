@@ -133,23 +133,45 @@ def _upload_documents(endpoint: str, index_name: str) -> int:
     return len(docs)
 
 
-def _create_or_update_knowledge_base(endpoint: str, kb_name: str, source_index: str) -> None:
+def _create_or_update_knowledge_source(endpoint: str, source_name: str, index_name: str) -> None:
+    """Create / update a SearchIndexKnowledgeSource that wraps the index.
+
+    In API version 2025-11-01-preview the knowledge base no longer accepts
+    inline ``kind: searchIndex`` entries; each source must be a separate
+    ``/knowledgesources/{name}`` resource referenced by name from the KB.
+    """
+    body = {
+        "name": source_name,
+        "kind": "searchIndex",
+        "description": f"Search index '{index_name}' wrapped as a knowledge source.",
+        "searchIndexParameters": {
+            "searchIndexName": index_name,
+            "sourceDataFields": [
+                {"name": "title"},
+                {"name": "source"},
+                {"name": "store_id"},
+                {"name": "doc_type"},
+            ],
+        },
+    }
+    _put(f"{endpoint}/knowledgesources/{source_name}?api-version={SEARCH_API_VERSION}", body)
+    LOG.info("Knowledge source '%s' ready", source_name)
+
+
+def _create_or_update_knowledge_base(endpoint: str, kb_name: str, source_name: str) -> None:
+    # Note: ``retrievalInstructions`` requires a ``chatCompletionModel`` to be
+    # bound to the KB. We rely on the agent's system prompt to express the
+    # same guidance (store_id filtering, cite filenames) instead. For the
+    # same reason we pin the retrieval reasoning effort to ``minimal`` and
+    # request extractive output — anything else also requires a model.
     body = {
         "name": kb_name,
         "description": "Zava store operations: store-manager handbooks, returns, safety, HR, SOPs.",
         "knowledgeSources": [
-            {
-                "name": source_index,
-                "kind": "searchIndex",
-                "searchIndexParameters": {"indexName": source_index},
-            }
+            {"name": source_name}
         ],
-        "retrievalInstructions": (
-            "When answering store-operations questions, prefer information from the "
-            "Zava store-ops knowledge base. When the user references a specific "
-            "store (e.g., 'Seattle'), narrow retrieval to that store_id and to "
-            "'all' (chain-wide policies). Always cite the source document filename."
-        ),
+        "outputMode": "extractiveData",
+        "retrievalReasoningEffort": {"kind": "minimal"},
     }
     _put(f"{endpoint}/knowledgebases/{kb_name}?api-version={SEARCH_API_VERSION}", body)
     LOG.info("Knowledge base '%s' ready", kb_name)
@@ -181,6 +203,7 @@ def main() -> None:
 
     _create_or_update_index(endpoint, index_name)
     _upload_documents(endpoint, index_name)
+    _create_or_update_knowledge_source(endpoint, index_name, index_name)
     _create_or_update_knowledge_base(endpoint, kb_name, index_name)
     _register_project_connection(endpoint, kb_name, settings.store_ops_kb_connection_name)
 
