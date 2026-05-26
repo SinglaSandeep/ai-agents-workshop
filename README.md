@@ -53,22 +53,100 @@ and `campaign_id`.
 
 ## Reference Architecture
 
+The Zava assistant follows the same **FoundryIQ + Agent Framework** pattern
+shown in the public reference diagram (User → Container running Agent
+Framework → Foundry Agent Service participants → FoundryIQ knowledge
+bases + remote tools), specialised to the three Zava domains.
+
+A full walk-through (component table, exercise map, observability path)
+lives in [docs/architecture.md](docs/architecture.md). The diagram is
+reproduced here for quick reference:
+
 ```mermaid
 flowchart LR
-    U[User] -->|HTTP| W[FastAPI Chat App]
-    W --> O[Magentic Orchestrator<br/>Microsoft Agent Framework]
-    O --> SO[Store-Ops Agent<br/>Foundry Prompt Agent + Foundry IQ]
-    O --> PR[Products Agent<br/>Foundry Prompt Agent + MCP Tool]
-    O --> MK[Marketing Agent<br/>Foundry Prompt Agent + MCP + Code Interpreter]
-    O --> RG[Response Generator<br/>Foundry Prompt Agent]
-    SO  --> AIS[(Azure AI Search<br/>Store-Ops Foundry IQ KB)]
-    PR  -->|MCP| PMCP[Products MCP Server<br/>Azure Container Apps]
-    MK  -->|MCP| MMCP[Marketing MCP Server<br/>Azure Container Apps]
-    MK  -->|MCP| MKB[(Marketing Foundry IQ KB)]
-    PMCP --> COS[(Cosmos DB<br/>products container)]
-    MMCP --> COS2[(Cosmos DB<br/>marketing container)]
-    W --> OBS[App Insights / OpenTelemetry]
+    %% ----- Caller -----
+    U([User question])
+
+    %% ----- Container running the Agent Framework orchestrator -----
+    subgraph CTR["Container · Azure Container Apps"]
+        direction TB
+        WEB["FastAPI chat app<br/>(SSE live UI)"]
+        ORCH(["Agent Framework<br/>Magentic orchestrator"])
+        WEB --> ORCH
+    end
+
+    %% ----- Hosted agents in Foundry Agent Service -----
+    subgraph AS["Foundry Agent Service"]
+        direction TB
+        MGR(["Orchestrator Agent<br/>gpt-4.1 · manager"])
+        SO(["Store-Ops Agent<br/>+ AI model"])
+        PR(["Products Agent<br/>+ AI model"])
+        MK(["Marketing Agent<br/>+ AI model"])
+        RG(["Response Generator<br/>+ AI model"])
+        MGR --> SO
+        MGR --> PR
+        MGR --> MK
+        SO --> RG
+        PR --> RG
+        MK --> RG
+    end
+
+    %% ----- FoundryIQ knowledge bases + remote tools -----
+    subgraph FIQ["FoundryIQ · Knowledge bases & remote tools"]
+        direction TB
+        SOKB[("store-ops-kb<br/>Indexed: Azure AI Search<br/>per-store handbooks, SOPs")]
+        MKKB[("marketing-kb<br/>Indexed: briefs &amp; post-mortems")]
+        PMCP["products-mcp<br/>Remote MCP · Container Apps"]
+        MMCP["marketing-mcp<br/>Remote MCP · Container Apps"]
+        BING["Bing Web Search<br/>Remote tool"]
+        CODE["Code Interpreter<br/>Hosted sandbox"]
+        COS[("Cosmos DB<br/>products + marketing")]
+        PMCP --> COS
+        MMCP --> COS
+    end
+
+    %% ----- Wiring agents to their tools/KBs -----
+    U --> WEB
+    ORCH --> MGR
+    SO --> SOKB
+    PR --> PMCP
+    MK --> MMCP
+    MK --> MKKB
+    MK --> BING
+    MK --> CODE
+
+    %% ----- Observability -----
+    OBS[/"App Insights · OpenTelemetry"/]
+    WEB -. traces .-> OBS
+    ORCH -. traces .-> OBS
 ```
+
+**How to read it (left → right, matching the reference layout):**
+
+1. **User question** is sent to a **FastAPI chat app** running in **Azure
+   Container Apps**. The app embeds the **Microsoft Agent Framework**
+   `MagenticBuilder` orchestrator.
+2. The orchestrator drives the **Orchestrator Agent** (a `gpt-4.1`
+   *manager*) inside **Foundry Agent Service**, which plans and dispatches
+   to the three specialists: **Store-Ops**, **Products** and
+   **Marketing**. Each specialist has its own AI model and instructions
+   hosted in Foundry.
+3. Every specialist's grounding lives in **FoundryIQ** on the right:
+   - **Store-Ops Agent** → `store-ops-kb` (indexed Azure AI Search KB,
+     filtered by `store_id`).
+   - **Products Agent** → `products-mcp` (remote MCP server on Container
+     Apps, backed by Cosmos DB).
+   - **Marketing Agent** → `marketing-mcp` + `marketing-kb` + **Bing Web
+     Search** + **Code Interpreter** (live web context and a Python
+     sandbox for ROI math/charts).
+4. All specialist outputs hand off to the **Response Generator**, which
+   synthesises the single, formatted reply shown back in the chat UI.
+5. The container, orchestrator and agents all emit traces to **App
+   Insights** via OpenTelemetry (Exercise 11).
+
+> The browser UI at `http://localhost:8000` renders this same topology
+> live: every node lights up as its agent / tool / KB is invoked, with
+> SVG wires showing the active hand-offs (see Exercise 07).
 
 ---
 
@@ -89,6 +167,7 @@ flowchart LR
 | 10 | [Guardrails & Red Teaming](docs/10_guardrails_red_teaming/10_guardrails_red_teaming.md) | Content-filter middleware + custom policies + automated red-team scan. |
 | 11 | [End-to-End Observability](docs/11_observability/11_observability.md) | OpenTelemetry → App Insights and Foundry traces for the chat app and registered agents. |
 | 12 | [Resource Cleanup](docs/12_cleanup/12_cleanup.md) | Remove container apps, agent versions, KBs, eval schedules, connections you created. |
+| 13 | [Deploy the Chat App to Container Apps](docs/13_deploy_chat_app/13_deploy_chat_app.md) | Publish the chat UI behind HTTP Basic auth on ACA with a runtime model picker for the orchestrator. |
 
 ---
 
@@ -126,6 +205,43 @@ wired into the same UI so you can keep testing in the browser as you go.
 
 ---
 
+## Deploy the chat app to Azure Container Apps
+
+Full walkthrough: [Exercise 13](docs/13_deploy_chat_app/13_deploy_chat_app.md).
+One-shot quickstart for the impatient:
+
+```powershell
+# Build the image into your workshop ACR (no local Docker required)
+$env:PYTHONIOENCODING = 'utf-8'
+az acr build -r $env:ACR_NAME -t zava-chat-app:latest --no-logs .
+
+# Create the Container App with Basic auth + the model picker enabled
+$BASIC_PWD = 'M$FT#AI@2026'   # single quotes — $ stays literal
+az containerapp create `
+  --name zava-chat-app `
+  --resource-group $env:AZURE_RESOURCE_GROUP `
+  --environment   $env:ACA_ENVIRONMENT `
+  --image "$env:ACR_NAME.azurecr.io/zava-chat-app:latest" `
+  --target-port 8000 --ingress external --system-assigned `
+  --secrets "basic-auth-password=$BASIC_PWD" `
+  --env-vars `
+      BASIC_AUTH_USERNAME=demo-admin `
+      BASIC_AUTH_PASSWORD=secretref:basic-auth-password `
+      AZURE_AI_PROJECT_ENDPOINT=$env:AZURE_AI_PROJECT_ENDPOINT `
+      AZURE_AI_MODEL_DEPLOYMENT=$env:AZURE_AI_MODEL_DEPLOYMENT `
+      ORCHESTRATOR_MODEL_CHOICES="gpt-4.1,gpt-4.1-mini,gpt-4o,gpt-4o-mini"
+```
+
+Then grant the app's managed identity `AcrPull` on your ACR and
+`Azure AI Developer` + `Cognitive Services User` on the Foundry account
+(commands in [13.04](docs/13_deploy_chat_app/13_04_grant_roles.md)).
+
+Once live, the chat UI gets a **model dropdown** next to the input that
+lets you switch the Magentic *manager* model per request — no redeploy.
+Hosted Foundry specialists keep their own configured deployments.
+
+---
+
 ## Repository Layout
 
 ```
@@ -143,7 +259,8 @@ ai-agents-workshop/
 │   ├── 09_evaluations/                  # Quality + scheduled + continuous evals
 │   ├── 10_guardrails_red_teaming/       # Middleware + custom policies + red team
 │   ├── 11_observability/
-│   └── 12_cleanup/
+│   ├── 12_cleanup/
+│   └── 13_deploy_chat_app/              # Basic auth + runtime model picker on ACA
 ├── src/                           # STARTER scaffolds — fill in as you go
 │   ├── common/
 │   ├── mcp_servers/products/

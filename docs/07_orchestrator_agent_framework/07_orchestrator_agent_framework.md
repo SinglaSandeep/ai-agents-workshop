@@ -58,4 +58,4 @@ flowchart LR
 | ---- | ----------- |
 | [07.01 — Magentic in 5 minutes](07_01_magentic_overview.md) | The mental model: manager, participants, plan, stall, reset. |
 | [07.02 — Build the orchestrator](07_02_build_orchestrator.md) | Implement `run_query` in `magentic_router.py`. |
-| [07.03 — Run the orchestrator](07_03_wire_orchestrator_into_chat.md) | Use the CLI runner to ask mixed-domain questions. |
+| [07.03 — Run the orchestrator in the web UI](07_03_wire_orchestrator_into_chat.md) | Start the Zava chat app and watch the workflow run live in the browser. |

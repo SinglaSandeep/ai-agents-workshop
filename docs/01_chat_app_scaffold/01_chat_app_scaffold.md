@@ -11,13 +11,21 @@ has_children: true
 
 Before you build any AI, you want a working **frontend** you can point at every
 new agent. Zava has asked for a single chat-style assistant that employees
-can use to ask HR, product, and marketing questions. In this workshop we use
-the official **Microsoft Agent Framework DevUI** as that frontend — no
-custom HTML/JS to maintain. DevUI auto-generates a chat surface for every
-registered agent and exposes an OpenAI-compatible Responses API on the side.
+can use to ask store-operations, product, and marketing questions.
 
-Every subsequent exercise creates a new Foundry agent that DevUI then picks up
-automatically — so you keep testing in the same browser tab as you go.
+This workshop ships **two complementary UIs** — you do not need to write
+any HTML/JS:
+
+1. **Agent Framework DevUI** — used in Exercises 01–06 to test each
+   specialist agent on its own. Auto-generates a chat surface per agent
+   and exposes an OpenAI-compatible Responses API.
+2. **Zava Orchestrator Web UI** — a small FastAPI app introduced in
+   Exercise 07. It shows the orchestrator's plan, the active agent, live
+   execution trace, and the final answer — all updating in real time.
+
+Every subsequent exercise creates a new Foundry agent that DevUI picks up
+automatically, and the orchestrator UI lights up the corresponding box on
+the workflow diagram when that agent is called.
 
 ## Description
 
@@ -37,8 +45,9 @@ In this exercise you will:
 > - `python -m src.app.devui_launch` starts cleanly on port 8080.
 > - <http://127.0.0.1:8080> shows the DevUI chat surface with three agents
 >   listed (`products`, `marketing`, `store_ops`).
-> - You understand that DevUI is the **only** UI in this workshop and that
->   every new Foundry agent shows up there with no extra wiring.
+> - You understand that DevUI is used to test each agent **individually**
+>   in Exercises 01–06, and that the **orchestrator web UI** (Exercise 07)
+>   chats with all agents at once.
 > - You can hit the Responses API at `POST /v1/responses` with `curl` or
 >   the OpenAI Python SDK.
 

@@ -35,6 +35,17 @@ remove. This exercise lists them and shows the safe way to delete each one.
 $RG = $env:AZURE_RESOURCE_GROUP
 az containerapp delete -g $RG -n zava-products-mcp --yes
 az containerapp delete -g $RG -n zava-marketing-mcp --yes
+# Only if you completed Exercise 13:
+az containerapp delete -g $RG -n zava-chat-app --yes
+```
+
+If you also pushed images you no longer need, prune them from ACR:
+
+```powershell
+$ACR = $env:ACR_NAME
+foreach ($img in "zava-products-mcp","zava-marketing-mcp","zava-chat-app") {
+  az acr repository delete -n $ACR --repository $img --yes 2>$null
+}
 ```
 
 ### 02: Delete the Foundry Prompt Agents

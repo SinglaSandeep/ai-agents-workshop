@@ -22,6 +22,7 @@ has_children: false
 | 10 | [Guardrails & Red Teaming](10_guardrails_red_teaming/10_guardrails_red_teaming.md) |
 | 11 | [End-to-End Observability](11_observability/11_observability.md) |
 | 12 | [Resource Cleanup](12_cleanup/12_cleanup.md) |
+| 13 | [Deploy the Chat App to Container Apps](13_deploy_chat_app/13_deploy_chat_app.md) |
 
 
 ## Test-as-you-go

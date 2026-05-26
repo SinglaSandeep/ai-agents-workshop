@@ -9,9 +9,9 @@ parent: 'Exercise 01: Scaffold the Chat App'
 
 ## Introduction
 
-This workshop uses the [Microsoft Agent Framework **DevUI**](https://github.com/microsoft/agent-framework/tree/main/python/packages/devui)
-as its frontend — **no custom HTML / FastAPI app**. DevUI is a sample debug UI
-shipped by the framework team that:
+This exercise uses the [Microsoft Agent Framework **DevUI**](https://github.com/microsoft/agent-framework/tree/main/python/packages/devui)
+to test each specialist agent on its own. DevUI is a debug UI shipped by
+the framework team that:
 
 * auto-generates a chat surface for any registered `Agent` (or workflow)
 * exposes an **OpenAI-compatible Responses API** at `/v1/responses`, so the
@@ -20,9 +20,12 @@ shipped by the framework team that:
 
 The launcher lives at [src/app/devui_launch.py](https://github.com/SinglaSandeep/ai-agents-workshop/blob/main/src/app/devui_launch.py).
 It registers the three Zava specialist agents (`products`, `marketing`,
-`store_ops`) by their Foundry agent names — exactly the pattern used in the
-reference sample at
-<https://github.com/Azure-Samples/foundry-hosted-agentframework-demos>.
+`store_ops`) by their Foundry agent names.
+
+{: .note }
+> Use **DevUI** to test a single agent end-to-end. Once you reach
+> Exercise 07 you will launch the **orchestrator web UI** which talks to
+> all agents at once and shows the multi-agent workflow live.
 
 {: .note }
 > The agents themselves don't exist yet in Foundry — that's what Exercises

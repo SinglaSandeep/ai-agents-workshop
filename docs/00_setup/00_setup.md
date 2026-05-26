@@ -46,6 +46,68 @@ Before you can start building agents you need to:
 
 ## Architecture you are wiring up
 
+The Zava assistant follows the **FoundryIQ + Agent Framework** reference
+pattern (User → Container running the Agent Framework orchestrator →
+Foundry Agent Service participants → FoundryIQ knowledge bases and
+remote tools). Each workshop exercise wires up one slice of this
+picture. See the full diagram and component map in
+[Reference Architecture](../architecture.md).
+
+```mermaid
+flowchart LR
+    %% Caller
+    U([User question])
+
+    %% Container running the Agent Framework orchestrator
+    subgraph CTR["Container · Azure Container Apps"]
+        direction TB
+        WEB["FastAPI chat app<br/>(SSE live UI)"]
+        ORCH(["Agent Framework<br/>Magentic orchestrator"])
+        WEB --> ORCH
+    end
+
+    %% Hosted agents in Foundry Agent Service
+    subgraph AS["Foundry Agent Service"]
+        direction TB
+        MGR(["Orchestrator Agent<br/>gpt-4.1 · manager"])
+        SO(["Store-Ops Agent"])
+        PR(["Products Agent"])
+        MK(["Marketing Agent"])
+        RG(["Response Generator"])
+        MGR --> SO
+        MGR --> PR
+        MGR --> MK
+        SO --> RG
+        PR --> RG
+        MK --> RG
+    end
+
+    %% FoundryIQ knowledge bases + remote tools
+    subgraph FIQ["FoundryIQ · Knowledge bases & remote tools"]
+        direction TB
+        SOKB[("store-ops-kb<br/>Indexed AI Search")]
+        MKKB[("marketing-kb<br/>Indexed AI Search")]
+        PMCP["products-mcp<br/>Remote MCP"]
+        MMCP["marketing-mcp<br/>Remote MCP"]
+        BING["Bing Web Search"]
+        CODE["Code Interpreter"]
+        COS[("Cosmos DB")]
+        PMCP --> COS
+        MMCP --> COS
+    end
+
+    U --> WEB
+    ORCH --> MGR
+    SO --> SOKB
+    PR --> PMCP
+    MK --> MMCP
+    MK --> MKKB
+    MK --> BING
+    MK --> CODE
+```
+
+### Local resources you will use
+
 ```mermaid
 flowchart LR
     Dev[Your laptop] -->|az login| Azure

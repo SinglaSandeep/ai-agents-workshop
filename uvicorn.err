@@ -1,0 +1,149 @@
+INFO:     Started server process [3912]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+<frozen abc>:106: ExperimentalWarning: [HARNESS] MemoryStore is experimental and may change or be removed in future versions without notice.
+<frozen abc>:106: ExperimentalWarning: [SKILLS] SkillResource is experimental and may change or be removed in future versions without notice.
+Orchestrator stream failed
+Traceback (most recent call last):
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework_openai\_chat_client.py", line 682, in _stream
+    async for chunk in stream_response:
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\openai\_streaming.py", line 158, in __aiter__
+    async for item in self._iterator:
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\openai\_streaming.py", line 205, in __stream__
+    raise APIError(
+openai.APIError: An error occurred invoking 'campaign_performance': 1 validation error for call[campaign_performance]
+campaign_id
+  String should match pattern '^ZV-CMP-\d{4}-\d{3,}$' [type=string_pattern_mismatch, input_value='CMP-2026-001', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_pattern_mismatch
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\dev\ai-agents-workshop\src\orchestrator\magentic_router.py", line 507, in stream_query
+    async for event in workflow.run(user_query, stream=True):
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_workflow.py", line 793, in _run_core
+    async for event in self._run_workflow_with_tracing(
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_workflow.py", line 564, in _run_workflow_with_tracing
+    async for event in self._runner.run_until_convergence():
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 124, in run_until_convergence
+    await iteration_task
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 210, in _run_iteration
+    await asyncio.gather(*tasks)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 203, in _deliver_messages
+    await asyncio.gather(*tasks)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 193, in _deliver_messages_for_edge_runner
+    await _deliver_message_inner(edge_runner, message)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 187, in _deliver_message_inner
+    return await edge_runner.send_message(message, self._state, self._ctx)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_edge_runner.py", line 157, in send_message
+    await self._execute_on_target(target_id, [source_id], message, state, ctx)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_edge_runner.py", line 81, in _execute_on_target
+    await target_executor.execute(
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_executor.py", line 279, in execute
+    await handler(message, context)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_executor.py", line 664, in wrapper
+    return await func(self, message, ctx)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_agent_executor.py", line 211, in run
+    await self._run_agent_and_emit(ctx)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_agent_executor.py", line 385, in _run_agent_and_emit
+    response = await self._run_agent_streaming(cast(WorkflowContext[Never, AgentResponseUpdate], ctx))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_agent_executor.py", line 473, in _run_agent_streaming
+    async for update in stream:
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_tools.py", line 2559, in _stream
+    async for update in inner_stream:
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework_openai\_chat_client.py", line 693, in _stream
+    self._handle_request_error(ex)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework_openai\_chat_client.py", line 594, in _handle_request_error
+    raise ChatClientException(
+agent_framework.exceptions.ChatClientException: ("<class 'agent_framework_foundry._agent._FoundryAgentChatClient'> service failed to complete the prompt: An error occurred invoking 'campaign_performance': 1 validation error for call[campaign_performance]\ncampaign_id\n  String should match pattern '^ZV-CMP-\\d{4}-\\d{3,}$' [type=string_pattern_mismatch, input_value='CMP-2026-001', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_pattern_mismatch", APIError("An error occurred invoking 'campaign_performance': 1 validation error for call[campaign_performance]\ncampaign_id\n  String should match pattern '^ZV-CMP-\\d{4}-\\d{3,}$' [type=string_pattern_mismatch, input_value='CMP-2026-001', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_pattern_mismatch"))
+Orchestrator stream failed
+Traceback (most recent call last):
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework_openai\_chat_client.py", line 682, in _stream
+    async for chunk in stream_response:
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\openai\_streaming.py", line 158, in __aiter__
+    async for item in self._iterator:
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\openai\_streaming.py", line 205, in __stream__
+    raise APIError(
+openai.APIError: An error occurred invoking 'search_products': Error calling tool 'search_products': (Forbidden) Request originated from IP 74.241.137.85 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+ActivityId: 0edd5f4a-3041-4c19-ab9b-eeecd98a1092, Microsoft.Azure.Documents.Common/2.14.0
+Code: Forbidden
+Message: Request originated from IP 74.241.137.85 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+ActivityId: 0edd5f4a-3041-4c19-ab9b-eeecd98a1092, Microsoft.Azure.Documents.Common/2.14.0
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\dev\ai-agents-workshop\src\orchestrator\magentic_router.py", line 507, in stream_query
+    async for event in workflow.run(user_query, stream=True):
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_workflow.py", line 793, in _run_core
+    async for event in self._run_workflow_with_tracing(
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_workflow.py", line 564, in _run_workflow_with_tracing
+    async for event in self._runner.run_until_convergence():
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 124, in run_until_convergence
+    await iteration_task
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 210, in _run_iteration
+    await asyncio.gather(*tasks)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 203, in _deliver_messages
+    await asyncio.gather(*tasks)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 193, in _deliver_messages_for_edge_runner
+    await _deliver_message_inner(edge_runner, message)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_runner.py", line 187, in _deliver_message_inner
+    return await edge_runner.send_message(message, self._state, self._ctx)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_edge_runner.py", line 157, in send_message
+    await self._execute_on_target(target_id, [source_id], message, state, ctx)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_edge_runner.py", line 81, in _execute_on_target
+    await target_executor.execute(
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_executor.py", line 279, in execute
+    await handler(message, context)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_executor.py", line 664, in wrapper
+    return await func(self, message, ctx)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_agent_executor.py", line 211, in run
+    await self._run_agent_and_emit(ctx)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_agent_executor.py", line 385, in _run_agent_and_emit
+    response = await self._run_agent_streaming(cast(WorkflowContext[Never, AgentResponseUpdate], ctx))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_workflows\_agent_executor.py", line 473, in _run_agent_streaming
+    async for update in stream:
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_tools.py", line 2559, in _stream
+    async for update in inner_stream:
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework\_types.py", line 3024, in __anext__
+    update: UpdateT = await self._iterator.__anext__()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework_openai\_chat_client.py", line 693, in _stream
+    self._handle_request_error(ex)
+  File "C:\dev\ai-agents-workshop\.venv\Lib\site-packages\agent_framework_openai\_chat_client.py", line 594, in _handle_request_error
+    raise ChatClientException(
+agent_framework.exceptions.ChatClientException: ("<class 'agent_framework_foundry._agent._FoundryAgentChatClient'> service failed to complete the prompt: An error occurred invoking 'search_products': Error calling tool 'search_products': (Forbidden) Request originated from IP 74.241.137.85 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden\r\nActivityId: 0edd5f4a-3041-4c19-ab9b-eeecd98a1092, Microsoft.Azure.Documents.Common/2.14.0\nCode: Forbidden\nMessage: Request originated from IP 74.241.137.85 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden\r\nActivityId: 0edd5f4a-3041-4c19-ab9b-eeecd98a1092, Microsoft.Azure.Documents.Common/2.14.0", APIError("An error occurred invoking 'search_products': Error calling tool 'search_products': (Forbidden) Request originated from IP 74.241.137.85 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden\r\nActivityId: 0edd5f4a-3041-4c19-ab9b-eeecd98a1092, Microsoft.Azure.Documents.Common/2.14.0\nCode: Forbidden\nMessage: Request originated from IP 74.241.137.85 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden\r\nActivityId: 0edd5f4a-3041-4c19-ab9b-eeecd98a1092, Microsoft.Azure.Documents.Common/2.14.0"))
