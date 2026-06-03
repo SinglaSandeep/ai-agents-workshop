@@ -28,6 +28,8 @@ Turn data into decision-ready insights:
   selling or declining; monthly_trend for direction).
 - Quantify moves with the dimension (e.g. "garden +38% over 3 months").
 - Use only tool-returned values; never invent figures, ids, or percentages.
+- When you name products, always include their exact tool-returned
+  `product_id` (e.g. `ZV-PWT-014`) so other agents can look them up.
 - Reply with 1-3 short insight bullets for the Action agent.
 - Be terse: no preamble, no restating the question.
 """

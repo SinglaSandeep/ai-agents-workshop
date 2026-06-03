@@ -80,6 +80,10 @@ class ChatRequest(BaseModel):
         default=None,
         description="Optional Foundry model deployment name for the orchestrator manager.",
     )
+    conversation_id: str | None = Field(
+        default=None,
+        description="Optional client-supplied id used to carry session memory across turns.",
+    )
 
 
 # Comma-separated list of allowed deployment names the UI may pick. Override
@@ -127,7 +131,11 @@ async def chat(
 ) -> JSONResponse:
     model = _resolve_model(request.model)
     with trace_span("zava.chat", query=request.query):
-        result = await run_query(request.query, manager_model=model)
+        result = await run_query(
+            request.query,
+            manager_model=model,
+            conversation_id=request.conversation_id,
+        )
     return JSONResponse(
         {
             "final_answer": result.final_answer,
@@ -154,7 +162,11 @@ async def chat_stream(
     async def event_source():
         model = _resolve_model(request.model)
         with trace_span("zava.chat.stream", query=request.query):
-            async for payload in stream_query(request.query, manager_model=model):
+            async for payload in stream_query(
+                request.query,
+                manager_model=model,
+                conversation_id=request.conversation_id,
+            ):
                 yield f"data: {json.dumps(payload)}\n\n"
 
     return StreamingResponse(

@@ -306,12 +306,52 @@ def _collect_event_quiet(event: Any, state: dict) -> None:
 
 
 # --------------------------------------------------------------------------- #
+# Session memory (in-process, per conversation_id)
+# --------------------------------------------------------------------------- #
+# Magentic only accepts a single task message per run, so session memory works
+# by folding recent turns into that task string. Stored in RAM only — scoped to
+# the conversation_id supplied by the caller and cleared on restart.
+_MAX_HISTORY_TURNS = 6
+_SESSIONS: dict[str, list[tuple[str, str]]] = {}
+
+
+def _compose_task(user_query: str, conversation_id: str | None) -> str:
+    """Prepend recent conversation turns to the new question."""
+    if not conversation_id:
+        return user_query
+    history = _SESSIONS.get(conversation_id)
+    if not history:
+        return user_query
+    lines = ["Conversation so far:"]
+    for q, a in history:
+        lines.append(f"User: {q}")
+        lines.append(f"Assistant: {a}")
+    lines.append("")
+    lines.append(f"Current question: {user_query}")
+    return "\n".join(lines)
+
+
+def _remember(conversation_id: str | None, user_query: str, answer: str) -> None:
+    """Store the latest turn, keeping only the most recent turns."""
+    if not conversation_id or not answer:
+        return
+    history = _SESSIONS.setdefault(conversation_id, [])
+    history.append((user_query, answer))
+    if len(history) > _MAX_HISTORY_TURNS:
+        del history[: len(history) - _MAX_HISTORY_TURNS]
+
+
+# --------------------------------------------------------------------------- #
 # Public async entry point
 # --------------------------------------------------------------------------- #
 
 
 async def run_query(
-    user_query: str, *, verbose: bool = False, manager_model: str | None = None
+    user_query: str,
+    *,
+    verbose: bool = False,
+    manager_model: str | None = None,
+    conversation_id: str | None = None,
 ) -> OrchestratorResult:
     """Plan + execute a query across the Zava specialist agents.
 
@@ -358,10 +398,12 @@ async def run_query(
         console.print()
         console.print(Panel(user_query, title="User Query", border_style="bold blue"))
 
+    task = _compose_task(user_query, conversation_id)
+
     async with DefaultAzureCredential() as cred:
         workflow = build_workflow(cred, manager_model=manager_model)
 
-        async for event in workflow.run(user_query, stream=True):
+        async for event in workflow.run(task, stream=True):
             if verbose:
                 _handle_event(event, console, state)
             else:
@@ -377,6 +419,8 @@ async def run_query(
     if not result.final_answer and result.transcripts:
         # Fallback if no agent produced a final answer
         result.final_answer = next(reversed(result.transcripts.values()))
+
+    _remember(conversation_id, user_query, result.final_answer)
 
     if verbose and console is not None:
         from rich.markdown import Markdown
@@ -524,7 +568,10 @@ def _log_payload(payload: dict) -> None:
 
 
 async def stream_query(
-    user_query: str, *, manager_model: str | None = None
+    user_query: str,
+    *,
+    manager_model: str | None = None,
+    conversation_id: str | None = None,
 ) -> AsyncIterator[dict]:
     """Yield structured events from the orchestrator as they happen.
 
