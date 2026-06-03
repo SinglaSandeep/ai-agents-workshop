@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zava</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --ink:#0f172a; --muted:#64748b; --soft:#94a3b8;
@@ -23,6 +24,10 @@
       --resp:#dcfce7; --resp-fg:#166534;
       --error:#fee2e2; --error-fg:#991b1b;
       --wire:#cbd5e1; --wire-active:#f59e0b; --wire-done:#10b981;
+    }
+    .chart-box {
+      position: relative; height: 280px; margin: 12px 0;
+      background:#fff; border:1px solid var(--line); border-radius:8px; padding: 10px 12px;
     }
     *, *::before, *::after { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
@@ -168,23 +173,23 @@
         <p class="section">Agents</p>
         <ul>
           <li class="agent"><span class="ic"></span>Orchestrator (Manager)</li>
-          <li class="agent"><span class="ic"></span>Store Ops Agent</li>
-          <li class="agent"><span class="ic"></span>Products Agent</li>
+          <li class="agent"><span class="ic"></span>Sales Agent</li>
+          <li class="agent"><span class="ic"></span>Inventory Agent</li>
           <li class="agent"><span class="ic"></span>Marketing Agent</li>
+          <li class="agent"><span class="ic"></span>Action Agent</li>
           <li class="agent"><span class="ic"></span>Response Generator</li>
         </ul>
 
         <p class="section">Tools</p>
         <ul>
-          <li class="tool"><span class="ic"></span><code>products-mcp</code></li>
+          <li class="tool"><span class="ic"></span><code>sales-mcp</code></li>
+          <li class="tool"><span class="ic"></span><code>inventory-mcp</code></li>
           <li class="tool"><span class="ic"></span><code>marketing-mcp</code></li>
-         
           <li class="tool"><span class="ic"></span>Code Interpreter</li>
         </ul>
 
         <p class="section">Knowledge Bases</p>
         <ul>
-          <li class="kb"><span class="ic"></span><code>store-ops-kb</code></li>
           <li class="kb"><span class="ic"></span><code>marketing-kb</code></li>
         </ul>
       </aside>
@@ -219,26 +224,26 @@
                   <span class="tag platform custom" title="Custom code: Microsoft Agent Framework MagenticBuilder running in our FastAPI container">Custom · Agent Framework</span>
                   <div class="title">Orchestrator (Manager)</div>
                   <div class="sub">Plans which specialist(s) to call (Magentic)</div>
-                  <span class="tag model">gpt-4.1</span>
+                  <span class="tag model">gpt-4.1-mini</span>
                 </div>
               </div>
 
               <!-- Row 3: three specialist agents -->
               <div class="col">
-                <div class="node agent" id="n-store_ops" data-id="store_ops">
+                <div class="node agent" id="n-sales" data-id="sales">
                   <span class="dot"></span>
                   <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
-                  <div class="title">Store Ops Agent</div>
-                  <div class="sub">Manager handbooks, returns, safety, HR, SOPs</div>
-                  <span class="tag storeops">grounded</span>
+                  <div class="title">Sales Agent</div>
+                  <div class="sub">Revenue, units, margin trends</div>
+                  <span class="tag prod">tools</span>
                 </div>
               </div>
               <div class="col">
-                <div class="node agent" id="n-products" data-id="products">
+                <div class="node agent" id="n-inventory" data-id="inventory">
                   <span class="dot"></span>
                   <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
-                  <div class="title">Products Agent</div>
-                  <div class="sub">Catalog, inventory, pricing</div>
+                  <div class="title">Inventory Agent</div>
+                  <div class="sub">Distributor stock, reorder, cover</div>
                   <span class="tag prod">tools</span>
                 </div>
               </div>
@@ -247,25 +252,25 @@
                   <span class="dot"></span>
                   <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
                   <div class="title">Marketing Agent</div>
-                  <div class="sub">Campaigns, KPIs, ROI, brand, live web</div>
+                  <div class="sub">Campaigns, KPIs, ROI, briefs &amp; post-mortems</div>
                   <span class="tag mkt">tools + KB</span>
                 </div>
               </div>
 
               <!-- Row 4: tools & KBs per agent -->
               <div class="col">
-                <div class="node kb" id="n-store-ops-kb" data-id="store-ops-kb">
+                <div class="node tool" id="n-sales-mcp" data-id="sales-mcp">
                   <span class="dot"></span>
-                  <div class="title">store-ops-kb</div>
-                  <div class="sub">Foundry IQ knowledge base</div>
-                  <span class="tag kb">KB</span>
+                  <div class="title">sales-mcp</div>
+                  <div class="sub">MCP server · Cosmos DB sales orders</div>
+                  <span class="tag tool">MCP</span>
                 </div>
               </div>
               <div class="col">
-                <div class="node tool" id="n-products-mcp" data-id="products-mcp">
+                <div class="node tool" id="n-inventory-mcp" data-id="inventory-mcp">
                   <span class="dot"></span>
-                  <div class="title">products-mcp</div>
-                  <div class="sub">MCP server · Cosmos DB catalog &amp; inventory</div>
+                  <div class="title">inventory-mcp</div>
+                  <div class="sub">MCP server · Cosmos DB distributor stock</div>
                   <span class="tag tool">MCP</span>
                 </div>
               </div>
@@ -282,21 +287,25 @@
                   <div class="sub">Briefs &amp; post-mortems (Foundry IQ)</div>
                   <span class="tag kb">KB</span>
                 </div>
-                <div class="node tool" id="n-code" data-id="code">
+              </div>
+
+              <!-- Row 5: Action Recommender (final responder) -->
+              <div class="full">
+                <div class="node full-w agent" id="n-action" data-id="action">
                   <span class="dot"></span>
-                  <div class="title">Code Interpreter</div>
-                  <div class="sub">Python sandbox for charts &amp; math</div>
-                  <span class="tag tool">tool</span>
+                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
+                  <div class="title">Action Agent</div>
+                  <div class="sub">Turns insights into prioritised actions &amp; writes the final reply</div>
                 </div>
               </div>
 
-              <!-- Row 5: Response Generator -->
+              <!-- Row 5b: Action's Code Interpreter -->
               <div class="full">
-                <div class="node full-w agent" id="n-response_generator" data-id="response_generator">
+                <div class="node tool" id="n-code" data-id="code" style="max-width:300px;margin:0 auto;">
                   <span class="dot"></span>
-                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
-                  <div class="title">Response Generator</div>
-                  <div class="sub">Synthesises one grounded final answer</div>
+                  <div class="title">Code Interpreter</div>
+                  <div class="sub">Python sandbox for consolidated figures</div>
+                  <span class="tag tool">tool</span>
                 </div>
               </div>
 
@@ -329,9 +338,11 @@
         </div>
         <div class="chat-body" id="chat-body">
           <div class="suggestions" id="suggestions">
-            <button class="suggestion" type="button">What discount can the Seattle store manager approve on Spring Paint?</button>
-            <button class="suggestion" type="button">Which Zava campaigns target DIY weekenders and what's the ROI?</button>
-            <button class="suggestion" type="button">List low-inventory paint SKUs at the Seattle store</button>
+            <button class="suggestion" type="button">How did our last Garden campaign in Seattle perform, and what did the post-mortem say we should change next time?</button>
+            <button class="suggestion" type="button">What are our top 5 products by revenue right now?</button>
+            <button class="suggestion" type="button">Which warehouses are low on stock and need a reorder this week?</button>
+            <button class="suggestion" type="button">Compare revenue across our stores, check where inventory is tight, and tell me which markets to push campaigns in — with the actions to take.</button>
+            <button class="suggestion" type="button">Garden sales are trending up — do we have enough stock and an active campaign to support it? What should we do?</button>
           </div>
         </div>
         <form class="chat-input" id="chat-form">
@@ -351,23 +362,23 @@
     const WIRES = [
       // user → manager
       { id: 'user__manager',    from: 'user',      to: 'manager',    side: 'mid' },
-      // manager → 3 specialists
-      { id: 'manager__store_ops', from: 'manager', to: 'store_ops',  side: 'mid' },
-      { id: 'manager__products',  from: 'manager', to: 'products',   side: 'mid' },
-      { id: 'manager__marketing', from: 'manager', to: 'marketing',  side: 'mid' },
+      // manager → 3 insight specialists
+      { id: 'manager__sales',     from: 'manager', to: 'sales',     side: 'mid' },
+      { id: 'manager__inventory', from: 'manager', to: 'inventory', side: 'mid' },
+      { id: 'manager__marketing', from: 'manager', to: 'marketing', side: 'mid' },
       // agents → their tools / KBs
-      { id: 'store_ops__store-ops-kb', from: 'store_ops', to: 'store-ops-kb', side: 'mid' },
-      { id: 'products__products-mcp',  from: 'products',  to: 'products-mcp', side: 'mid' },
+      { id: 'sales__sales-mcp',         from: 'sales',     to: 'sales-mcp',     side: 'mid' },
+      { id: 'inventory__inventory-mcp', from: 'inventory', to: 'inventory-mcp', side: 'mid' },
       { id: 'marketing__marketing-mcp', from: 'marketing', to: 'marketing-mcp', side: 'mid' },
       { id: 'marketing__marketing-kb',  from: 'marketing', to: 'marketing-kb',  side: 'mid' },
-      { id: 'marketing__bing',          from: 'marketing', to: 'bing',          side: 'mid' },
-      { id: 'marketing__code',          from: 'marketing', to: 'code',          side: 'mid' },
-      // specialists → response_generator
-      { id: 'store_ops__response_generator', from: 'store_ops', to: 'response_generator', side: 'mid' },
-      { id: 'products__response_generator',  from: 'products',  to: 'response_generator', side: 'mid' },
-      { id: 'marketing__response_generator', from: 'marketing', to: 'response_generator', side: 'mid' },
-      // response → final
-      { id: 'response_generator__final', from: 'response_generator', to: 'final', side: 'mid' },
+      // specialists → action recommender
+      { id: 'sales__action',     from: 'sales',     to: 'action', side: 'mid' },
+      { id: 'inventory__action', from: 'inventory', to: 'action', side: 'mid' },
+      { id: 'marketing__action', from: 'marketing', to: 'action', side: 'mid' },
+      // action → code interpreter
+      { id: 'action__code', from: 'action', to: 'code', side: 'mid' },
+      // action → final
+      { id: 'action__final', from: 'action', to: 'final', side: 'mid' },
     ];
 
     const diagram = document.getElementById('diagram');
@@ -464,16 +475,19 @@
       }
     })();
 
-    const ALL_NODES = ['user','manager','store_ops','products','marketing',
-      'store-ops-kb','products-mcp','marketing-mcp','marketing-kb','bing','code',
-      'response_generator','final'];
+    const ALL_NODES = ['user','manager','sales','inventory','marketing','action',
+      'sales-mcp','inventory-mcp','marketing-mcp','marketing-kb','code','final'];
 
     // Which downstream tools/KBs each agent uses
     const AGENT_DEPS = {
-      store_ops: ['store-ops-kb'],
-      products:  ['products-mcp'],
-      marketing: ['marketing-mcp','marketing-kb','bing','code'],
+      sales:     ['sales-mcp'],
+      inventory: ['inventory-mcp'],
+      marketing: ['marketing-mcp','marketing-kb'],
+      action:    ['code'],
     };
+
+    // Insight specialists that fan into the Action agent.
+    const SPECIALISTS = ['sales','inventory','marketing'];
 
     document.getElementById('clear-trace').addEventListener('click', () => { traceEl.innerHTML = ''; });
     document.querySelectorAll('.suggestion').forEach(btn => btn.addEventListener('click', () => ask(btn.textContent.trim())));
@@ -546,6 +560,53 @@
       flushPara(); closeList();
       return out.join('\n');
     }
+    // Render markdown PLUS any ```chart fenced JSON blocks into `el`.
+    // Each chart block is replaced by a <canvas> that Chart.js draws into.
+    const CHART_PALETTE = ['#1e40af','#16a34a','#f59e0b','#db2777','#7c3aed','#0891b2','#dc2626','#ca8a04'];
+    function renderRich(el, text) {
+      const specs = [];
+      const cleaned = (text || '').replace(/```chart\s*([\s\S]*?)```/g, (_m, body) => {
+        specs.push(body.trim());
+        return `\n@@CHART${specs.length - 1}@@\n`;
+      });
+      let html = md(cleaned).replace(/<p>@@CHART(\d+)@@<\/p>|@@CHART(\d+)@@/g,
+        () => '<div class="chart-box"><canvas></canvas></div>');
+      el.innerHTML = html;
+      el.querySelectorAll('.chart-box canvas').forEach((cv, i) => {
+        try { renderChart(cv, JSON.parse(specs[i])); }
+        catch (e) { cv.parentElement.innerHTML = '<em>(chart unavailable)</em>'; }
+      });
+    }
+    function renderChart(canvas, spec) {
+      if (!window.Chart) return;
+      const type = spec.type || 'bar';
+      const isPie = type === 'pie' || type === 'doughnut';
+      const datasets = (spec.datasets || []).map((d, i) => {
+        const color = CHART_PALETTE[i % CHART_PALETTE.length];
+        return {
+          label: d.label || '',
+          data: d.data || [],
+          backgroundColor: isPie ? (spec.labels || []).map((_, j) => CHART_PALETTE[j % CHART_PALETTE.length])
+                                  : (type === 'line' ? 'transparent' : color),
+          borderColor: color, borderWidth: 2, fill: false, tension: 0.3,
+        };
+      });
+      new Chart(canvas.getContext('2d'), {
+        type,
+        data: { labels: spec.labels || [], datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#334155' } },
+            title: { display: !!spec.title, text: spec.title || '', color: '#0f172a' },
+          },
+          scales: isPie ? {} : {
+            x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(15,23,42,0.07)' } },
+            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(15,23,42,0.07)' } },
+          },
+        },
+      });
+    }
     function addUser(q) {
       const div = document.createElement('div');
       div.className = 'msg user'; div.textContent = q;
@@ -554,15 +615,16 @@
     function addAssistant(text) {
       const div = document.createElement('div');
       div.className = 'msg asst';
-      div.innerHTML = `<div class="who">orchestrator</div><div class="body">${md(text)}</div>`;
+      div.innerHTML = `<div class="who">orchestrator</div><div class="body"></div>`;
+      renderRich(div.querySelector('.body'), text);
       chatBody.appendChild(div); chatBody.scrollTop = chatBody.scrollHeight;
       return div;
     }
 
     const agentLabel = {
-      manager:'orchestrator', store_ops:'store-ops-agent',
-      products:'products-agent', marketing:'marketing-agent',
-      response_generator:'response-agent',
+      manager:'orchestrator', sales:'sales-agent',
+      inventory:'inventory-agent', marketing:'marketing-agent',
+      action:'action-agent',
     };
 
     let asstEl = null;
@@ -570,7 +632,7 @@
 
     function activateAgent(agent) {
       // demote previously active specialist nodes & their wires
-      ['store_ops','products','marketing'].forEach(a => {
+      SPECIALISTS.forEach(a => {
         if (a !== agent && nodeEl(a) && nodeEl(a).classList.contains('active')) {
           setNode(a, 'done');
           (AGENT_DEPS[a] || []).forEach(t => setNode(t, 'done'));
@@ -587,7 +649,7 @@
       setNode(agent, 'done');
       (AGENT_DEPS[agent] || []).forEach(t => { setNode(t, 'done'); setWireState(agent, t, 'done'); });
       setWireState('manager', agent, 'done');
-      setWireState(agent, 'response_generator', 'active');
+      setWireState(agent, 'action', 'active');
     }
 
     function handlePayload(p) {
@@ -605,7 +667,7 @@
       } else if (p.type === 'token') {
         if (!visitedAgents.has(p.agent)) {
           visitedAgents.add(p.agent);
-          if (['store_ops','products','marketing'].includes(p.agent)) {
+          if (SPECIALISTS.includes(p.agent)) {
             setNode('manager','done');
             setWireState('user','manager','done');
             activateAgent(p.agent);
@@ -615,30 +677,30 @@
           trace('query', `Routed to ${agentLabel[p.agent] || p.agent}`);
         }
       } else if (p.type === 'agent') {
-        if (['store_ops','products','marketing'].includes(p.agent)) {
+        if (SPECIALISTS.includes(p.agent)) {
           activateAgent(p.agent);
           trace('query', `${agentLabel[p.agent] || p.agent} executed`);
           trace('resp', `Response from ${agentLabel[p.agent] || p.agent} (${(p.text||'').length} chars)`);
           completeAgent(p.agent);
-        } else if (p.agent === 'response_generator') {
-          setNode('response_generator','active');
-          ['store_ops','products','marketing'].forEach(a => setWireState(a,'response_generator','done'));
-          trace('resp', `response-agent produced final answer (${(p.text||'').length} chars)`);
-          setNode('response_generator','done');
-          setWireState('response_generator','final','done');
+        } else if (p.agent === 'action') {
+          SPECIALISTS.forEach(a => setWireState(a,'action','done'));
+          setNode('action','active');
+          setNode('code','done');
+          setWireState('action','code','done');
+          trace('query', `${agentLabel.action} executed`);
+          trace('resp', `${agentLabel.action} produced final answer (${(p.text||'').length} chars)`);
+          setNode('action','done');
+          setWireState('action','final','done');
           setNode('final','done');
-          // Render exactly ONE assistant bubble. The orchestrator may emit
-          // both `agent_response` and `executor_completed` for the response
-          // generator, plus a trailing `final` event — all carry the same
-          // text. Reuse the existing bubble on subsequent events.
+          // The Action agent writes the final user-facing reply (one bubble).
           if (!asstEl) asstEl = addAssistant(p.text);
-          else asstEl.querySelector('.body').innerHTML = md(p.text);
+          else renderRich(asstEl.querySelector('.body'), p.text);
         } else {
           setNode(p.agent, 'done');
         }
       } else if (p.type === 'final') {
         if (!asstEl) asstEl = addAssistant(p.text);
-        else asstEl.querySelector('.body').innerHTML = md(p.text);
+        else renderRich(asstEl.querySelector('.body'), p.text);
       } else if (p.type === 'done') {
         if (p.final && !asstEl) asstEl = addAssistant(p.final);
         // mark everything reached as done

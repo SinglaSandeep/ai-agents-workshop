@@ -1,16 +1,18 @@
-"""Seed the Zava marketing_campaigns container in Cosmos DB.
+"""Seed the Zava ``sales`` container in Cosmos DB with >1000 generated rows.
 
 Usage:
-    zava-seed-marketing
+    zava-seed-sales
     # or
-    python -m src.mcp_servers.marketing.seed.seed_cosmos
+    python -m src.mcp_servers.sales.seed.seed_cosmos
+
+The container is created with ``/id`` as the partition key if it does not exist.
+Rows are produced deterministically by :mod:`generate`, so re-running upserts
+the same documents (idempotent).
 """
 
 from __future__ import annotations
 
-import json
 import logging
-from pathlib import Path
 
 from azure.cosmos import PartitionKey
 from azure.cosmos.exceptions import CosmosResourceExistsError
@@ -21,7 +23,6 @@ from src.common.settings import get_settings
 from .generate import generate_rows
 
 LOG = logging.getLogger(__name__)
-SEED_FILE = Path(__file__).with_name("marketing_seed.json")
 
 
 def main() -> None:
@@ -34,21 +35,18 @@ def main() -> None:
 
     try:
         container = db.create_container(
-            id=settings.cosmos_marketing_container,
+            id=settings.cosmos_sales_container,
             partition_key=PartitionKey(path="/id"),
         )
-        LOG.info("Created container '%s'", settings.cosmos_marketing_container)
+        LOG.info("Created container '%s'", settings.cosmos_sales_container)
     except CosmosResourceExistsError:
-        container = db.get_container_client(settings.cosmos_marketing_container)
-        LOG.info("Container '%s' already exists", settings.cosmos_marketing_container)
+        container = db.get_container_client(settings.cosmos_sales_container)
+        LOG.info("Container '%s' already exists", settings.cosmos_sales_container)
 
-    documents = json.loads(SEED_FILE.read_text(encoding="utf-8"))
-    # Top up to >1000 campaigns with deterministic synthetic data so the
-    # Marketing agent has rich Cosmos history to join against FoundryIQ.
-    documents = documents + generate_rows(curated=documents)
+    documents = generate_rows()
     for document in documents:
         container.upsert_item(body=document)
-    LOG.info("Upserted %d campaigns", len(documents))
+    LOG.info("Upserted %d sales order lines", len(documents))
 
 
 if __name__ == "__main__":

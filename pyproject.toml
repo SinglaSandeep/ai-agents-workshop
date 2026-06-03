@@ -65,9 +65,11 @@ dev = [
 [project.scripts]
 zava-devui = "src.app.devui_launch:main"
 zava-orchestrator = "src.orchestrator.runner:main"
-zava-products-mcp = "src.mcp_servers.products.server:main"
+zava-sales-mcp = "src.mcp_servers.sales.server:main"
+zava-inventory-mcp = "src.mcp_servers.inventory.server:main"
 zava-marketing-mcp = "src.mcp_servers.marketing.server:main"
-zava-seed-products = "src.mcp_servers.products.seed.seed_cosmos:main"
+zava-seed-sales = "src.mcp_servers.sales.seed.seed_cosmos:main"
+zava-seed-inventory = "src.mcp_servers.inventory.seed.seed_cosmos:main"
 zava-seed-marketing = "src.mcp_servers.marketing.seed.seed_cosmos:main"
 
 [tool.setuptools.packages.find]

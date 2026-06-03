@@ -37,16 +37,6 @@ class Settings(BaseSettings):
     # instead of AAD bearer tokens (useful when the Search service is
     # configured with `authOptions: apiKeyOnly`).
     azure_search_api_key: str = Field(default="", alias="AZURE_SEARCH_API_KEY")
-    # Store-ops KB (replaces the former HR KB). Index includes a filterable
-    # `store_id` field so the store-ops agent can scope retrieval to a
-    # single Zava store.
-    store_ops_kb_name: str = Field(default="zava-store-ops-kb", alias="STORE_OPS_KB_NAME")
-    store_ops_kb_source_id: str = Field(
-        default="zava-store-ops-source", alias="STORE_OPS_KB_SOURCE_ID"
-    )
-    store_ops_kb_connection_name: str = Field(
-        default="zava-store-ops-kb-conn", alias="STORE_OPS_KB_CONNECTION_NAME"
-    )
     marketing_kb_name: str = Field(default="zava-marketing-kb", alias="MARKETING_KB_NAME")
     marketing_kb_source_id: str = Field(
         default="zava-marketing-source", alias="MARKETING_KB_SOURCE_ID"
@@ -61,15 +51,22 @@ class Settings(BaseSettings):
     # ---- Cosmos DB ---------------------------------------------------------
     cosmos_endpoint: str = Field(default="", alias="COSMOS_ENDPOINT")
     cosmos_database: str = Field(default="zava", alias="COSMOS_DATABASE")
-    cosmos_products_container: str = Field(default="products", alias="COSMOS_PRODUCTS_CONTAINER")
+    cosmos_sales_container: str = Field(default="sales", alias="COSMOS_SALES_CONTAINER")
+    cosmos_inventory_container: str = Field(
+        default="inventory", alias="COSMOS_INVENTORY_CONTAINER"
+    )
     cosmos_marketing_container: str = Field(
         default="marketing_campaigns", alias="COSMOS_MARKETING_CONTAINER"
     )
 
     # ---- MCP servers -------------------------------------------------------
-    products_mcp_url: str = Field(default="", alias="PRODUCTS_MCP_URL")
-    products_mcp_connection_name: str = Field(
-        default="zava-products-mcp-conn", alias="PRODUCTS_MCP_CONNECTION_NAME"
+    sales_mcp_url: str = Field(default="", alias="SALES_MCP_URL")
+    sales_mcp_connection_name: str = Field(
+        default="zava-sales-mcp-conn", alias="SALES_MCP_CONNECTION_NAME"
+    )
+    inventory_mcp_url: str = Field(default="", alias="INVENTORY_MCP_URL")
+    inventory_mcp_connection_name: str = Field(
+        default="zava-inventory-mcp-conn", alias="INVENTORY_MCP_CONNECTION_NAME"
     )
     marketing_mcp_url: str = Field(default="", alias="MARKETING_MCP_URL")
     marketing_mcp_connection_name: str = Field(
@@ -82,11 +79,12 @@ class Settings(BaseSettings):
     )
 
     # ---- Foundry agent names ----------------------------------------------
-    store_ops_agent_name: str = Field(
-        default="zava-store-ops-agent", alias="STORE_OPS_AGENT_NAME"
+    sales_agent_name: str = Field(default="zava-sales-agent", alias="SALES_AGENT_NAME")
+    inventory_agent_name: str = Field(
+        default="zava-inventory-agent", alias="INVENTORY_AGENT_NAME"
     )
-    products_agent_name: str = Field(default="zava-products-agent", alias="PRODUCTS_AGENT_NAME")
     marketing_agent_name: str = Field(default="zava-marketing-agent", alias="MARKETING_AGENT_NAME")
+    action_agent_name: str = Field(default="zava-action-agent", alias="ACTION_AGENT_NAME")
     response_agent_name: str = Field(default="zava-response-generator", alias="RESPONSE_AGENT_NAME")
 
     # ---- Container Apps ----------------------------------------------------

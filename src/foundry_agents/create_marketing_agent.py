@@ -4,7 +4,6 @@ Creates / updates `MARKETING_AGENT_NAME` (default `zava-marketing-agent`) as
 a Foundry Prompt Agent wired to:
 
   - the Marketing MCP server from Exercise 04 (Cosmos campaign records),
-  - the Foundry Code Interpreter tool,
   - the Marketing Foundry IQ knowledge base from `setup_marketing_knowledge_base`.
 
 This is the **only** Marketing-agent path in the workshop — there is no
@@ -25,7 +24,6 @@ from __future__ import annotations
 import logging
 
 from azure.ai.projects.models import (
-    CodeInterpreterTool,
     MCPTool,
 )
 
@@ -36,37 +34,25 @@ from ._common import create_or_update_agent
 
 LOG = logging.getLogger(__name__)
 
-INSTRUCTIONS = """You are the Zava Marketing Specialist.
+INSTRUCTIONS = """You are the Zava Marketing Specialist. Zava: PNW DIY
+retailer, 7 stores (seattle, bellevue, tacoma, redmond, kirkland, spokane,
+everett) + online. Campaign IDs `ZV-CMP-YYYY-NNN`.
 
-Zava is a Pacific Northwest DIY hardware retailer with 7 physical stores
-(seattle, bellevue, tacoma, redmond, kirkland, spokane, everett) plus an
-online fulfillment center. Campaign IDs follow `ZV-CMP-YYYY-NNN`.
-
-You have the following tools:
-
-1. `zava-marketing` MCP — authoritative campaign records (status, budget,
-   channels, KPIs, featured product_ids, target store_ids, category_id)
-   backed by Cosmos DB. Prefer the most specific tool:
-     - `list_campaigns_by_store` / `list_campaigns_by_category` when the
-       user names a store or category
-     - `get_campaign(campaign_id)` for a single campaign
-     - `list_campaigns(status)` / `search_campaigns(text)` otherwise
-2. `code_interpreter` — sandboxed Python for ad-hoc analysis on the
-   campaign data returned by the MCP (totals, comparisons, charts).
-3. `marketing-knowledge-base` Foundry IQ KB — `knowledge_base_retrieve`
-   over indexed Zava marketing briefs and campaign post-mortems. When the
-   user references a specific store_id or category_id, pass it as a
-   retrieval filter.
+Tools:
+1. `zava-marketing` MCP — campaign records (status, budget, channels, KPIs,
+   product_ids, store_ids, category_id). Prefer the most specific:
+   list_campaigns_by_store / list_campaigns_by_category when a store or
+   category is named; get_campaign(id) for one; list_campaigns(status) /
+   search_campaigns(text) otherwise.
+2. `marketing-knowledge-base` Foundry IQ KB — knowledge_base_retrieve over
+   briefs/post-mortems; pass store_id or category_id as a filter when named.
 
 Rules:
-1. Never invent Zava campaign data, SKUs, or stores. Prefer the MCP for
-   structured facts and the KB for narrative briefs.
-2. Always cite `campaign_id`, `store_id`, `category_id`, or `product_id`
-   when referencing structured data.
-3. You do NOT have a web-search tool. If the user asks for live news or
-   competitor activity, say so plainly and offer to answer from the KB or
-   MCP instead.
-4. End every answer with a line: `Tools used: ...`.
+1. Never invent campaigns, SKUs, or stores. MCP for structured facts, KB
+   for narrative.
+2. Cite campaign_id/store_id/category_id/product_id for structured data.
+3. No web-search tool; if asked for live news, say so and offer KB/MCP.
+4. End with `Tools used: ...`. Be terse: no preamble.
 """
 
 
@@ -107,10 +93,7 @@ def main() -> None:
     )
 
 
-    # 3) Code Interpreter (no connection required).
-    tools.append(CodeInterpreterTool())
-
-    # 4) Foundry IQ KB MCP (Marketing briefs + post-mortems).
+    # 2) Foundry IQ KB MCP (Marketing briefs + post-mortems).
     kb_url = (
         f"{settings.azure_search_endpoint.rstrip('/')}"
         f"/knowledgebases/{settings.marketing_kb_name}"

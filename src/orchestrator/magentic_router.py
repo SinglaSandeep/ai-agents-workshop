@@ -1,10 +1,10 @@
 """Magentic orchestrator that coordinates the Zava Foundry agents.
 
 The orchestrator uses **Microsoft Agent Framework** (``agent-framework``)
-and its ``MagenticBuilder`` planner. The four Foundry hosted agents
-(Store-Ops, Products, Marketing, Response Generator) are exposed to the
+and its ``MagenticBuilder`` planner. The Foundry hosted agents (Sales,
+Inventory, Marketing, Action, Response Generator) are exposed to the
 planner as *participants*; the planner picks which to call, in what order,
-and synthesises the trail.
+and synthesises the trail into prioritised actions.
 
 Public surface
 --------------
@@ -81,26 +81,26 @@ def build_workflow(credential: Any, *, manager_model: str | None = None) -> Any:
 
     # FoundryAgent(agent_name=...) references hosted specialists by name;
     # their model + instructions + tools live in the Foundry project.
-    store_ops = FoundryAgent(
+    sales = FoundryAgent(
         project_endpoint=settings.azure_ai_project_endpoint,
-        agent_name=settings.store_ops_agent_name,
+        agent_name=settings.sales_agent_name,
         credential=credential,
-        name="store_ops",
+        name="sales",
         description=(
-            "Answers Zava store-operations questions (per-store handbooks, "
-            "returns, safety, HR, SOPs) using the Foundry IQ knowledge base; "
-            "scopes retrieval by store_id."
+            "Surfaces Zava SALES insights (revenue/units/margin trends by "
+            "store, region, category, month and product) using the Sales MCP "
+            "server backed by Cosmos DB."
         ),
     )
-    products = FoundryAgent(
+    inventory = FoundryAgent(
         project_endpoint=settings.azure_ai_project_endpoint,
-        agent_name=settings.products_agent_name,
+        agent_name=settings.inventory_agent_name,
         credential=credential,
-        name="products",
+        name="inventory",
         description=(
-            "Answers questions about the Zava DIY product catalog (SKU "
-            "`ZV-XXX-NNN`, category, price, and per-store inventory) using "
-            "the Products MCP server."
+            "Surfaces Zava distributor-level INVENTORY insights (low stock, "
+            "overstock, weeks of cover, reorder needs across 4 distributors / "
+            "6 warehouses) using the Inventory MCP server backed by Cosmos DB."
         ),
     )
     marketing = FoundryAgent(
@@ -111,40 +111,43 @@ def build_workflow(credential: Any, *, manager_model: str | None = None) -> Any:
         description=(
             "Answers questions about Zava marketing campaigns (status, KPIs, "
             "budgets, ROI, target stores/categories) using the Marketing MCP "
-            "server, the Foundry IQ KB of briefs/post-mortems, and Bing "
-            "web_search for live context."
+            "server (Cosmos DB) joined with the Foundry IQ knowledge base of "
+            "briefs/post-mortems, plus Bing web_search for live context."
         ),
     )
-    response_generator = FoundryAgent(
+    action = FoundryAgent(
         project_endpoint=settings.azure_ai_project_endpoint,
-        agent_name=settings.response_agent_name,
+        agent_name=settings.action_agent_name,
         credential=credential,
-        name="response_generator",
+        name="action",
         description=(
-            "Synthesises the final user-facing answer from specialist "
-            "transcripts. Always called last."
+            "Turns the sales / inventory / marketing INSIGHTS into a short, "
+            "prioritised set of concrete cross-domain operational ACTIONS and "
+            "writes the final user-facing reply (with an optional chart). "
+            "Always call this last."
         ),
     )
 
     manager = Agent(
         client=client,
         name="manager",
-        description="Magentic manager that coordinates Zava specialist agents.",
+        description="Magentic manager that coordinates Zava insights-to-action agents.",
         instructions=(
-            "You coordinate Zava specialist agents to answer a store manager's "
-            "question. Plan the smallest set of specialist calls needed to "
-            "answer fully. Pay attention to shared keys (store_id, "
-            "category_id, product_id, campaign_id) so context flows between "
-            "specialists. Always finish by handing the consolidated context "
-            "to `response_generator` so the user sees a single, well-formatted "
-            "reply."
+            "Coordinate Zava specialists to turn data into action for a "
+            "store/ops manager. Call the relevant insight specialists "
+            "(`sales`, `inventory`, `marketing`) — often more than one, since "
+            "the best actions connect domains; reuse shared keys (store_id, "
+            "region, category, product_id, campaign_id). Finish by calling "
+            "`action`, which produces the prioritised recommendations AND the "
+            "single final user-facing reply. Be efficient: call each needed "
+            "agent ONCE, skip irrelevant ones, and avoid redundant rounds."
         ),
     )
 
     workflow = MagenticBuilder(
-        participants=[store_ops, products, marketing, response_generator],
+        participants=[sales, inventory, marketing, action],
         manager_agent=manager,
-        max_round_count=8,
+        max_round_count=7,
         max_stall_count=2,
         max_reset_count=1,
     ).build()
@@ -252,7 +255,7 @@ def _handle_event(event: Any, console: Any, state: dict) -> None:
         if text:
             state["transcripts"][name] = text
             state["plan"].append(name)
-            if name == "response_generator":
+            if name == "action":
                 state["final_answer"] = text
             console.print()
             console.print(
@@ -271,7 +274,7 @@ def _handle_event(event: Any, console: Any, state: dict) -> None:
         text = getattr(data, "text", None)
         if text is None and isinstance(data, list) and data:
             text = getattr(data[-1], "text", str(data[-1]))
-        if text:
+        if text and not state.get("final_answer"):
             state["final_answer"] = text
 
 
@@ -291,7 +294,7 @@ def _collect_event_quiet(event: Any, state: dict) -> None:
         if text:
             state["transcripts"][name] = text
             state["plan"].append(name)
-            if name == "response_generator":
+            if name == "action":
                 state["final_answer"] = text
     elif etype == "output":
         data = event.data
@@ -372,7 +375,7 @@ async def run_query(
     )
 
     if not result.final_answer and result.transcripts:
-        # Fallback if the manager forgot to call response_generator
+        # Fallback if no agent produced a final answer
         result.final_answer = next(reversed(result.transcripts.values()))
 
     if verbose and console is not None:
@@ -456,7 +459,7 @@ def _event_to_payload(event: Any, state: dict) -> list[dict]:
             state["transcripts"][name] = text
             if name not in state["plan"]:
                 state["plan"].append(name)
-            if name == "response_generator":
+            if name == "action":
                 state["final_answer"] = text
             payloads.append({"type": "agent", "agent": name, "text": text})
         return payloads
@@ -483,7 +486,7 @@ def _event_to_payload(event: Any, state: dict) -> list[dict]:
         text = getattr(data, "text", None)
         if text is None and isinstance(data, list) and data:
             text = getattr(data[-1], "text", str(data[-1]))
-        if text:
+        if text and not state["final_answer"]:
             state["final_answer"] = text
             payloads.append({"type": "final", "text": text})
         return payloads

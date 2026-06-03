@@ -1,18 +1,18 @@
-"""Seed the Zava products container in Cosmos DB.
+"""Seed the Zava ``inventory`` container in Cosmos DB with >1000 generated rows.
 
 Usage:
-    zava-seed-products
+    zava-seed-inventory
     # or
-    python -m src.mcp_servers.products.seed.seed_cosmos
+    python -m src.mcp_servers.inventory.seed.seed_cosmos
 
-The container is created with `/id` as the partition key if it does not exist.
+The container is created with ``/id`` as the partition key if it does not exist.
+Rows are produced deterministically by :mod:`generate`, so re-running upserts
+the same documents (idempotent).
 """
 
 from __future__ import annotations
 
-import json
 import logging
-from pathlib import Path
 
 from azure.cosmos import PartitionKey
 from azure.cosmos.exceptions import CosmosResourceExistsError
@@ -20,8 +20,9 @@ from azure.cosmos.exceptions import CosmosResourceExistsError
 from src.common.cosmos import get_cosmos_client
 from src.common.settings import get_settings
 
+from .generate import generate_rows
+
 LOG = logging.getLogger(__name__)
-SEED_FILE = Path(__file__).with_name("products_seed.json")
 
 
 def main() -> None:
@@ -34,18 +35,18 @@ def main() -> None:
 
     try:
         container = db.create_container(
-            id=settings.cosmos_products_container,
+            id=settings.cosmos_inventory_container,
             partition_key=PartitionKey(path="/id"),
         )
-        LOG.info("Created container '%s'", settings.cosmos_products_container)
+        LOG.info("Created container '%s'", settings.cosmos_inventory_container)
     except CosmosResourceExistsError:
-        container = db.get_container_client(settings.cosmos_products_container)
-        LOG.info("Container '%s' already exists", settings.cosmos_products_container)
+        container = db.get_container_client(settings.cosmos_inventory_container)
+        LOG.info("Container '%s' already exists", settings.cosmos_inventory_container)
 
-    documents = json.loads(SEED_FILE.read_text(encoding="utf-8"))
+    documents = generate_rows()
     for document in documents:
         container.upsert_item(body=document)
-    LOG.info("Upserted %d products", len(documents))
+    LOG.info("Upserted %d inventory snapshots", len(documents))
 
 
 if __name__ == "__main__":
