@@ -86,6 +86,7 @@ class Settings(BaseSettings):
     marketing_agent_name: str = Field(default="zava-marketing-agent", alias="MARKETING_AGENT_NAME")
     action_agent_name: str = Field(default="zava-action-agent", alias="ACTION_AGENT_NAME")
     response_agent_name: str = Field(default="zava-response-generator", alias="RESPONSE_AGENT_NAME")
+    intent_agent_name: str = Field(default="zava-intent-detector", alias="INTENT_AGENT_NAME")
 
     # ---- Container Apps ----------------------------------------------------
     aca_environment: str = Field(default="zava-aca-env", alias="ACA_ENVIRONMENT")

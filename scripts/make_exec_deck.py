@@ -180,16 +180,18 @@ def build_slide1(prs):
     chip(s, ax + 1.62, 3.35, 2.0, 0.95, "Orchestrator", "Agent Framework (Magentic)", BLUE)
     chip(s, ax + 1.62, 4.45, 2.0, 0.85, "Manager", "plans · gpt-4.1-mini", RGBColor(0x1D, 0x4E, 0xD8))
 
-    # Foundry agents
-    box(s, ax + 4.05, 1.5, 2.4, 5.35, fill=RGBColor(0xF0, 0xEC, 0xFB), line=PURPLE, line_w=1.25, radius=0.05)
-    text(s, ax + 4.05, 1.57, 2.4, 0.3, [[("MICROSOFT FOUNDRY · HOSTED AGENTS", 8.0, True, PURPLE)]], align=PP_ALIGN.CENTER)
-    chip(s, ax + 4.22, 1.95, 2.05, 0.7, "Sales agent", "trends & revenue", PURPLE)
-    chip(s, ax + 4.22, 2.78, 2.05, 0.7, "Inventory agent", "stock & reorder", PURPLE)
-    chip(s, ax + 4.22, 3.61, 2.05, 0.7, "Marketing agent", "campaigns & ROI", PURPLE)
-    chip(s, ax + 4.22, 4.6, 2.05, 1.05, "Action agent", "final answer + chart\n(Code Interpreter)", AMBER)
-    text(s, ax + 4.22, 5.75, 2.05, 0.95, [
-        [("Always runs last — consolidates all insights into the reply.", 8.2, False, SUBINK)],
-    ], align=PP_ALIGN.CENTER, line_spacing=0.95)
+    # Foundry agents (now incl. Intent Detector + Response Generator)
+    box(s, ax + 4.05, 1.5, 2.4, 5.36, fill=RGBColor(0xF0, 0xEC, 0xFB), line=PURPLE, line_w=1.25, radius=0.05)
+    text(s, ax + 4.05, 1.55, 2.4, 0.3, [[("MICROSOFT FOUNDRY · HOSTED AGENTS", 8.0, True, PURPLE)]], align=PP_ALIGN.CENTER)
+    chip(s, ax + 4.22, 1.9, 2.05, 0.62, "Intent Detector", "chat vs business", SLATE)
+    chip(s, ax + 4.22, 2.56, 2.05, 0.54, "Sales agent", "trends & revenue", PURPLE)
+    chip(s, ax + 4.22, 3.14, 2.05, 0.54, "Inventory agent", "stock & reorder", PURPLE)
+    chip(s, ax + 4.22, 3.72, 2.05, 0.54, "Marketing agent", "campaigns & ROI", PURPLE)
+    chip(s, ax + 4.22, 4.32, 2.05, 0.72, "Action agent", "actions + chart\n(Code Interpreter)", AMBER)
+    chip(s, ax + 4.22, 5.1, 2.05, 0.7, "Response Gen", "writes the final reply", GREEN)
+    text(s, ax + 4.22, 5.86, 2.05, 0.92, [
+        [("Greetings skip straight to Response Gen; business questions fan out, then return here.", 7.6, False, SUBINK)],
+    ], align=PP_ALIGN.CENTER, line_spacing=0.92)
 
     # Data layer
     box(s, ax + 6.7, 1.95, 1.9, 4.05, fill=RGBColor(0xE6, 0xF5, 0xF3), line=TEAL, line_w=1.25, radius=0.06)
@@ -383,11 +385,19 @@ def build_slide4(prs):
     title_bar(s, "ZAVA · ONE QUESTION, START TO FINISH", "How the agents turn a question into a decision")
 
     # the question
-    box(s, 0.45, 1.4, 12.45, 0.72, fill=RGBColor(0xEA, 0xF0, 0xFE), line=BLUE, line_w=1.25, radius=0.12)
-    text(s, 0.7, 1.42, 12.0, 0.68, [
+    box(s, 0.45, 1.36, 12.45, 0.6, fill=RGBColor(0xEA, 0xF0, 0xFE), line=BLUE, line_w=1.25, radius=0.12)
+    text(s, 0.7, 1.36, 12.0, 0.6, [
         [("The user asks:   ", 11, True, BLUE),
          ("“Garden — sorry, paint sales are slipping in Seattle. Do we have stock and a campaign in play? What should we do?”",
           12, True, INK)]],
+        anchor=MSO_ANCHOR.MIDDLE)
+
+    # intent routing band (conditional edge)
+    box(s, 0.45, 2.04, 12.45, 0.46, fill=RGBColor(0xE7, 0xEA, 0xF1), line=SLATE, line_w=1.0, radius=0.12)
+    text(s, 0.7, 2.04, 12.0, 0.46, [
+        [("Intent Detector:  ", 10.5, True, SLATE),
+         ("first it classifies the message — a greeting would get a quick friendly reply; this is a business question, so the Manager engages the specialists.",
+          10, False, INK)]],
         anchor=MSO_ANCHOR.MIDDLE)
 
     steps = [
@@ -397,10 +407,10 @@ def build_slide4(prs):
          "Seattle warehouse has just 3 cans of the top paint left — below the safe reorder level."),
         ("3", "MARKETING AGENT", PURPLE, "Reviews campaigns",
          "A ‘Spring Paint Sale’ is LIVE on that exact paint — and last year’s post-mortem (Foundry IQ) warned stock ran out early."),
-        ("4", "ACTION AGENT", AMBER, "Decides & replies",
-         "Joins it all up and recommends the moves — with an owner and priority for each."),
+        ("4", "ACTION AGENT", AMBER, "Decides the moves",
+         "Joins it all up into a ranked set of actions — each with an owner and priority — plus a chart of the numbers."),
     ]
-    cw, gap, x0, y0, ch = 2.95, 0.22, 0.45, 2.35, 2.55
+    cw, gap, x0, y0, ch = 2.95, 0.22, 0.45, 2.58, 2.2
     for i, (n, name, col, role, body) in enumerate(steps):
         x = x0 + i * (cw + gap)
         box(s, x, y0, cw, ch, fill=CARD, line=RGBColor(0xE0, 0xE4, 0xEE), radius=0.05)
@@ -408,24 +418,26 @@ def build_slide4(prs):
         text(s, x + 0.15, y0, cw - 0.3, 0.62, [[(n + "   " + name, 11.5, True, WHITE)]],
              anchor=MSO_ANCHOR.MIDDLE)
         text(s, x + 0.2, y0 + 0.72, cw - 0.4, 0.35, [[(role, 10, True, col)]])
-        text(s, x + 0.2, y0 + 1.12, cw - 0.4, 1.3, [[(body, 10, False, INK)]], line_spacing=1.05)
+        text(s, x + 0.2, y0 + 1.08, cw - 0.4, 1.05, [[(body, 9.7, False, INK)]], line_spacing=1.02)
         if i < 3:
             arrow(s, x + cw + 0.01, y0 + ch / 2, x + cw + gap - 0.01, y0 + ch / 2, color=SUBINK, w=2.0)
 
     # the action result band
-    box(s, 0.45, 5.2, 12.45, 1.55, fill=RGBColor(0xFB, 0xF3, 0xE2), line=AMBER, line_w=1.5, radius=0.06)
-    text(s, 0.7, 5.28, 12.0, 0.4, [[("✓  RECOMMENDED ACTIONS  (what the leader sees)", 12, True, RGBColor(0x9A, 0x5E, 0x00))]])
-    text(s, 0.7, 5.7, 12.0, 1.0, [
+    box(s, 0.45, 5.0, 12.45, 1.5, fill=RGBColor(0xFB, 0xF3, 0xE2), line=AMBER, line_w=1.5, radius=0.06)
+    text(s, 0.7, 5.06, 12.0, 0.4, [[("✓  RECOMMENDED ACTIONS  (what the leader sees)", 12, True, RGBColor(0x9A, 0x5E, 0x00))]])
+    text(s, 0.7, 5.46, 12.0, 1.0, [
         [("1.  Emergency restock / transfer paint into Seattle this week   ", 10.5, True, INK),
          ("— Owner: Distributor Ops · Priority: High", 10, False, SUBINK)],
         [("2.  Hold or re-time the Spring Paint promo until stock lands   ", 10.5, True, INK),
          ("— Owner: Marketing · Priority: High", 10, False, SUBINK)],
         [("3.  Watch the paint downtrend; consider a margin review   ", 10.5, True, INK),
          ("— Owner: Merchandising · Priority: Medium", 10, False, SUBINK)],
-    ], space_after=3, line_spacing=1.0)
+    ], space_after=3, line_spacing=0.98)
 
-    text(s, 0.45, 6.92, 12.45, 0.4,
-         [[("Every recommendation cites the exact numbers it came from — nothing is guessed.", 10.5, True, INK)]],
+    text(s, 0.45, 6.6, 12.45, 0.5,
+         [[("The ", 10.5, True, INK), ("Response Generator", 10.5, True, GREEN),
+           (" writes the final reply — keeping the Action agent’s chart — and every recommendation cites the exact numbers it came from.",
+            10.5, False, INK)]],
          align=PP_ALIGN.CENTER)
     return s
 

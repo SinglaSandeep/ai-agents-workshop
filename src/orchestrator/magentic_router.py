@@ -138,9 +138,11 @@ def build_workflow(credential: Any, *, manager_model: str | None = None) -> Any:
             "(`sales`, `inventory`, `marketing`) — often more than one, since "
             "the best actions connect domains; reuse shared keys (store_id, "
             "region, category, product_id, campaign_id). Finish by calling "
-            "`action`, which produces the prioritised recommendations AND the "
-            "single final user-facing reply. Be efficient: call each needed "
-            "agent ONCE, skip irrelevant ones, and avoid redundant rounds."
+            "`action`, which produces the prioritised recommendations and a "
+            "draft reply (with an optional ```chart block). A separate "
+            "Response Generator then writes the polished final reply, so make "
+            "sure `action` runs last. Be efficient: call each needed agent "
+            "ONCE, skip irrelevant ones, and avoid redundant rounds."
         ),
     )
 
@@ -316,18 +318,40 @@ _SESSIONS: dict[str, list[tuple[str, str]]] = {}
 
 
 def _compose_task(user_query: str, conversation_id: str | None) -> str:
-    """Prepend recent conversation turns to the new question."""
+    """Wrap the new question with recent turns as clearly-labelled context.
+
+    The manager must understand that the prior turns are *read-only
+    background* (only there so follow-ups like "and the second one?" or
+    "do the same for inventory" make sense) and that the single thing it
+    has to plan for and answer is the CURRENT REQUEST. Without this strict
+    framing the manager tends to re-answer earlier questions or merge them
+    into the new one.
+    """
     if not conversation_id:
         return user_query
     history = _SESSIONS.get(conversation_id)
     if not history:
         return user_query
-    lines = ["Conversation so far:"]
+
+    lines = [
+        "You are continuing an ongoing conversation with the same user.",
+        "",
+        "=== PRIOR CONVERSATION (read-only context, already answered) ===",
+    ]
     for q, a in history:
-        lines.append(f"User: {q}")
-        lines.append(f"Assistant: {a}")
+        lines.append(f"User asked: {q}")
+        lines.append(f"You answered: {a}")
+        lines.append("")
+    lines.append("=== END PRIOR CONVERSATION ===")
     lines.append("")
-    lines.append(f"Current question: {user_query}")
+    lines.append(
+        "Use the prior conversation ONLY to resolve references in the new "
+        "request (e.g. pronouns, 'that product', 'the same for ...', "
+        "'those stores'). Do NOT re-answer earlier questions. Plan for and "
+        "answer ONLY the current request below."
+    )
+    lines.append("")
+    lines.append(f"CURRENT REQUEST: {user_query}")
     return "\n".join(lines)
 
 
@@ -339,6 +363,147 @@ def _remember(conversation_id: str | None, user_query: str, answer: str) -> None
     history.append((user_query, answer))
     if len(history) > _MAX_HISTORY_TURNS:
         del history[: len(history) - _MAX_HISTORY_TURNS]
+
+
+def _compose_intent_input(user_query: str, conversation_id: str | None) -> str:
+    """Wrap the new message with recent turns for the Intent Detector.
+
+    Uses the SAME shared session memory (``_SESSIONS``) as the Magentic flow,
+    so a short follow-up that only makes sense in context (e.g. "and the
+    second one?", "do the same for inventory") is still seen as a continuation
+    of the business thread rather than an out-of-context one-liner.
+    """
+    if not conversation_id:
+        return user_query
+    history = _SESSIONS.get(conversation_id)
+    if not history:
+        return user_query
+
+    lines = ["=== RECENT CONVERSATION (context only) ==="]
+    for q, _a in history:
+        lines.append(f"User: {q}")
+    lines.append("=== END CONTEXT ===")
+    lines.append("")
+    lines.append(f"Classify ONLY this latest user message: {user_query}")
+    return "\n".join(lines)
+
+
+# --------------------------------------------------------------------------- #
+# Intent detection + Response Generator (conditional routing)
+# --------------------------------------------------------------------------- #
+# A lightweight Intent Detector classifies each turn as GENERAL (greeting /
+# small talk) or BUSINESS. GENERAL turns short-circuit to the Response
+# Generator for a quick friendly reply; BUSINESS turns run the full Magentic
+# flow and the Response Generator then writes the final reply from the
+# specialists' + action recommender's transcripts.
+import re
+
+_CHART_RE = re.compile(r"```chart\s*[\s\S]*?```", re.IGNORECASE)
+_GREETING_HINTS = (
+    "hi", "hello", "hey", "yo", "hiya", "thanks", "thank you", "thank",
+    "good morning", "good afternoon", "good evening", "how are you",
+    "who are you", "what can you do", "what do you do", "help", "bye",
+    "goodbye", "see you", "cheers",
+)
+
+
+async def _run_foundry_agent(agent_name: str, prompt: str, credential: Any) -> str:
+    """Invoke a single hosted Foundry agent and return its text answer."""
+    from agent_framework.foundry import FoundryAgent
+
+    settings = get_settings()
+    async with FoundryAgent(
+        project_endpoint=settings.azure_ai_project_endpoint,
+        agent_name=agent_name,
+        credential=credential,
+    ) as agent:
+        response = await agent.run(prompt)
+        return getattr(response, "text", str(response)) or ""
+
+
+async def _detect_intent(user_query: str, credential: Any, conversation_id: str | None = None) -> str:
+    """Classify the raw user message as ``"general"`` or ``"business"``.
+
+    Shares the same per-conversation session memory as the Magentic flow
+    (``_SESSIONS``) so short follow-ups (e.g. "and the second one?") that only
+    make sense in context are still classified correctly.
+    """
+    settings = get_settings()
+    prompt = _compose_intent_input(user_query, conversation_id)
+    try:
+        raw = await _run_foundry_agent(settings.intent_agent_name, prompt, credential)
+        token = raw.strip().upper()
+        if "GENERAL" in token and "BUSINESS" not in token:
+            return "general"
+        if "BUSINESS" in token:
+            return "business"
+    except Exception:  # pragma: no cover - fall back to heuristic
+        LOG.warning("[orchestrator] intent detector failed; using heuristic", exc_info=True)
+
+    q = user_query.strip().lower().rstrip("!.?")
+    if len(q.split()) <= 4 and any(q == h or q.startswith(h + " ") or q == h for h in _GREETING_HINTS):
+        return "general"
+    if q in _GREETING_HINTS:
+        return "general"
+    return "business"
+
+
+def _extract_chart_blocks(text: str) -> list[str]:
+    return _CHART_RE.findall(text or "")
+
+
+async def _respond_general(user_query: str, credential: Any) -> str:
+    """Quick friendly reply for greetings / small talk via the Response Generator."""
+    settings = get_settings()
+    prompt = (
+        "GENERAL turn. The user sent a conversational message (greeting, "
+        "thanks, small talk, or a question about what you can do). Reply "
+        "briefly and warmly in the Zava voice. Do NOT add a chart and do NOT "
+        "add a 'Sources:' line.\n\n"
+        f"User: {user_query}"
+    )
+    return await _run_foundry_agent(settings.response_agent_name, prompt, credential)
+
+
+async def _finalize_with_response_generator(
+    user_query: str,
+    transcripts: dict[str, str],
+    draft: str,
+    credential: Any,
+) -> str:
+    """Compose the final user-facing reply from the specialist transcripts.
+
+    Any ```chart block produced by the action recommender is preserved: the
+    Response Generator is instructed to keep it verbatim, and as a deterministic
+    safety net it is re-appended if the generator dropped it.
+    """
+    settings = get_settings()
+    parts = [
+        "BUSINESS turn. Write the final user-facing reply from these findings.",
+        "",
+        f"User question: {user_query}",
+        "",
+        "Specialist findings:",
+    ]
+    for name, text in transcripts.items():
+        if text and text.strip():
+            parts.append(f"[{name}]")
+            parts.append(text.strip())
+            parts.append("")
+    parts.append(
+        "Synthesise the findings and surface the recommended ACTIONS. If the "
+        "action recommender included a ```chart block, KEEP that exact chart "
+        "block verbatim in your reply."
+    )
+    prompt = "\n".join(parts)
+    reply = await _run_foundry_agent(settings.response_agent_name, prompt, credential)
+
+    # Deterministic chart safety net: make sure any chart the action agent
+    # generated survives even if the Response Generator omitted it.
+    charts = _extract_chart_blocks(draft)
+    if charts and "```chart" not in (reply or "").lower():
+        reply = (reply or "").rstrip() + "\n\n## Snapshot\n\n" + charts[0]
+    return reply or draft
 
 
 # --------------------------------------------------------------------------- #
@@ -401,13 +566,39 @@ async def run_query(
     task = _compose_task(user_query, conversation_id)
 
     async with DefaultAzureCredential() as cred:
-        workflow = build_workflow(cred, manager_model=manager_model)
+        # Intent Detector — conditional edge. GENERAL turns skip Magentic and
+        # go straight to the Response Generator. Shares session memory.
+        intent = await _detect_intent(user_query, cred, conversation_id)
+        state["events"].append({"type": "intent", "intent": intent})
+        LOG.info("[orchestrator] intent=%s", intent)
+        if verbose and console is not None:
+            console.print()
+            console.print(Panel(intent, title="🧭 Intent", border_style="bold magenta"))
 
-        async for event in workflow.run(task, stream=True):
-            if verbose:
-                _handle_event(event, console, state)
-            else:
-                _collect_event_quiet(event, state)
+        if intent == "general":
+            reply = await _respond_general(user_query, cred)
+            state["final_answer"] = reply
+            state["plan"] = ["intent", "response"]
+        else:
+            workflow = build_workflow(cred, manager_model=manager_model)
+
+            async for event in workflow.run(task, stream=True):
+                if verbose:
+                    _handle_event(event, console, state)
+                else:
+                    _collect_event_quiet(event, state)
+
+            # The action recommender's text is the draft (carries any chart);
+            # the Response Generator writes the final user-facing reply.
+            draft = state["final_answer"]
+            if not draft and state["transcripts"]:
+                draft = next(reversed(state["transcripts"].values()))
+            reply = await _finalize_with_response_generator(
+                user_query, state["transcripts"], draft, cred
+            )
+            state["final_answer"] = reply
+            if "response" not in state["plan"]:
+                state["plan"].append("response")
 
     result = OrchestratorResult(
         final_answer=state["final_answer"],
@@ -599,30 +790,62 @@ async def stream_query(
     )
     yield {"type": "start", "query": user_query, "manager_model": manager_model}
 
+    reply = ""
     try:
         async with DefaultAzureCredential() as cred:
-            workflow = build_workflow(cred, manager_model=manager_model)
-            async for event in workflow.run(user_query, stream=True):
-                for payload in _event_to_payload(event, state):
-                    _log_payload(payload)
-                    yield payload
+            # Intent Detector — conditional edge (shares session memory).
+            intent = await _detect_intent(user_query, cred, conversation_id)
+            state["events"].append({"type": "intent", "intent": intent})
+            LOG.info("[orchestrator] intent=%s", intent)
+            yield {"type": "intent", "intent": intent}
+
+            if intent == "general":
+                # GENERAL turn → straight to the Response Generator.
+                reply = await _respond_general(user_query, cred)
+                state["final_answer"] = reply
+                state["plan"] = ["intent", "response"]
+                _log_payload({"type": "agent", "agent": "response", "text": reply})
+                yield {"type": "response", "agent": "response", "intent": "general", "text": reply}
+            else:
+                # BUSINESS turn → full Magentic flow, then the Response
+                # Generator writes the final reply.
+                task = _compose_task(user_query, conversation_id)
+                workflow = build_workflow(cred, manager_model=manager_model)
+                async for event in workflow.run(task, stream=True):
+                    for payload in _event_to_payload(event, state):
+                        # The Response Generator produces the real final reply,
+                        # so suppress Magentic's own "final" payload.
+                        if payload.get("type") == "final":
+                            continue
+                        _log_payload(payload)
+                        yield payload
+
+                draft = state["final_answer"]
+                if not draft and state["transcripts"]:
+                    draft = next(reversed(state["transcripts"].values()))
+                reply = await _finalize_with_response_generator(
+                    user_query, state["transcripts"], draft, cred
+                )
+                state["final_answer"] = reply
+                if "response" not in state["plan"]:
+                    state["plan"].append("response")
+                _log_payload({"type": "agent", "agent": "response", "text": reply})
+                yield {"type": "response", "agent": "response", "intent": "business", "text": reply}
     except Exception as exc:  # pragma: no cover - surface to UI
         LOG.exception("Orchestrator stream failed")
         yield {"type": "error", "message": str(exc)}
         return
 
-    final = state["final_answer"]
-    if not final and state["transcripts"]:
-        final = next(reversed(state["transcripts"].values()))
+    _remember(conversation_id, user_query, reply)
 
     LOG.info(
         "[orchestrator] DONE plan=%s final_chars=%d",
         " -> ".join(state["plan"]) or "(none)",
-        len(final or ""),
+        len(reply or ""),
     )
     yield {
         "type": "done",
-        "final": final,
+        "final": reply,
         "plan": state["plan"],
         "transcripts": state["transcripts"],
     }

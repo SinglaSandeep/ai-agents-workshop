@@ -172,11 +172,13 @@
       <aside class="sidebar">
         <p class="section">Agents</p>
         <ul>
+          <li class="agent"><span class="ic"></span>Intent Detector</li>
           <li class="agent"><span class="ic"></span>Orchestrator (Manager)</li>
           <li class="agent"><span class="ic"></span>Sales Agent</li>
           <li class="agent"><span class="ic"></span>Inventory Agent</li>
           <li class="agent"><span class="ic"></span>Marketing Agent</li>
           <li class="agent"><span class="ic"></span>Action Agent</li>
+          <li class="agent"><span class="ic"></span>Response Generator</li>
         </ul>
 
         <p class="section">Tools</p>
@@ -213,6 +215,16 @@
                   <span class="dot"></span>
                   <div class="title">User Input</div>
                   <div class="sub">Question typed in the chat panel</div>
+                </div>
+              </div>
+
+              <!-- Row 1b: Intent Detector (conditional edge) -->
+              <div class="full">
+                <div class="node full-w agent" id="n-intent" data-id="intent">
+                  <span class="dot"></span>
+                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
+                  <div class="title">Intent Detector</div>
+                  <div class="sub">General chit-chat → Response Generator · Business → Orchestrator</div>
                 </div>
               </div>
 
@@ -308,6 +320,16 @@
                 </div>
               </div>
 
+              <!-- Row 5c: Response Generator (writes the final reply) -->
+              <div class="full">
+                <div class="node full-w agent" id="n-response" data-id="response">
+                  <span class="dot"></span>
+                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
+                  <div class="title">Response Generator</div>
+                  <div class="sub">Writes the polished final reply · keeps Action's charts</div>
+                </div>
+              </div>
+
               <!-- Row 6: Final Answer -->
               <div class="full">
                 <div class="node full-w" id="n-final" data-id="final">
@@ -359,8 +381,11 @@
     // are recomputed on resize and updated to active/done states as nodes
     // light up.
     const WIRES = [
-      // user → manager
-      { id: 'user__manager',    from: 'user',      to: 'manager',    side: 'mid' },
+      // user → intent detector
+      { id: 'user__intent',     from: 'user',      to: 'intent',     side: 'mid' },
+      // intent detector → manager (business) OR → response (general): conditional
+      { id: 'intent__manager',  from: 'intent',    to: 'manager',    side: 'mid' },
+      { id: 'intent__response', from: 'intent',    to: 'response',   side: 'mid' },
       // manager → 3 insight specialists
       { id: 'manager__sales',     from: 'manager', to: 'sales',     side: 'mid' },
       { id: 'manager__inventory', from: 'manager', to: 'inventory', side: 'mid' },
@@ -376,8 +401,9 @@
       { id: 'marketing__action', from: 'marketing', to: 'action', side: 'mid' },
       // action → code interpreter
       { id: 'action__code', from: 'action', to: 'code', side: 'mid' },
-      // action → final
-      { id: 'action__final', from: 'action', to: 'final', side: 'mid' },
+      // action → response generator → final
+      { id: 'action__response',   from: 'action',   to: 'response', side: 'mid' },
+      { id: 'response__final',    from: 'response', to: 'final',    side: 'mid' },
     ];
 
     const diagram = document.getElementById('diagram');
@@ -476,8 +502,8 @@
       }
     })();
 
-    const ALL_NODES = ['user','manager','sales','inventory','marketing','action',
-      'sales-mcp','inventory-mcp','marketing-mcp','marketing-kb','code','final'];
+    const ALL_NODES = ['user','intent','manager','sales','inventory','marketing','action',
+      'sales-mcp','inventory-mcp','marketing-mcp','marketing-kb','code','response','final'];
 
     // Which downstream tools/KBs each agent uses
     const AGENT_DEPS = {
@@ -625,7 +651,7 @@
     const agentLabel = {
       manager:'orchestrator', sales:'sales-agent',
       inventory:'inventory-agent', marketing:'marketing-agent',
-      action:'action-agent',
+      action:'action-agent', intent:'intent-detector', response:'response-generator',
     };
 
     let asstEl = null;
@@ -656,10 +682,23 @@
     function handlePayload(p) {
       if (p.type === 'start') {
         trace('info', `User query received: "${p.query}"`);
-        trace('route', 'Orchestrator analyzing intent...');
+        trace('route', 'Intent Detector classifying request...');
         setNode('user', 'done');
-        setWireState('user','manager','active');
-        setNode('manager', 'active');
+        setWireState('user','intent','active');
+        setNode('intent', 'active');
+      } else if (p.type === 'intent') {
+        window.__intent = p.intent;
+        setNode('intent', 'done');
+        setWireState('user','intent','done');
+        if (p.intent === 'general') {
+          trace('route', 'Intent: GENERAL → Response Generator (skipping specialists)');
+          setWireState('intent','response','active');
+          setNode('response','active');
+        } else {
+          trace('route', 'Intent: BUSINESS → Orchestrator');
+          setWireState('intent','manager','active');
+          setNode('manager','active');
+        }
       } else if (p.type === 'manager') {
         setNode('manager','active');
         const summary = (p.text || '').trim();
@@ -669,7 +708,7 @@
           visitedAgents.add(p.agent);
           if (SPECIALISTS.includes(p.agent)) {
             setNode('manager','done');
-            setWireState('user','manager','done');
+            setWireState('intent','manager','done');
             activateAgent(p.agent);
           } else {
             setNode(p.agent, 'active');
@@ -688,16 +727,27 @@
           setNode('code','done');
           setWireState('action','code','done');
           trace('query', `${agentLabel.action} executed`);
-          trace('resp', `${agentLabel.action} produced final answer (${(p.text||'').length} chars)`);
+          trace('resp', `${agentLabel.action} produced a draft + chart (${(p.text||'').length} chars)`);
           setNode('action','done');
-          setWireState('action','final','done');
-          setNode('final','done');
-          // The Action agent writes the final user-facing reply (one bubble).
-          if (!asstEl) asstEl = addAssistant(p.text);
-          else renderRich(asstEl.querySelector('.body'), p.text);
+          setWireState('action','response','active');
+          setNode('response','active');
+          // The Response Generator writes the final bubble (see 'response').
         } else {
           setNode(p.agent, 'done');
         }
+      } else if (p.type === 'response') {
+        // The Response Generator produced the final user-facing reply.
+        if (window.__intent === 'general') {
+          setWireState('intent','response','done');
+        } else {
+          setWireState('action','response','done');
+        }
+        setNode('response','done');
+        setWireState('response','final','done');
+        setNode('final','done');
+        trace('resp', `${agentLabel.response} produced final answer (${(p.text||'').length} chars)`);
+        if (!asstEl) asstEl = addAssistant(p.text);
+        else renderRich(asstEl.querySelector('.body'), p.text);
       } else if (p.type === 'final') {
         if (!asstEl) asstEl = addAssistant(p.text);
         else renderRich(asstEl.querySelector('.body'), p.text);
@@ -723,6 +773,7 @@
       addUser(query);
       asstEl = null;
       visitedAgents = new Set();
+      window.__intent = null;
       resetAllNodes();
       drawWires();
       sendBtn.disabled = true;

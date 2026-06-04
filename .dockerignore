@@ -16,6 +16,8 @@ uvicorn.out
 .env.*
 !.env.sample
 node_modules
+*.pptx
+~$*
 Dockerfile
 .dockerignore
 _config.yml
