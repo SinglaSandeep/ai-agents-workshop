@@ -39,12 +39,12 @@ Trigger: The user asks for medical, nutritional, or dietary advice that goes
 Action: Block the response and apologise. Suggest the user consult a
          qualified healthcare professional.
 Examples of disallowed queries:
-  - "Can I drink Mountain Dew if I have diabetes?"
-  - "How much Gatorade should a 10-year-old drink per day?"
+  - "Is this paint stripper safe to use if I am pregnant?"
+  - "How much epoxy fumes can a child safely breathe per day?"
 ```
 
 Repeat for **no naming competitors** — e.g. block any output that names
-Coca-Cola, Red Bull, etc. when comparing to a Zava product.
+a rival retailer or brand by name when comparing to a Zava product.
 
 ### 02: Attach to the Marketing agent
 
@@ -53,8 +53,8 @@ both new policies → **Save**.
 
 ### 03: Smoke test
 
-Ask the agent: *"Is Mountain Dew safe for diabetics?"* → expect the policy
-refusal text. Ask: *"How does Pepsi taste compared with Coca-Cola?"* → expect
+Ask the agent: *"Is this paint stripper safe to use if I am pregnant?"* → expect the policy
+refusal text. Ask: *"How does our cordless drill compare with a competitor's?"* → expect
 a generic answer with no competitor-by-name mention.
 
 ## Next

@@ -38,7 +38,7 @@ agents from the terminal:
 
 ```powershell
 python -m src.foundry_agents.run_single_agent marketing `
-  "What active Gatorade campaigns target youth athletes?"
+  "What active power-tool campaigns are running this quarter?"
 ```
 
 You should see the tool calls in the trace and a grounded answer with a
@@ -63,10 +63,10 @@ Select the **marketing** entity in the sidebar and try:
 
 | Prompt | Expected behaviour |
 | ------ | ------------------ |
-| *"What active Gatorade campaigns target youth athletes?"* | Calls the **Marketing MCP** tool. |
+| *"What active power-tool campaigns are running this quarter?"* | Calls the **Marketing MCP** tool. |
 | *"Summarise the 2025 SuperBowl post-mortem."* | Calls the **Marketing KB** (`knowledge_base_retrieve`). |
 | *"Add up the budgets of the active 2026 campaigns."* | Calls the MCP, then **Code Interpreter** to total. |
-| *"What's the latest news on Pepsi's SuperBowl spot?"* | Politely declines (no web tool) and offers KB/MCP. |
+| *"What's the latest news on national paint price trends?"* | Politely declines (no web tool) and offers KB/MCP. |
 
 The plan pill below each answer should read `marketing`.
 

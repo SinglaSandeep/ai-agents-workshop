@@ -53,10 +53,10 @@ In the Inspector sidebar you should see the four tools. Click each in turn:
 
 | Tool | Args | Expected |
 | ---- | ---- | -------- |
-| `list_categories` | _none_ | `["Beverages", "Snacks", ...]` |
-| `list_products` | `{ "category": "Beverages" }` | array of 4-5 product dicts |
-| `get_product` | `{ "product_id": "ZV-PNT-001" }` | The Pepsi Cola record |
-| `search_products` | `{ "text": "lime" }` | products mentioning "lime" |
+| `list_categories` | _none_ | `["paint", "power-tools", ...]` |
+| `list_products` | `{ "category": "paint" }` | array of 4-5 product dicts |
+| `get_product` | `{ "product_id": "ZV-PNT-001" }` | The Premium Interior Paint record |
+| `search_products` | `{ "text": "white" }` | products mentioning "white" |
 
 
 ## Next

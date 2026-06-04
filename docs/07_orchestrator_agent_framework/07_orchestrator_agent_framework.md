@@ -10,7 +10,7 @@ has_children: true
 ## Scenario
 
 Each specialist works in isolation, but real Zava questions often cross
-domains: *"Which active Gatorade campaigns target youth athletes, and what is
+domains: *"Which active power-tool campaigns are running this quarter, and what is
 the PTO policy for marketing managers attending those activations?"* A single
 agent cannot answer that — the orchestrator can.
 

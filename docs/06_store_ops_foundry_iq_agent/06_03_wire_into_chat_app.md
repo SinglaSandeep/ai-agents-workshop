@@ -33,7 +33,7 @@ Pick the **store_ops** agent from the sidebar at <http://127.0.0.1:8080>.
 | ------ | -------- |
 | *"What is Zava's PTO policy?"* | Cites `pto_and_scheduling.md` |
 | *"What benefits does Zava offer?"* | Cites `employee_onboarding.md` |
-| *"How many SKUs does Pepsi Cola have?"* | Politely declines — agent only knows store-ops content (handbooks, returns, safety, HR, SOPs). |
+| *"How many SKUs does the Premium Interior Paint have?"* | Politely declines — agent only knows store-ops content (handbooks, returns, safety, HR, SOPs). |
 
 You now have three working specialist agents, each individually usable from
 DevUI. The next exercise stitches them together so the user can ask a

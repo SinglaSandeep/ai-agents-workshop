@@ -15,7 +15,7 @@ You have a deployed MCP server (Exercise 02) and a runnable chat UI (Exercise
 wire the FastAPI chat endpoint to call it.
 
 By the end of this exercise users can ask the chat UI things like *"What
-Pepsi products do you have?"* or *"Tell me about ZV-PNT-001"* and get answers
+paint products do you have?"* or *"Tell me about ZV-PNT-001"* and get answers
 grounded in the live Cosmos data.
 
 ## Description
@@ -49,8 +49,8 @@ flowchart LR
 >   (`MCPTool` → that connection).
 > - `python -m src.foundry_agents.create_products_agent` runs without error
 >   and prints the new agent version.
-> - In DevUI, asking the **products** agent *"What sizes does Pepsi Cola
->   come in?"* returns an answer that cites `ZV-PNT-001`.
+> - In DevUI, asking the **products** agent *"What sizes does the Premium
+>   Interior Paint come in?"* returns an answer that cites `ZV-PNT-001`.
 
 ## Learning Resources
 

@@ -82,7 +82,7 @@ from openai import OpenAI
 client = OpenAI(base_url="http://127.0.0.1:8080/v1", api_key="not-needed")
 resp = client.responses.create(
     metadata={"entity_id": "products"},
-    input="What Pepsi colas do you have?",
+    input="What paint products do you have?",
 )
 print(resp.output[0].content[0].text)
 ```

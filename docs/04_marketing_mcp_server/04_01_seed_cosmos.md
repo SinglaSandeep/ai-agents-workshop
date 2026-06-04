@@ -28,12 +28,12 @@ Each document looks like:
 ```json
 {
   "id": "CMP-2026-001",
-  "campaign_name": "Gatorade Hydrate Summer",
-  "brand": "Gatorade",
+  "campaign_name": "Spring Paint Sale 2026",
+  "brand": "Zava",
   "status": "active",
   "region": "North America",
   "channel": ["TV", "Social", "OOH"],
-  "target_audience": "Youth athletes (13-22)",
+  "target_audience": "DIY homeowners (25-54)",
   "budget_usd": 3500000,
   "impressions": 12500000,
   "clicks": 215000,

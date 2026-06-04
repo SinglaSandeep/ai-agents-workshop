@@ -31,7 +31,7 @@ Each line is:
 
 ```json
 {"query": "What is the ROI of CMP-2026-001?",
- "ground_truth": "Gatorade SuperBowl campaign with budget USD 18M, target +12% aided awareness in 13-22."}
+ "ground_truth": "Spring Paint Sale 2026 campaign with budget USD 18M, target +12% aided awareness in DIY homeowners 25-54."}
 ```
 
 ### 02: Cover the three tool surfaces
@@ -42,7 +42,7 @@ Make sure the dataset exercises all three Marketing tools:
 | ---- | -------------- |
 | `marketing_mcp` (Cosmos) | *"What is the budget of CMP-2026-002?"* |
 | `marketing_kb` (Foundry IQ) | *"What worked and what did not in the 2025 SuperBowl post-mortem?"* |
-| `toolbox.web_search` | *"What is Pepsi's most recent SuperBowl spot?"* |
+| `toolbox.web_search` | *"What are the latest national paint price trends?"* |
 
 ## Next
 

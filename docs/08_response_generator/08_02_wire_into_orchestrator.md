@@ -35,7 +35,7 @@ Then open <http://127.0.0.1:8000>.
 
 In the chat panel, ask:
 
-> *How does our 2026 SuperBowl Gatorade push compare to our latest hydration
+> *How does our 2026 Spring Paint Sale push compare to our latest power-tool
 > product launch, and what HR support is available for the marketing team
 > during launch week?*
 
@@ -49,7 +49,7 @@ You should see:
 ### 03: Optional — verify from the CLI
 
 ```powershell
-python -m src.orchestrator.runner --query "How does our 2026 SuperBowl Gatorade push compare to our latest hydration product launch, and what HR support is available for the marketing team during launch week?"
+python -m src.orchestrator.runner --query "How does our 2026 Spring Paint Sale push compare to our latest power-tool product launch, and what HR support is available for the marketing team during launch week?"
 ```
 
 The printed **Plan** line should end in `... -> response_generator`.

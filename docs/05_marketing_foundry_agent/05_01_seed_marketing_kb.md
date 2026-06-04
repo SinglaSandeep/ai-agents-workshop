@@ -52,7 +52,7 @@ connection used by the Marketing agent.
 
 Foundry portal → **Knowledge bases** → confirm `zava-marketing-kb` lists
 the marketing source. Open the KB and run a test query like *"What is the
-goal of the Gatorade 2026 SuperBowl campaign?"*.
+goal of the Spring Paint Sale 2026 campaign?"*.
 
 ## Next
 

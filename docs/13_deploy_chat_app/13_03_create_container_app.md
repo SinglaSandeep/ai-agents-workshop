@@ -30,7 +30,7 @@ endpoint the orchestrator needs.
 ```powershell
 $RG          = $env:AZURE_RESOURCE_GROUP            # e.g. aifounry-rg
 $ACR         = $env:ACR_NAME                        # e.g. acrregistry2025
-$ENV         = $env:ACA_ENVIRONMENT                 # e.g. pepsico-aca-env
+$ENV         = $env:ACA_ENVIRONMENT                 # e.g. ai-aca-env
 $APP         = "zava-chat-app"
 $IMG         = "$ACR.azurecr.io/zava-chat-app:latest"
 

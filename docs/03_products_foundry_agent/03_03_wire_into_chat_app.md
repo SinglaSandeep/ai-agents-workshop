@@ -44,9 +44,9 @@ actually respond — `marketing` and `store_ops` come online in Exercises 05 and
 Open <http://127.0.0.1:8080>, pick **products** in the left rail, and try
 prompts like:
 
-* *"What flavors of Lay's chips do you carry?"*
-* *"Tell me about PEP-007."*
-* *"Which beverages are under $5?"*
+* *"What cordless drills do you carry?"*
+* *"Tell me about ZV-PNT-001."*
+* *"Which power tools are under $100?"*
 
 You should see grounded answers that include real product ids and prices
 from Cosmos. In **developer mode**, the right-hand panel shows every MCP

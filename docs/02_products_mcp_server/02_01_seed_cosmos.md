@@ -29,13 +29,13 @@ and look at the document shape:
 ```json
 {
   "id": "ZV-PNT-001",
-  "name": "Pepsi Cola",
-  "brand": "Pepsi",
-  "category": "Beverages",
-  "size": "12 oz can (12-pack)",
-  "description": "Classic Pepsi cola in a 12-pack of 12 oz cans.",
-  "calories": 150,
-  "price_usd": 6.99
+  "name": "Premium Interior Paint — Eggshell White",
+  "brand": "Zava Pro",
+  "category": "paint",
+  "size": "1 gallon",
+  "description": "Low-VOC interior latex paint with an eggshell finish.",
+  "coverage_sqft": 400,
+  "price_usd": 32.99
 }
 ```
 

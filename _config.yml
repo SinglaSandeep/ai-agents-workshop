@@ -1,5 +1,5 @@
-title: Pepsico AI Agents Workshop (L300)
-description: Build an end-to-end multi-agent Pepsico business assistant on Azure with Microsoft Foundry, Microsoft Agent Framework, Foundry IQ, Bing Grounding, MCP servers on Container Apps, and Azure Cosmos DB.
+title: Zava AI Agents Workshop (L300)
+description: Build an end-to-end multi-agent Zava business assistant on Azure with Microsoft Foundry, Microsoft Agent Framework, Foundry IQ, Bing Grounding, MCP servers on Container Apps, and Azure Cosmos DB.
 theme: just-the-docs
 
 # Enable Mermaid diagrams in just-the-docs.
@@ -32,7 +32,7 @@ exclude:
 # url: https://<github-org-or-user>.github.io/ai-agents-workshop/
 
 aux_links:
-  "Pepsico AI Agents Workshop on GitHub":
+  "Zava AI Agents Workshop on GitHub":
     - "https://github.com/SinglaSandeep/ai-agents-workshop"
 
 callouts_level: quiet
