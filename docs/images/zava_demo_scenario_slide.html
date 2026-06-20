@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Demo scenario — Zava Insights-to-Action</title>
+<style>
+  :root {
+    --bg: #000000;
+    --header: #2aa9ff;
+    --header-text: #002740;
+    --box-border: #3a3a3a;
+    --box-bg: #0a0a0a;
+    --text: #ffffff;
+    --muted: #b8b8b8;
+    --chip: #1b9df0;
+    --line: #8a8a8a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #111; }
+  .slide {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    margin: 16px auto;
+    overflow: hidden;
+  }
+  .title {
+    position: absolute;
+    top: 26px;
+    left: 40px;
+    width: 350px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  /* generic panel */
+  .panel { position: absolute; border: 1px solid var(--box-border); background: var(--box-bg); }
+  .panel > .cap {
+    background: var(--header);
+    color: var(--header-text);
+    font-weight: 700;
+    text-align: center;
+    font-size: 16px;
+    padding: 6px 8px;
+  }
+  .inner { border: 1px solid var(--box-border); margin: 14px; padding: 12px; height: calc(100% - 28px - 35px); }
+  .sub-cap { color: var(--header); font-weight: 700; text-align: center; font-size: 14px; margin-bottom: 6px; }
+
+  /* INPUT */
+  #input { left: 40px; top: 250px; width: 210px; height: 230px; }
+  #input .body { text-align: center; padding: 26px 14px; }
+  #input .ic { font-size: 46px; }
+  #input .label { font-weight: 700; font-size: 17px; margin-top: 20px; line-height: 1.3; }
+  #input .small { color: var(--muted); font-size: 12px; margin-top: 8px; }
+
+  /* AGENT SYSTEM */
+  #system { left: 410px; top: 250px; width: 470px; height: 270px; }
+  #system .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
+  .agent { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+  .agent .dot { width: 18px; height: 18px; border-radius: 4px; background: var(--chip); flex: none; }
+  .fwk-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 12px; padding: 8px; border: 1px solid var(--box-border); }
+  .chip { background: var(--chip); color: #fff; font-weight: 700; font-size: 12px; text-align: center; width: 150px; margin: 4px auto 2px; padding: 3px 0; }
+  .hosted { margin: 6px 12px 12px; padding: 10px; border: 1px solid var(--box-border); background: #060606; display: flex; align-items: center; gap: 10px; }
+  .hosted .dot { width: 22px; height: 22px; border-radius: 5px; background: var(--chip); flex: none; }
+  .hosted .t { font-weight: 700; font-size: 14px; }
+  .hosted .s { color: var(--muted); font-size: 11px; }
+
+  /* TOP - management band */
+  #governance { left: 410px; top: 36px; width: 320px; height: 78px; }
+  #governance .body { padding: 8px 10px; display: flex; align-items: center; gap: 10px; }
+  #governance .pill { width: 24px; height: 24px; border-radius: 6px; background: #8a5cf6; flex: none; }
+  #governance .gt { font-weight: 700; font-size: 13px; }
+  #governance .gs { color: var(--muted); font-size: 11px; }
+  #optimizer { left: 750px; top: 36px; width: 310px; height: 78px; }
+  #optimizer .body { text-align: center; padding: 10px; font-size: 13px; color: var(--muted); }
+
+  /* RIGHT column */
+  #channel { left: 980px; top: 232px; width: 262px; height: 96px; }
+  #channel .body, #itsm .body { padding: 14px; display: flex; align-items: center; gap: 10px; }
+  .pill { width: 26px; height: 26px; border-radius: 6px; background: var(--chip); flex: none; }
+  .rt { font-weight: 700; font-size: 15px; }
+  .rs { color: var(--muted); font-size: 11px; }
+  #itsm { left: 980px; top: 372px; width: 262px; height: 96px; }
+  .user { position: absolute; left: 1075px; top: 138px; width: 70px; height: 70px; border-radius: 50%; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 34px; }
+
+  /* BOTTOM - Tools & knowledge */
+  #tools { left: 250px; top: 548px; width: 760px; height: 150px; }
+  #tools .row { display: flex; gap: 14px; padding: 10px 16px; }
+  .toolbox { flex: 2; }
+  .memory { flex: 1; }
+  .tcards { display: flex; gap: 10px; }
+  .tcard { flex: 1; border: 1px solid var(--box-border); background: #060606; text-align: center; padding: 10px 4px; font-size: 12px; font-weight: 600; }
+  .tcard .ti { font-size: 24px; display: block; margin-bottom: 6px; }
+  .memcard { border: 1px solid var(--box-border); background: #060606; padding: 12px; display: flex; align-items: center; gap: 10px; height: 100%; }
+  .memcard .dot { width: 26px; height: 26px; border-radius: 6px; background: var(--chip); flex: none; }
+
+  /* labels on connectors */
+  .lbl { position: absolute; color: var(--text); font-size: 12px; }
+  .lbl.muted { color: var(--muted); }
+
+  svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .wire { stroke: var(--line); stroke-width: 1.6; fill: none; }
+  .arrow { fill: var(--line); }
+  .wire.dotted { stroke: #2aa9ff; stroke-dasharray: 4 4; }
+  .arrow.dotted { fill: #2aa9ff; }
+
+  /* TEAMS (art of the possible) */
+  #teams { left: 980px; top: 512px; width: 262px; height: 90px; border-style: dashed; border-color: #2aa9ff; }
+  #teams .cap { background: transparent; color: #2aa9ff; border-bottom: 1px dashed #2aa9ff; }
+  #teams .body { padding: 12px; display: flex; align-items: center; gap: 10px; }
+  #teams .pill { width: 26px; height: 26px; border-radius: 6px; background: #5059c9; flex: none; }
+  #teams .badge { position: absolute; top: -10px; right: 10px; background: #2aa9ff; color: #002740; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="title">Demo scenario:<br/>Zava Insights-to-Action retail assistant</div>
+
+    <!-- connectors -->
+    <svg class="wires" viewBox="0 0 1280 720">
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 z" class="arrow"></path>
+        </marker>
+        <marker id="ahd" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 z" class="arrow dotted"></path>
+        </marker>
+      </defs>
+      <!-- input <-> system -->
+      <path class="wire" d="M250,330 L408,330" marker-end="url(#ah)"></path>
+      <path class="wire" d="M408,400 L252,400" marker-end="url(#ah)"></path>
+      <!-- system -> channel -->
+      <path class="wire" d="M880,300 L978,290" marker-end="url(#ah)"></path>
+      <!-- system -> itsm -->
+      <path class="wire" d="M880,420 L978,420" marker-end="url(#ah)"></path>
+      <!-- itsm -> system (monitor) -->
+      <path class="wire" d="M1100,372 L1100,360 L905,360 L905,470 L880,470" marker-end="url(#ah)"></path>
+      <!-- optimizer -> system -->
+      <path class="wire" d="M820,114 L700,200 L700,248" marker-end="url(#ah)"></path>
+      <!-- governance -> system -->
+      <path class="wire" d="M540,114 L540,200 L540,248" marker-end="url(#ah)"></path>
+      <!-- channel <-> user -->
+      <path class="wire" d="M1110,232 L1110,208" marker-end="url(#ah)"></path>
+      <!-- user dispatch -->
+      <path class="wire" d="M1075,165 L905,150 L905,150" marker-end="url(#ah)"></path>
+      <!-- system -> tools -->
+      <path class="wire" d="M540,520 L540,546" marker-end="url(#ah)"></path>
+      <path class="wire" d="M720,546 L720,520" marker-end="url(#ah)"></path>
+      <!-- system -> teams (dotted, art of possible) -->
+      <path class="wire dotted" d="M880,490 L940,520 L940,545 L978,550" marker-end="url(#ahd)"></path>
+    </svg>
+
+    <!-- INPUT -->
+    <div class="panel" id="input">
+      <div class="cap">Input</div>
+      <div class="inner" style="margin:10px;height:auto;">
+        <div class="body">
+          <div class="ic">&#128202;</div>
+          <div class="label">Business question<br/>(NL, live chat)</div>
+          <div class="small">Sales · inventory · marketing data</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENT SYSTEM -->
+    <div class="panel" id="system">
+      <div class="cap">Insights-to-Action Agent System</div>
+      <div class="grid">
+        <div class="agent"><span class="dot"></span>Intent agent</div>
+        <div class="agent"><span class="dot"></span>Action recommender</div>
+        <div class="agent"><span class="dot"></span>Sales / Inventory / Marketing</div>
+        <div class="agent"><span class="dot"></span>Response generator</div>
+      </div>
+      <div class="fwk-row">
+        <div class="agent"><span class="dot"></span>Microsoft Agent<br/>Framework (Magentic)</div>
+        <div class="agent"><span class="dot"></span>FastAPI chat app<br/>+ live SSE UI</div>
+      </div>
+      <div class="chip">Plan / Orchestrate / Respond</div>
+      <div class="hosted">
+        <span class="dot"></span>
+        <div>
+          <div class="t">Hosted agents in Foundry Agent Service</div>
+          <div class="s">Secure, isolated · gpt-4.1-mini manager</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTIMIZER -->
+    <div class="panel" id="optimizer">
+      <div class="cap">Agent Optimizer</div>
+      <div class="body">Trace, evaluate, and auto-optimize (App Insights · OpenTelemetry)</div>
+    </div>
+
+    <!-- GOVERNANCE / CONTROL PLANE -->
+    <div class="panel" id="governance">
+      <div class="cap">Governance &amp; Control Plane</div>
+      <div class="body"><span class="pill"></span>
+        <div>
+          <div class="gt">Microsoft Agent 365 · Entra Agent ID</div>
+          <div class="gs">Registry · RBAC · policy · audit · lifecycle</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USER -->
+    <div class="user">&#128100;</div>
+
+    <!-- CHANNEL -->
+    <div class="panel" id="channel">
+      <div class="cap">Channel</div>
+      <div class="body"><span class="pill"></span>
+        <div><div class="rt">Browser chat UI</div><div class="rs">Streaming answer + chart</div></div>
+      </div>
+    </div>
+
+    <!-- ITSM / actions -->
+    <div class="panel" id="itsm">
+      <div class="cap">Recommended actions</div>
+      <div class="body"><span class="pill"></span>
+        <div><div class="rt">Prioritized action list</div><div class="rs">Owner · priority · evidence</div></div>
+      </div>
+    </div>
+
+    <!-- TEAMS (art of the possible) -->
+    <div class="panel" id="teams">
+      <div class="badge">Art of the possible</div>
+      <div class="cap">Channel</div>
+      <div class="body"><span class="pill"></span>
+        <div><div class="rt">Publish to Microsoft Teams</div><div class="rs">Notify owners · approve actions</div></div>
+      </div>
+    </div>
+
+    <!-- TOOLS & KNOWLEDGE -->
+    <div class="panel" id="tools">
+      <div class="cap">Tools and knowledge</div>
+      <div class="row">
+        <div class="toolbox">
+          <div class="sub-cap">Toolbox</div>
+          <div class="tcards">
+            <div class="tcard"><span class="ti">&#128230;</span>sales-mcp</div>
+            <div class="tcard"><span class="ti">&#128230;</span>inventory-mcp</div>
+            <div class="tcard"><span class="ti">&#128230;</span>marketing-mcp</div>
+            <div class="tcard"><span class="ti">&#129518;</span>Code Interpreter</div>
+          </div>
+        </div>
+        <div class="memory">
+          <div class="sub-cap">Knowledge</div>
+          <div class="memcard">
+            <span class="dot"></span>
+            <div>
+              <div class="rt" style="font-size:13px;">marketing-kb (Foundry IQ)</div>
+              <div class="rs">Cosmos DB · briefs &amp; post-mortems</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- connector labels -->
+    <div class="lbl" style="left:268px; top:308px;">Ask question</div>
+    <div class="lbl muted" style="left:268px; top:382px;">Stream insights</div>
+    <div class="lbl" style="left:892px; top:262px;">Publish answer</div>
+    <div class="lbl" style="left:892px; top:398px;">Emit actions</div>
+    <div class="lbl muted" style="left:912px; top:336px;">Monitor live</div>
+    <div class="lbl muted" style="left:1015px; top:178px;">Interact / dispatch</div>
+    <div class="lbl muted" style="left:548px; top:528px;">Ground</div>
+    <div class="lbl" style="left:905px; top:498px; color:#2aa9ff;">Publish in Teams</div>
+    <div class="lbl muted" style="left:430px; top:120px;">Govern &amp; secure</div>
+    <div class="lbl muted" style="left:705px; top:120px;">Observe &amp; optimize</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+[project]
+name = "zava-ai-agents-workshop"
+version = "1.0.0"
+description = "End-to-end multi-agent Zava DIY retail assistant on Azure (Microsoft Foundry, Agent Framework, Foundry IQ, MCP on Container Apps, Cosmos DB)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.4.0",
+    "python-dotenv>=1.0.1",
+    "httpx>=0.27.0",
+    "azure-identity>=1.17.0",
+    "azure-cosmos>=4.7.0,<4.15",
+    "azure-ai-projects>=2.0.0b1",
+    "azure-core>=1.30.0",
+    "requests>=2.32.0",
+    "openai>=1.55.0",
+]
+
+[project.optional-dependencies]
+mcp = [
+    "mcp>=1.4.0",
+    "fastmcp>=2.5.0",
+]
+framework = [
+    # Pinned to 1.6.0 — last verified working set. `agent-framework-foundry`
+    # provides `FoundryAgent` / `FoundryChatClient` (the modern replacement
+    # for the old `agent_framework.azure.AzureAIAgentClient`).
+    # `agent-framework-orchestrations` and `agent-framework-devui` only ship
+    # pre-releases today, so install with --pre.
+    "agent-framework-core==1.6.0",
+    "agent-framework-foundry==1.6.0",
+    "agent-framework-orchestrations==1.0.0rc2",
+    "agent-framework-devui==1.0.0b260521",
+]
+observability = [
+    "azure-monitor-opentelemetry>=1.6.0",
+    "opentelemetry-api>=1.27.0",
+    "opentelemetry-sdk>=1.27.0",
+    "opentelemetry-instrumentation-fastapi>=0.48b0",
+    "opentelemetry-instrumentation-httpx>=0.48b0",
+]
+evals = [
+    "azure-ai-evaluation>=1.0.0",
+]
+redteam = [
+    "azure-ai-evaluation[redteam]>=1.0.0",
+    "rich>=13.7.0",
+]
+hosted = [
+    # NOTE: `agent-framework-foundry-hosting` is only published as a pre-release
+    # at workshop time. The default install (Exercise 00) intentionally omits
+    # this extra so the bootstrap doesn't fail.
+    #
+    # When you reach Exercise 05, install it explicitly with `--pre`:
+    #   pip install --pre "agent-framework-foundry-hosting>=0.3.0a0"
+    "mcp>=1.4.0",
+]
+dev = [
+    "ruff>=0.6.0",
+]
+
+[project.scripts]
+zava-devui = "src.app.devui_launch:main"
+zava-orchestrator = "src.orchestrator.runner:main"
+zava-sales-mcp = "src.mcp_servers.sales.server:main"
+zava-inventory-mcp = "src.mcp_servers.inventory.server:main"
+zava-marketing-mcp = "src.mcp_servers.marketing.server:main"
+zava-seed-sales = "src.mcp_servers.sales.seed.seed_cosmos:main"
+zava-seed-inventory = "src.mcp_servers.inventory.seed.seed_cosmos:main"
+zava-seed-marketing = "src.mcp_servers.marketing.seed.seed_cosmos:main"
+zava-seed-knowledge = "src.foundry_agents.setup_marketing_knowledge_base:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.setuptools.package-data]
+"src.prompts" = ["*.prompty"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"

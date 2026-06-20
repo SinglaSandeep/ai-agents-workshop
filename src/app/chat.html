@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zava</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --ink:#0f172a; --muted:#64748b; --soft:#94a3b8;
+      --bg:#ffffff; --line:#e5e7eb; --line2:#eef0f3; --hover:#f8fafc;
+      --tag-storeops:#fee2e2; --tag-storeops-fg:#991b1b;
+      --tag-mkt:#fce7f3; --tag-mkt-fg:#9d174d;
+      --tag-prod:#dcfce7; --tag-prod-fg:#166534;
+      --tag-model:#e0f2fe; --tag-model-fg:#075985;
+      --tag-tool:#fef3c7; --tag-tool-fg:#92400e;
+      --tag-kb:#ede9fe; --tag-kb-fg:#5b21b6;
+      --user-bubble:#0f172a; --user-fg:#fff;
+      --asst-bubble:#f1f5f9;
+      --suggestion:#f1f5f9;
+      --info:#dbeafe; --info-fg:#1e40af;
+      --route:#ede9fe; --route-fg:#5b21b6;
+      --query:#fef3c7; --query-fg:#92400e;
+      --resp:#dcfce7; --resp-fg:#166534;
+      --error:#fee2e2; --error-fg:#991b1b;
+      --wire:#cbd5e1; --wire-active:#f59e0b; --wire-done:#10b981;
+    }
+    .chart-box {
+      position: relative; height: 280px; margin: 12px 0;
+      background:#fff; border:1px solid var(--line); border-radius:8px; padding: 10px 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif;
+      background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.45;
+    }
+    .app { display: grid; grid-template-rows: 56px 1fr; height: 100vh; overflow: hidden; }
+    .topbar { display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid var(--line); background:#fff; }
+    .topbar h1 { margin: 0; font-size: 20px; font-weight: 700; }
+    .body { display: grid; grid-template-columns: 260px 1fr 420px; height: 100%; min-height: 0; overflow: hidden; }
+    .body > * { min-height: 0; min-width: 0; }
+
+    /* ---------- Left sidebar ---------- */
+    .sidebar { border-right: 1px solid var(--line); padding: 20px 16px; overflow-y: auto; background:#fff; }
+    .sidebar .section { color: var(--soft); font-size: 11px; letter-spacing: .08em; font-weight: 600; text-transform: uppercase; margin: 0 0 10px; }
+    .sidebar ul { list-style: none; margin: 0 0 24px; padding: 0; }
+    .sidebar li { padding: 6px 10px; border-radius: 6px; font-size: 13.5px; display:flex; align-items:center; gap:8px; }
+    .sidebar li .ic { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+    .sidebar li.agent .ic    { background:#1e40af; border-radius:50%; }
+    .sidebar li.tool  .ic    { background:#f59e0b; }
+    .sidebar li.kb    .ic    { background:#7c3aed; }
+    .sidebar li code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; color:#334155; }
+
+    /* ---------- Center: workflow + trace ---------- */
+    .center { display: grid; grid-template-rows: 1fr auto; min-height: 0; overflow: hidden; background:#fff; }
+    .center > * { min-height: 0; }
+    .flow-wrap { padding: 24px 24px 12px; overflow: auto; }
+    .legend { display:flex; gap:14px; justify-content:center; margin-bottom: 12px; font-size: 12px; color: var(--muted); }
+    .legend span { display:flex; align-items:center; gap:6px; }
+    .legend i { width: 10px; height: 10px; border-radius: 3px; display:inline-block; }
+    .legend i.agent { background:#1e40af; border-radius:50%; }
+    .legend i.tool  { background:#f59e0b; }
+    .legend i.kb    { background:#7c3aed; }
+
+    .diagram { position: relative; max-width: 980px; margin: 0 auto; }
+    .diagram svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    .diagram svg.wires path { stroke: var(--wire); stroke-width: 2; fill: none; transition: stroke .25s ease; }
+    .diagram svg.wires path.active { stroke: var(--wire-active); stroke-width: 2.5; }
+    .diagram svg.wires path.done   { stroke: var(--wire-done); }
+
+    .grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 24px; row-gap: 38px; }
+    .grid .full { grid-column: 1 / -1; display:flex; justify-content:center; }
+    .grid .col { display: flex; flex-direction: column; align-items: stretch; gap: 14px; }
+
+    .node {
+      background:#fff; border:1px solid var(--line); border-radius:8px;
+      padding: 12px 14px; box-shadow: 0 1px 2px rgba(15,23,42,.04);
+      transition: all .25s ease; position: relative;
+    }
+    .node.full-w { min-width: 280px; max-width: 360px; }
+    .node .title { font-size: 14px; font-weight: 700; }
+    .node .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .node .tag { display:inline-block; margin-top:8px; padding:2px 8px; border-radius:4px; font-size:11px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .node .dot { position:absolute; top:-6px; left:12px; width:10px; height:10px; border-radius:50%; background:#cbd5e1; box-shadow: 0 0 0 3px #fff; }
+
+    .node.agent .title::before    { content:""; display:inline-block; width:8px; height:8px; background:#1e40af; border-radius:50%; margin-right:8px; vertical-align:middle; }
+    .node.tool  .title::before    { content:""; display:inline-block; width:8px; height:8px; background:#f59e0b; border-radius:2px; margin-right:8px; vertical-align:middle; }
+    .node.kb    .title::before    { content:""; display:inline-block; width:8px; height:8px; background:#7c3aed; border-radius:2px; margin-right:8px; vertical-align:middle; }
+
+    .node.active { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,.18); }
+    .node.active .dot { background:#f59e0b; animation: pulse 1.2s infinite; }
+    .node.done   { border-color: #10b981; }
+    .node.done .dot { background:#10b981; }
+    @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.5);} }
+
+    .tag.storeops { background: var(--tag-storeops); color: var(--tag-storeops-fg); }
+    .tag.mkt      { background: var(--tag-mkt);      color: var(--tag-mkt-fg); }
+    .tag.prod     { background: var(--tag-prod);     color: var(--tag-prod-fg); }
+    .tag.model    { background: var(--tag-model);    color: var(--tag-model-fg); }
+    .tag.tool     { background: var(--tag-tool);     color: var(--tag-tool-fg); }
+    .tag.kb       { background: var(--tag-kb);       color: var(--tag-kb-fg); }
+
+    /* Platform badges — highlight interoperability between hosted Foundry
+       agents and custom Agent Framework code running in our container. */
+    .node .tag.platform {
+      position: absolute; top: 8px; right: 10px; margin-top: 0;
+      font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase;
+      font-size: 10px; padding: 2px 6px; border-radius: 999px;
+      border: 1px solid transparent;
+    }
+    .tag.platform.foundry { background:#ede9fe; color:#5b21b6; border-color:#c4b5fd; }
+    .tag.platform.custom  { background:#ecfeff; color:#155e75; border-color:#67e8f9; }
+
+    /* Execution trace */
+    .trace { border-top: 1px solid var(--line); padding: 14px 24px 18px; display:flex; flex-direction:column; min-height: 200px; max-height: 36vh; background:#fff; }
+    .trace-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .trace-head .label { font-size:11px; letter-spacing:.08em; font-weight:600; color:var(--soft); text-transform:uppercase; }
+    .trace-head button { background:none; border:1px solid var(--line); color:var(--muted); border-radius:4px; font-size:12px; padding:3px 10px; cursor:pointer; }
+    .trace-body { flex:1; overflow-y:auto; border:1px solid var(--line2); border-radius:6px; background:#fafbfc; padding:8px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; }
+    .trace-row { display: grid; grid-template-columns: 100px 70px 1fr; gap: 12px; padding: 4px 0; align-items: start; }
+    .trace-row .ts { color: var(--soft); }
+    .trace-row .badge { padding:1px 8px; border-radius:4px; font-size:11px; font-weight:700; text-align:center; letter-spacing:.04em; }
+    .badge.info  { background: var(--info);  color: var(--info-fg); }
+    .badge.route { background: var(--route); color: var(--route-fg); }
+    .badge.query { background: var(--query); color: var(--query-fg); }
+    .badge.resp  { background: var(--resp);  color: var(--resp-fg); }
+    .badge.error { background: var(--error); color: var(--error-fg); }
+    .trace-row .msg { white-space: pre-wrap; word-break: break-word; }
+
+    /* Right chat */
+    .chat { border-left: 1px solid var(--line); display: grid; grid-template-rows: 52px 1fr auto; min-height: 0; background:#fff; overflow: hidden; }
+    .chat > * { min-height: 0; min-width: 0; }
+    .chat-head { display:flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--line); }
+    .chat-head h2 { margin: 0; font-size: 16px; font-weight: 700; }
+    .chat-head .status { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .chat-head .status .sdot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+    .chat-head .status.running .sdot { background: #f59e0b; animation: pulse 1.2s infinite; }
+    .chat-head .status.error .sdot { background: #dc2626; }
+    .chat-body { overflow-y: auto; overflow-x: hidden; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+    .suggestions { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+    .suggestion { background: var(--suggestion); border: 0; text-align: left; padding: 12px 14px; border-radius: 6px; color: var(--ink); font: inherit; cursor: pointer; }
+    .suggestion:hover { background: #e2e8f0; }
+    .msg { padding: 12px 14px; border-radius: 10px; line-height: 1.5; overflow-wrap: break-word; word-break: normal; hyphens: auto; max-width: 100%; }
+    .msg.user { align-self: flex-end; background: var(--user-bubble); color: var(--user-fg); max-width: 92%; width: fit-content; }
+    .msg.asst { align-self: stretch; background: var(--asst-bubble); color: var(--ink); width: 100%; }
+    .msg .who { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .msg .body { white-space: normal; display: block; width: 100%; }
+    .msg .body > * { display: block; max-width: 100%; }
+    .msg .body p { margin: 0 0 10px; display: block; }
+    .msg .body p:last-child { margin-bottom: 0; }
+    .msg .body ul, .msg .body ol { margin: 6px 0 10px 20px; padding: 0; display: block; }
+    .msg .body li { margin: 2px 0; display: list-item; }
+    .msg .body h2, .msg .body h3, .msg .body h4 { margin: 10px 0 6px; font-weight: 700; display: block; }
+    .msg .body h2 { font-size: 16px; }
+    .msg .body h3 { font-size: 14.5px; }
+    .msg .body h4 { font-size: 13.5px; }
+    .msg .body code { background:#e2e8f0; padding:1px 5px; border-radius:3px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; }
+    .chat-input { border-top: 1px solid var(--line); padding: 12px 14px; display: flex; gap: 8px; }
+    .chat-input input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+    .chat-input select { padding: 10px 8px; border: 1px solid var(--line); border-radius: 6px; font: inherit; background: #fff; color: var(--ink); max-width: 170px; }
+    .chat-input button { background: var(--user-bubble); color: #fff; border: 0; border-radius: 6px; padding: 10px 18px; font-weight: 600; cursor: pointer; }
+    .chat-input button:disabled { opacity: .55; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <h1>Zava</h1>
+    </div>
+
+    <div class="body">
+      <!-- LEFT SIDEBAR -->
+      <aside class="sidebar">
+        <p class="section">Agents</p>
+        <ul>
+          <li class="agent"><span class="ic"></span>Intent Detector</li>
+          <li class="agent"><span class="ic"></span>Orchestrator (Manager)</li>
+          <li class="agent"><span class="ic"></span>Sales Agent</li>
+          <li class="agent"><span class="ic"></span>Inventory Agent</li>
+          <li class="agent"><span class="ic"></span>Marketing Agent</li>
+          <li class="agent"><span class="ic"></span>Action Agent</li>
+          <li class="agent"><span class="ic"></span>Response Generator</li>
+        </ul>
+
+        <p class="section">Tools</p>
+        <ul>
+          <li class="tool"><span class="ic"></span><code>sales-mcp</code></li>
+          <li class="tool"><span class="ic"></span><code>inventory-mcp</code></li>
+          <li class="tool"><span class="ic"></span><code>marketing-mcp</code></li>
+          <li class="tool"><span class="ic"></span>Code Interpreter</li>
+        </ul>
+
+        <p class="section">Knowledge Bases</p>
+        <ul>
+          <li class="kb"><span class="ic"></span><code>marketing-kb</code></li>
+        </ul>
+      </aside>
+
+      <!-- CENTER: workflow + trace -->
+      <section class="center">
+        <div class="flow-wrap">
+          <div class="legend">
+            <span><i class="agent"></i>Agent</span>
+            <span><i class="tool"></i>Tool / MCP</span>
+            <span><i class="kb"></i>Knowledge Base</span>
+          </div>
+
+          <div class="diagram" id="diagram">
+            <!-- SVG wires drawn dynamically -->
+            <svg class="wires" id="wires" xmlns="http://www.w3.org/2000/svg"></svg>
+
+            <div class="grid">
+              <!-- Row 1: User Input -->
+              <div class="full">
+                <div class="node full-w" id="n-user" data-id="user">
+                  <span class="dot"></span>
+                  <div class="title">User Input</div>
+                  <div class="sub">Question typed in the chat panel</div>
+                </div>
+              </div>
+
+              <!-- Row 1b: Intent Detector (conditional edge) -->
+              <div class="full">
+                <div class="node full-w agent" id="n-intent" data-id="intent">
+                  <span class="dot"></span>
+                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
+                  <div class="title">Intent Detector</div>
+                  <div class="sub">General chit-chat → Response Generator · Business → Orchestrator</div>
+                </div>
+              </div>
+
+              <!-- Row 2: Orchestrator -->
+              <div class="full">
+                <div class="node full-w agent" id="n-manager" data-id="manager">
+                  <span class="dot"></span>
+                  <span class="tag platform custom" title="Custom code: Microsoft Agent Framework MagenticBuilder running in our FastAPI container">Custom · Agent Framework</span>
+                  <div class="title">Orchestrator (Manager)</div>
+                  <div class="sub">Plans which specialist(s) to call (Magentic)</div>
+                  <span class="tag model">gpt-4.1-mini</span>
+                </div>
+              </div>
+
+              <!-- Row 3: three specialist agents -->
+              <div class="col">
+                <div class="node agent" id="n-sales" data-id="sales">
+                  <span class="dot"></span>
+                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
+                  <div class="title">Sales Agent</div>
+                  <div class="sub">Revenue, units, margin trends</div>
+                  <span class="tag prod">tools</span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="node agent" id="n-inventory" data-id="inventory">
+                  <span class="dot"></span>
+                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
+                  <div class="title">Inventory Agent</div>
+                  <div class="sub">Distributor stock, reorder, cover</div>
+                  <span class="tag prod">tools</span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="node agent" id="n-marketing" data-id="marketing">
+                  <span class="dot"></span>
+                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
+                  <div class="title">Marketing Agent</div>
+                  <div class="sub">Campaigns, KPIs, ROI, briefs &amp; post-mortems</div>
+                  <span class="tag mkt">tools + KB</span>
+                </div>
+              </div>
+
+              <!-- Row 4: tools & KBs per agent -->
+              <div class="col">
+                <div class="node tool" id="n-sales-mcp" data-id="sales-mcp">
+                  <span class="dot"></span>
+                  <div class="title">sales-mcp</div>
+                  <div class="sub">MCP server · Cosmos DB sales orders</div>
+                  <span class="tag tool">MCP</span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="node tool" id="n-inventory-mcp" data-id="inventory-mcp">
+                  <span class="dot"></span>
+                  <div class="title">inventory-mcp</div>
+                  <div class="sub">MCP server · Cosmos DB distributor stock</div>
+                  <span class="tag tool">MCP</span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="node tool" id="n-marketing-mcp" data-id="marketing-mcp">
+                  <span class="dot"></span>
+                  <div class="title">marketing-mcp</div>
+                  <div class="sub">MCP server · campaigns in Cosmos DB</div>
+                  <span class="tag tool">MCP</span>
+                </div>
+                <div class="node kb" id="n-marketing-kb" data-id="marketing-kb">
+                  <span class="dot"></span>
+                  <div class="title">marketing-kb</div>
+                  <div class="sub">Briefs &amp; post-mortems (Foundry IQ)</div>
+                  <span class="tag kb">KB</span>
+                </div>
+              </div>
+
+              <!-- Row 5: Action Recommender (final responder) -->
+              <div class="full">
+                <div class="node full-w agent" id="n-action" data-id="action">
+                  <span class="dot"></span>
+                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
+                  <div class="title">Action Agent</div>
+                  <div class="sub">Turns insights into prioritised actions &amp; writes the final reply</div>
+                </div>
+              </div>
+
+              <!-- Row 5b: Action's Code Interpreter -->
+              <div class="full">
+                <div class="node tool" id="n-code" data-id="code" style="max-width:300px;margin:0 auto;">
+                  <span class="dot"></span>
+                  <div class="title">Code Interpreter</div>
+                  <div class="sub">Python sandbox for consolidated figures</div>
+                  <span class="tag tool">tool</span>
+                </div>
+              </div>
+
+              <!-- Row 5c: Response Generator (writes the final reply) -->
+              <div class="full">
+                <div class="node full-w agent" id="n-response" data-id="response">
+                  <span class="dot"></span>
+                  <span class="tag platform foundry" title="Hosted in Microsoft Foundry Agent Service · invoked via Agent Framework FoundryAgent">Foundry hosted</span>
+                  <div class="title">Response Generator</div>
+                  <div class="sub">Writes the polished final reply · keeps Action's charts</div>
+                </div>
+              </div>
+
+              <!-- Row 6: Final Answer -->
+              <div class="full">
+                <div class="node full-w" id="n-final" data-id="final">
+                  <span class="dot"></span>
+                  <div class="title">Final Answer</div>
+                  <div class="sub">Shown in the chat panel on the right</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="trace">
+          <div class="trace-head">
+            <span class="label">Execution Trace</span>
+            <button id="clear-trace" type="button">Clear</button>
+          </div>
+          <div class="trace-body" id="trace"></div>
+        </div>
+      </section>
+
+      <!-- RIGHT: chat -->
+      <aside class="chat">
+        <div class="chat-head">
+          <h2>Chat</h2>
+          <div class="status" id="status"><span class="sdot"></span><span id="status-text">Ready</span></div>
+        </div>
+        <div class="chat-body" id="chat-body">
+          <div class="suggestions" id="suggestions">
+            <button class="suggestion" type="button">How did our last Garden campaign in Seattle perform, and what did the post-mortem say we should change next time?</button>
+            <button class="suggestion" type="button">What are our top 5 products by revenue right now?</button>
+            <button class="suggestion" type="button">Which warehouses are low on stock and need a reorder this week?</button>
+            <button class="suggestion" type="button">Compare revenue across our stores, check where inventory is tight, and tell me which markets to push campaigns in — with the actions to take.</button>
+            <button class="suggestion" type="button">Garden sales are trending up — do we have enough stock and an active campaign to support it? What should we do?</button>
+          </div>
+        </div>
+        <form class="chat-input" id="chat-form">
+          <select id="model-select" title="Orchestrator model (manager LLM). Hosted specialists keep their Foundry-configured models."></select>
+          <input id="query" type="text" placeholder="Ask a question..." autocomplete="off" />
+          <button id="send-btn" type="submit">Send</button>
+        </form>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // --------- Wire drawing ---------
+    // Each wire connects two node ids; rendered as a smooth SVG path. Wires
+    // are recomputed on resize and updated to active/done states as nodes
+    // light up.
+    const WIRES = [
+      // user → intent detector
+      { id: 'user__intent',     from: 'user',      to: 'intent',     side: 'mid' },
+      // intent detector → manager (business) OR → response (general): conditional
+      { id: 'intent__manager',  from: 'intent',    to: 'manager',    side: 'mid' },
+      { id: 'intent__response', from: 'intent',    to: 'response',   side: 'mid' },
+      // manager → 3 insight specialists
+      { id: 'manager__sales',     from: 'manager', to: 'sales',     side: 'mid' },
+      { id: 'manager__inventory', from: 'manager', to: 'inventory', side: 'mid' },
+      { id: 'manager__marketing', from: 'manager', to: 'marketing', side: 'mid' },
+      // agents → their tools / KBs
+      { id: 'sales__sales-mcp',         from: 'sales',     to: 'sales-mcp',     side: 'mid' },
+      { id: 'inventory__inventory-mcp', from: 'inventory', to: 'inventory-mcp', side: 'mid' },
+      { id: 'marketing__marketing-mcp', from: 'marketing', to: 'marketing-mcp', side: 'mid' },
+      { id: 'marketing__marketing-kb',  from: 'marketing', to: 'marketing-kb',  side: 'mid' },
+      // specialists → action recommender
+      { id: 'sales__action',     from: 'sales',     to: 'action', side: 'mid' },
+      { id: 'inventory__action', from: 'inventory', to: 'action', side: 'mid' },
+      { id: 'marketing__action', from: 'marketing', to: 'action', side: 'mid' },
+      // action → code interpreter
+      { id: 'action__code', from: 'action', to: 'code', side: 'mid' },
+      // action → response generator → final
+      { id: 'action__response',   from: 'action',   to: 'response', side: 'mid' },
+      { id: 'response__final',    from: 'response', to: 'final',    side: 'mid' },
+    ];
+
+    const diagram = document.getElementById('diagram');
+    const svg = document.getElementById('wires');
+
+    function nodeEl(id) { return document.getElementById('n-' + id); }
+    function rect(el) {
+      const d = diagram.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      return { x: r.left - d.left, y: r.top - d.top, w: r.width, h: r.height };
+    }
+    function drawWires() {
+      svg.setAttribute('width', diagram.clientWidth);
+      svg.setAttribute('height', diagram.clientHeight);
+      svg.innerHTML = '';
+      for (const w of WIRES) {
+        const a = nodeEl(w.from), b = nodeEl(w.to);
+        if (!a || !b) continue;
+        const ra = rect(a), rb = rect(b);
+        const ax = ra.x + ra.w / 2, ay = ra.y + ra.h;
+        const bx = rb.x + rb.w / 2, by = rb.y;
+        // smooth vertical S-curve
+        const dy = Math.max(20, (by - ay) / 2);
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${ax} ${ay} C ${ax} ${ay + dy}, ${bx} ${by - dy}, ${bx} ${by}`);
+        path.dataset.from = w.from;
+        path.dataset.to = w.to;
+        path.id = 'w-' + w.id;
+        svg.appendChild(path);
+      }
+    }
+    function setWireState(fromId, toId, state) {
+      for (const p of svg.querySelectorAll('path')) {
+        if (p.dataset.from === fromId && p.dataset.to === toId) {
+          p.classList.remove('active', 'done');
+          if (state) p.classList.add(state);
+        }
+      }
+    }
+    function setWiresFrom(fromId, state) {
+      for (const p of svg.querySelectorAll('path')) {
+        if (p.dataset.from === fromId) {
+          p.classList.remove('active', 'done');
+          if (state) p.classList.add(state);
+        }
+      }
+    }
+    function setWiresInto(toId, state) {
+      for (const p of svg.querySelectorAll('path')) {
+        if (p.dataset.to === toId) {
+          p.classList.remove('active', 'done');
+          if (state) p.classList.add(state);
+        }
+      }
+    }
+    function resetWires() {
+      for (const p of svg.querySelectorAll('path')) p.classList.remove('active','done');
+    }
+
+    window.addEventListener('resize', drawWires);
+    window.requestAnimationFrame(drawWires);
+
+    // --------- Workflow + chat ---------
+    const traceEl = document.getElementById('trace');
+    const chatBody = document.getElementById('chat-body');
+    const suggestionsEl = document.getElementById('suggestions');
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('query');
+    const sendBtn = document.getElementById('send-btn');
+    const modelSelect = document.getElementById('model-select');
+    const statusEl = document.getElementById('status');
+    const statusText = document.getElementById('status-text');
+    // Stable per-tab id so the orchestrator can carry session history across turns.
+    let CONVERSATION_ID = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
+    function newConversation() {
+      CONVERSATION_ID = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
+    }
+
+    // Populate the orchestrator-model picker from the server. Falls back to
+    // a single "(default)" option if the endpoint is unreachable.
+    (async function loadModels() {
+      try {
+        const r = await fetch('/models');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        const choices = data.choices || [];
+        const def = data.default;
+        modelSelect.innerHTML = '';
+        for (const m of choices) {
+          const opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = m + (m === def ? ' (default)' : '');
+          if (m === def) opt.selected = true;
+          modelSelect.appendChild(opt);
+        }
+      } catch (e) {
+        modelSelect.innerHTML = '<option value="">(default)</option>';
+        console.warn('Could not load /models', e);
+      }
+    })();
+
+    const ALL_NODES = ['user','intent','manager','sales','inventory','marketing','action',
+      'sales-mcp','inventory-mcp','marketing-mcp','marketing-kb','code','response','final'];
+
+    // Which downstream tools/KBs each agent uses
+    const AGENT_DEPS = {
+      sales:     ['sales-mcp'],
+      inventory: ['inventory-mcp'],
+      marketing: ['marketing-mcp','marketing-kb'],
+      action:    ['code'],
+    };
+
+    // Insight specialists that fan into the Action agent.
+    const SPECIALISTS = ['sales','inventory','marketing'];
+
+    document.getElementById('clear-trace').addEventListener('click', () => { traceEl.innerHTML = ''; });
+    document.querySelectorAll('.suggestion').forEach(btn => btn.addEventListener('click', () => ask(btn.textContent.trim())));
+
+    function ts() {
+      const d = new Date();
+      return d.toTimeString().slice(0,8) + '.' + String(d.getMilliseconds()).padStart(3,'0');
+    }
+    function trace(kind, msg) {
+      const row = document.createElement('div');
+      row.className = 'trace-row';
+      row.innerHTML = `<span class="ts">${ts()}</span><span class="badge ${kind}">${kind.toUpperCase()}</span><span class="msg"></span>`;
+      row.querySelector('.msg').textContent = msg;
+      traceEl.appendChild(row);
+      traceEl.scrollTop = traceEl.scrollHeight;
+    }
+    function setStatus(state, text) {
+      statusEl.className = 'status' + (state ? ' ' + state : '');
+      statusText.textContent = text;
+    }
+    function setNode(id, state) {
+      const n = nodeEl(id);
+      if (!n) return;
+      n.classList.remove('active','done');
+      if (state) n.classList.add(state);
+    }
+    function resetAllNodes() { ALL_NODES.forEach(id => setNode(id, null)); resetWires(); }
+
+    function md(text) {
+      // Escape HTML first.
+      let t = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      // Inline marks.
+      t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+           .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+           .replace(/`([^`]+)`/g, '<code>$1</code>');
+      // Headings (#, ##, ###) on their own line.
+      t = t.replace(/^###\s+(.+)$/gm, '<h4>$1</h4>')
+           .replace(/^##\s+(.+)$/gm,  '<h3>$1</h3>')
+           .replace(/^#\s+(.+)$/gm,   '<h2>$1</h2>');
+      // Bullet / numbered lists. Wrap consecutive list lines in <ul>/<ol>.
+      const lines = t.split('\n');
+      const out = [];
+      let listType = null;        // 'ul' | 'ol' | null
+      let para = [];
+      const flushPara = () => {
+        if (para.length) { out.push('<p>' + para.join(' ') + '</p>'); para = []; }
+      };
+      const closeList = () => { if (listType) { out.push(`</${listType}>`); listType = null; } };
+      for (const raw of lines) {
+        const line = raw.trimEnd();
+        const mUl = /^\s*[-*]\s+(.*)$/.exec(line);
+        const mOl = /^\s*\d+\.\s+(.*)$/.exec(line);
+        if (mUl) {
+          flushPara();
+          if (listType !== 'ul') { closeList(); out.push('<ul>'); listType = 'ul'; }
+          out.push('<li>' + mUl[1] + '</li>');
+        } else if (mOl) {
+          flushPara();
+          if (listType !== 'ol') { closeList(); out.push('<ol>'); listType = 'ol'; }
+          out.push('<li>' + mOl[1] + '</li>');
+        } else if (!line.trim()) {
+          flushPara(); closeList();
+        } else if (/^<(h[1-6]|ul|ol|li|p)/.test(line)) {
+          flushPara(); closeList(); out.push(line);
+        } else {
+          closeList();
+          para.push(line);
+        }
+      }
+      flushPara(); closeList();
+      return out.join('\n');
+    }
+    // Render markdown PLUS any ```chart fenced JSON blocks into `el`.
+    // Each chart block is replaced by a <canvas> that Chart.js draws into.
+    const CHART_PALETTE = ['#1e40af','#16a34a','#f59e0b','#db2777','#7c3aed','#0891b2','#dc2626','#ca8a04'];
+    function renderRich(el, text) {
+      const specs = [];
+      const cleaned = (text || '').replace(/```chart\s*([\s\S]*?)```/g, (_m, body) => {
+        specs.push(body.trim());
+        return `\n@@CHART${specs.length - 1}@@\n`;
+      });
+      let html = md(cleaned).replace(/<p>@@CHART(\d+)@@<\/p>|@@CHART(\d+)@@/g,
+        () => '<div class="chart-box"><canvas></canvas></div>');
+      el.innerHTML = html;
+      el.querySelectorAll('.chart-box canvas').forEach((cv, i) => {
+        try { renderChart(cv, JSON.parse(specs[i])); }
+        catch (e) { cv.parentElement.innerHTML = '<em>(chart unavailable)</em>'; }
+      });
+    }
+    function renderChart(canvas, spec) {
+      if (!window.Chart) return;
+      const type = spec.type || 'bar';
+      const isPie = type === 'pie' || type === 'doughnut';
+      const datasets = (spec.datasets || []).map((d, i) => {
+        const color = CHART_PALETTE[i % CHART_PALETTE.length];
+        return {
+          label: d.label || '',
+          data: d.data || [],
+          backgroundColor: isPie ? (spec.labels || []).map((_, j) => CHART_PALETTE[j % CHART_PALETTE.length])
+                                  : (type === 'line' ? 'transparent' : color),
+          borderColor: color, borderWidth: 2, fill: false, tension: 0.3,
+        };
+      });
+      new Chart(canvas.getContext('2d'), {
+        type,
+        data: { labels: spec.labels || [], datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#334155' } },
+            title: { display: !!spec.title, text: spec.title || '', color: '#0f172a' },
+          },
+          scales: isPie ? {} : {
+            x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(15,23,42,0.07)' } },
+            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(15,23,42,0.07)' } },
+          },
+        },
+      });
+    }
+    function addUser(q) {
+      const div = document.createElement('div');
+      div.className = 'msg user'; div.textContent = q;
+      chatBody.appendChild(div); chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    function addAssistant(text) {
+      const div = document.createElement('div');
+      div.className = 'msg asst';
+      div.innerHTML = `<div class="who">orchestrator</div><div class="body"></div>`;
+      renderRich(div.querySelector('.body'), text);
+      chatBody.appendChild(div); chatBody.scrollTop = chatBody.scrollHeight;
+      return div;
+    }
+
+    const agentLabel = {
+      manager:'orchestrator', sales:'sales-agent',
+      inventory:'inventory-agent', marketing:'marketing-agent',
+      action:'action-agent', intent:'intent-detector', response:'response-generator',
+    };
+
+    let asstEl = null;
+    let visitedAgents = new Set();
+
+    function activateAgent(agent) {
+      // demote previously active specialist nodes & their wires
+      SPECIALISTS.forEach(a => {
+        if (a !== agent && nodeEl(a) && nodeEl(a).classList.contains('active')) {
+          setNode(a, 'done');
+          (AGENT_DEPS[a] || []).forEach(t => setNode(t, 'done'));
+          setWiresFrom(a, 'done');
+        }
+      });
+      setNode(agent, 'active');
+      setWireState('manager', agent, 'active');
+      // light up that agent's tools / KBs as "active"
+      (AGENT_DEPS[agent] || []).forEach(t => { setNode(t, 'active'); setWireState(agent, t, 'active'); });
+    }
+
+    function completeAgent(agent) {
+      setNode(agent, 'done');
+      (AGENT_DEPS[agent] || []).forEach(t => { setNode(t, 'done'); setWireState(agent, t, 'done'); });
+      setWireState('manager', agent, 'done');
+      setWireState(agent, 'action', 'active');
+    }
+
+    function handlePayload(p) {
+      if (p.type === 'start') {
+        trace('info', `User query received: "${p.query}"`);
+        trace('route', 'Intent Detector classifying request...');
+        setNode('user', 'done');
+        setWireState('user','intent','active');
+        setNode('intent', 'active');
+      } else if (p.type === 'intent') {
+        window.__intent = p.intent;
+        setNode('intent', 'done');
+        setWireState('user','intent','done');
+        if (p.intent === 'general') {
+          trace('route', 'Intent: GENERAL → Response Generator (skipping specialists)');
+          setWireState('intent','response','active');
+          setNode('response','active');
+        } else {
+          trace('route', 'Intent: BUSINESS → Orchestrator');
+          setWireState('intent','manager','active');
+          setNode('manager','active');
+        }
+      } else if (p.type === 'manager') {
+        setNode('manager','active');
+        const summary = (p.text || '').trim();
+        trace('route', `Manager ${p.kind}${summary ? ': ' + summary : ''}`);
+      } else if (p.type === 'token') {
+        if (!visitedAgents.has(p.agent)) {
+          visitedAgents.add(p.agent);
+          if (SPECIALISTS.includes(p.agent)) {
+            setNode('manager','done');
+            setWireState('intent','manager','done');
+            activateAgent(p.agent);
+          } else {
+            setNode(p.agent, 'active');
+          }
+          trace('query', `Routed to ${agentLabel[p.agent] || p.agent}`);
+        }
+      } else if (p.type === 'agent') {
+        if (SPECIALISTS.includes(p.agent)) {
+          activateAgent(p.agent);
+          trace('query', `${agentLabel[p.agent] || p.agent} executed`);
+          trace('resp', `Response from ${agentLabel[p.agent] || p.agent} (${(p.text||'').length} chars)`);
+          completeAgent(p.agent);
+        } else if (p.agent === 'action') {
+          SPECIALISTS.forEach(a => setWireState(a,'action','done'));
+          setNode('action','active');
+          setNode('code','done');
+          setWireState('action','code','done');
+          trace('query', `${agentLabel.action} executed`);
+          trace('resp', `${agentLabel.action} produced a draft + chart (${(p.text||'').length} chars)`);
+          setNode('action','done');
+          setWireState('action','response','active');
+          setNode('response','active');
+          // The Response Generator writes the final bubble (see 'response').
+        } else {
+          setNode(p.agent, 'done');
+        }
+      } else if (p.type === 'response') {
+        // The Response Generator produced the final user-facing reply.
+        if (window.__intent === 'general') {
+          setWireState('intent','response','done');
+        } else {
+          setWireState('action','response','done');
+        }
+        setNode('response','done');
+        setWireState('response','final','done');
+        setNode('final','done');
+        trace('resp', `${agentLabel.response} produced final answer (${(p.text||'').length} chars)`);
+        if (!asstEl) asstEl = addAssistant(p.text);
+        else renderRich(asstEl.querySelector('.body'), p.text);
+      } else if (p.type === 'final') {
+        if (!asstEl) asstEl = addAssistant(p.text);
+        else renderRich(asstEl.querySelector('.body'), p.text);
+      } else if (p.type === 'done') {
+        if (p.final && !asstEl) asstEl = addAssistant(p.final);
+        // mark everything reached as done
+        ALL_NODES.forEach(id => {
+          const n = nodeEl(id);
+          if (n && n.classList.contains('active')) setNode(id, 'done');
+        });
+        setNode('final','done');
+        trace('info', `Workflow complete. Plan: ${(p.plan || []).join(' → ') || '(none)'}`);
+        setStatus('', 'Ready');
+      } else if (p.type === 'error') {
+        trace('error', p.message);
+        setStatus('error', 'Error');
+      }
+    }
+
+    async function ask(query) {
+      if (!query) return;
+      suggestionsEl.style.display = 'none';
+      addUser(query);
+      asstEl = null;
+      visitedAgents = new Set();
+      window.__intent = null;
+      resetAllNodes();
+      drawWires();
+      sendBtn.disabled = true;
+      input.disabled = true;
+      setStatus('running', 'Working...');
+
+      try {
+        const model = modelSelect && modelSelect.value ? modelSelect.value : null;
+        const resp = await fetch('/chat/stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, model, conversation_id: CONVERSATION_ID }),
+        });
+        if (!resp.ok || !resp.body) throw new Error('HTTP ' + resp.status);
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = '';
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          let idx;
+          while ((idx = buf.indexOf('\n\n')) !== -1) {
+            const chunk = buf.slice(0, idx);
+            buf = buf.slice(idx + 2);
+            for (const line of chunk.split('\n')) {
+              if (line.startsWith('data: ')) {
+                try { handlePayload(JSON.parse(line.slice(6))); }
+                catch (e) { console.warn('Bad SSE payload', line, e); }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        trace('error', String(err));
+        setStatus('error', String(err));
+        addAssistant('_Error: ' + String(err) + '_');
+      } finally {
+        sendBtn.disabled = false;
+        input.disabled = false;
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    form.addEventListener('submit', (e) => { e.preventDefault(); ask(input.value.trim()); });
+
+    // Redraw after fonts / images settle.
+    window.addEventListener('load', () => setTimeout(drawWires, 50));
+  </script>
+</body>
+</html>
