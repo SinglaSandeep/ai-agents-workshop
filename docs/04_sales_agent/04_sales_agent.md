@@ -72,7 +72,8 @@ First create the tool, then attach it to the agent.
    | ----- | ----- |
    | Name | `zava-sales` |
    | Remote MCP server endpoint | Your `SALES_MCP_URL`, for example `https://<sales-container-app>/mcp` |
-   | Authentication | `Unauthenticated` |
+   | Authentication | `Key-based` |
+   | Credential | Key `Authorization`, Value `Basic <base64 of MCP_BASIC_AUTH_USERNAME:MCP_BASIC_AUTH_PASSWORD>` (see `.env`) |
    | Approval | `Never` |
 
 5. Save the tool and confirm it lists the Sales tools:

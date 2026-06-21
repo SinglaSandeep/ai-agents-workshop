@@ -122,10 +122,10 @@ def build_workflow(credential: Any, *, manager_model: str | None = None) -> Any:
         credential=credential,
         name="action",
         description=(
-            "Turns the sales / inventory / marketing INSIGHTS into a short, "
-            "prioritised set of concrete cross-domain operational ACTIONS and "
-            "writes the final user-facing reply (with an optional chart). "
-            "Always call this last."
+            "Turns the sales / inventory / marketing INSIGHTS into a short "
+            "prioritised set of operational ACTIONS and an optional chart "
+            "spec. Call ONLY when the user wants a chart/plot/visual or an "
+            "explicit action plan; skip it for plain Q&A."
         ),
     )
 
@@ -139,7 +139,7 @@ def build_workflow(credential: Any, *, manager_model: str | None = None) -> Any:
     workflow = MagenticBuilder(
         participants=[sales, inventory, marketing, action],
         manager_agent=manager,
-        max_round_count=7,
+        max_round_count=4,
         max_stall_count=2,
         max_reset_count=1,
     ).build()

@@ -18,6 +18,8 @@ from typing import Annotated
 from fastmcp import FastMCP
 from pydantic import Field
 
+from src.common.basic_auth import mcp_basic_auth_middleware
+
 from .cosmos_repo import MarketingRepository
 
 SERVER_INSTRUCTIONS = (
@@ -50,7 +52,7 @@ def _repo() -> MarketingRepository:
 def list_active_campaigns(
     limit: Annotated[
         int,
-        Field(ge=1, le=25, description="Maximum campaigns to return (1-25). Default 5."),
+        Field(ge=1, le=10, description="Maximum campaigns to return (1-10). Default 5."),
     ] = 5,
 ) -> list[dict]:
     """Return campaigns whose status is currently `active`.
@@ -78,7 +80,7 @@ def list_campaigns_by_category(
     ],
     limit: Annotated[
         int,
-        Field(ge=1, le=25, description="Maximum campaigns to return (1-25). Default 5."),
+        Field(ge=1, le=10, description="Maximum campaigns to return (1-10). Default 5."),
     ] = 5,
 ) -> list[dict]:
     """List campaigns for a specific category_id, regardless of status."""
@@ -101,7 +103,7 @@ def list_campaigns_by_store(
     ],
     limit: Annotated[
         int,
-        Field(ge=1, le=25, description="Maximum campaigns to return (1-25). Default 5."),
+        Field(ge=1, le=10, description="Maximum campaigns to return (1-10). Default 5."),
     ] = 5,
 ) -> list[dict]:
     """List campaigns whose ``stores`` array contains ``store_id``.
@@ -150,7 +152,7 @@ def search_campaigns(
     ],
     limit: Annotated[
         int,
-        Field(ge=1, le=25, description="Maximum matches to return (1-25). Default 5."),
+        Field(ge=1, le=10, description="Maximum matches to return (1-10). Default 5."),
     ] = 5,
 ) -> list[dict]:
     """Free-text search across campaign name, target_audience, and category.
@@ -193,7 +195,11 @@ _cors = Middleware(
     expose_headers=["mcp-session-id"],
 )
 
-app = mcp.http_app(path="/mcp", transport="streamable-http", middleware=[_cors])
+app = mcp.http_app(
+    path="/mcp",
+    transport="streamable-http",
+    middleware=[_cors, mcp_basic_auth_middleware()],
+)
 
 
 def main() -> None:

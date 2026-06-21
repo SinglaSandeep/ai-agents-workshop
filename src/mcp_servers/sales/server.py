@@ -19,6 +19,8 @@ from typing import Annotated
 from fastmcp import FastMCP
 from pydantic import Field
 
+from src.common.basic_auth import mcp_basic_auth_middleware
+
 from .cosmos_repo import SalesRepository
 
 SERVER_INSTRUCTIONS = (
@@ -68,7 +70,7 @@ def revenue_summary(
     ] = "category",
     limit: Annotated[
         int,
-        Field(ge=1, le=50, description="Maximum grouped rows to return (1-50). Default 10."),
+        Field(ge=1, le=15, description="Maximum grouped rows to return (1-15). Default 10."),
     ] = 10,
 ) -> list[dict]:
     """Aggregate total revenue, units, margin and order count grouped by one dimension.
@@ -106,7 +108,7 @@ def top_products(
         str,
         Field(description="Ranking metric: revenue_usd, units, or margin_usd.", examples=["revenue_usd", "units"]),
     ] = "revenue_usd",
-    limit: Annotated[int, Field(ge=1, le=25, description="How many products (1-25). Default 5.")] = 5,
+    limit: Annotated[int, Field(ge=1, le=10, description="How many products (1-10). Default 5.")] = 5,
     ascending: Annotated[
         bool,
         Field(description="Set true to return the WORST performers (markdown/clearance candidates)."),
@@ -165,7 +167,11 @@ _cors = Middleware(
     expose_headers=["mcp-session-id"],
 )
 
-app = mcp.http_app(path="/mcp", transport="streamable-http", middleware=[_cors])
+app = mcp.http_app(
+    path="/mcp",
+    transport="streamable-http",
+    middleware=[_cors, mcp_basic_auth_middleware()],
+)
 
 
 def main() -> None:

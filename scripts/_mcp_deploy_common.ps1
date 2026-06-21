@@ -97,7 +97,9 @@ function Invoke-McpServerDeploy {
         $cosmosEndpoint = Get-RequiredValue ''               $envValues 'COSMOS_ENDPOINT'      'Cosmos endpoint'      $EnvFile
         $cosmosDatabase = Get-RequiredValue ''               $envValues 'COSMOS_DATABASE'      'Cosmos database'      $EnvFile
         $containerName  = Get-RequiredValue ''               $envValues $ContainerEnvKey       "Cosmos container for $Service" $EnvFile
-        $appInsights    = $envValues['APPLICATIONINSIGHTS_CONNECTION_STRING']
+        $appInsights     = $envValues['APPLICATIONINSIGHTS_CONNECTION_STRING']
+        $mcpAuthUsername = Get-RequiredValue '' $envValues 'MCP_BASIC_AUTH_USERNAME' 'MCP Basic Auth username' $EnvFile
+        $mcpAuthPassword = Get-RequiredValue '' $envValues 'MCP_BASIC_AUTH_PASSWORD' 'MCP Basic Auth password' $EnvFile
 
         # ---- Key-based auth: ACR admin credentials -------------------------
         # Enable the registry admin user and read its username/password so the
@@ -143,7 +145,9 @@ function Invoke-McpServerDeploy {
             "COSMOS_ENDPOINT=$cosmosEndpoint",
             'COSMOS_KEY=secretref:cosmos-key',
             "COSMOS_DATABASE=$cosmosDatabase",
-            "$ContainerEnvKey=$containerName"
+            "$ContainerEnvKey=$containerName",
+            "MCP_BASIC_AUTH_USERNAME=$mcpAuthUsername",
+            'MCP_BASIC_AUTH_PASSWORD=secretref:mcp-basic-auth-password'
         )
         if (-not [string]::IsNullOrWhiteSpace($appInsights)) {
             $envVars += "APPLICATIONINSIGHTS_CONNECTION_STRING=$appInsights"
@@ -170,7 +174,7 @@ function Invoke-McpServerDeploy {
                 --registry-server "$AcrName.azurecr.io" `
                 --registry-username $acrUsername `
                 --registry-password $acrPassword `
-                --secrets "cosmos-key=$cosmosKey" `
+                --secrets "cosmos-key=$cosmosKey" "mcp-basic-auth-password=$mcpAuthPassword" `
                 --env-vars $envVars `
                 --only-show-errors | Out-Null
             if ($LASTEXITCODE -ne 0) {
@@ -182,7 +186,7 @@ function Invoke-McpServerDeploy {
             az containerapp registry set --name $AppName --resource-group $ResourceGroup `
                 --server "$AcrName.azurecr.io" --username $acrUsername --password $acrPassword --only-show-errors | Out-Null
             az containerapp secret set --name $AppName --resource-group $ResourceGroup `
-                --secrets "cosmos-key=$cosmosKey" --only-show-errors | Out-Null
+                --secrets "cosmos-key=$cosmosKey" "mcp-basic-auth-password=$mcpAuthPassword" --only-show-errors | Out-Null
             az containerapp ingress update --name $AppName --resource-group $ResourceGroup `
                 --target-port $Port --only-show-errors | Out-Null
             az containerapp update `

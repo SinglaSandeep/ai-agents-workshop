@@ -73,7 +73,8 @@ First create the tool, then attach it to the agent.
    | ----- | ----- |
    | Name | `zava-inventory` |
    | Remote MCP server endpoint | Your `INVENTORY_MCP_URL`, for example `https://<inventory-container-app>/mcp` |
-   | Authentication | `Unauthenticated` |
+   | Authentication | `Key-based` |
+   | Credential | Key `Authorization`, Value `Basic <base64 of MCP_BASIC_AUTH_USERNAME:MCP_BASIC_AUTH_PASSWORD>` (see `.env`) |
    | Approval | `Never` |
 
 5. Save the tool and confirm it lists the Inventory tools:

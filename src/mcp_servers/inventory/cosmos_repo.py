@@ -135,9 +135,9 @@ class InventoryRepository:
         clause = " AND ".join(where)
         rows = self._query(
             "low_stock",
-            "SELECT c.id, c.distributor_id, c.distributor_name, c.warehouse_id, c.region, "
-            "c.product_id, c.product_name, c.category, c.available_units, c.reorder_point, "
-            f"c.weekly_demand_units, c.weeks_of_cover, c.stock_status FROM c WHERE {clause}",
+            "SELECT c.warehouse_id, c.product_id, c.product_name, c.category, "
+            "c.available_units, c.reorder_point, c.weekly_demand_units, "
+            f"c.weeks_of_cover, c.stock_status FROM c WHERE {clause}",
             params or None,
         )
         rows.sort(key=lambda r: r.get("weeks_of_cover", 0))
@@ -153,9 +153,9 @@ class InventoryRepository:
         clause = " AND ".join(where)
         rows = self._query(
             "overstock",
-            "SELECT c.id, c.distributor_id, c.distributor_name, c.warehouse_id, c.region, "
-            "c.product_id, c.product_name, c.category, c.on_hand_units, c.available_units, "
-            f"c.max_stock, c.weeks_of_cover, c.stock_status FROM c WHERE {clause}",
+            "SELECT c.warehouse_id, c.product_id, c.product_name, c.category, "
+            "c.on_hand_units, c.available_units, c.max_stock, "
+            f"c.weeks_of_cover, c.stock_status FROM c WHERE {clause}",
             params or None,
         )
         rows.sort(key=lambda r: r.get("on_hand_units", 0) - r.get("max_stock", 0), reverse=True)
@@ -183,10 +183,9 @@ class InventoryRepository:
         clause = " AND ".join(where)
         rows = self._query(
             "reorder_recommendations",
-            "SELECT c.id, c.distributor_id, c.distributor_name, c.warehouse_id, c.region, "
-            "c.product_id, c.product_name, c.category, c.available_units, c.reorder_point, "
-            "c.max_stock, c.weekly_demand_units, c.weeks_of_cover, c.stock_status, "
-            f"c.lead_time_days FROM c WHERE {clause}",
+            "SELECT c.warehouse_id, c.product_id, c.product_name, c.category, "
+            "c.available_units, c.reorder_point, c.max_stock, c.weekly_demand_units, "
+            f"c.weeks_of_cover, c.stock_status, c.lead_time_days FROM c WHERE {clause}",
             params or None,
         )
         recs: list[dict[str, Any]] = []

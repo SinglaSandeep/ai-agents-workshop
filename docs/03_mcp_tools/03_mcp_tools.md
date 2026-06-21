@@ -196,6 +196,27 @@ INVENTORY_MCP_URL=https://zava-inventory-mcp.<region>.azurecontainerapps.io/mcp
 MARKETING_MCP_URL=https://zava-marketing-mcp.<region>.azurecontainerapps.io/mcp
 ```
 
+### Authentication
+
+The deployed servers are **not open to the public** — `src/common/basic_auth.py`
+wraps each one in HTTP **Basic auth**, reading `MCP_BASIC_AUTH_USERNAME` and
+`MCP_BASIC_AUTH_PASSWORD` from the container environment. Keep both set in `.env`
+(the deploy scripts pass them through as Container App secrets).
+
+When you wire a server into a Foundry agent (Modules 4–6), choose **Key-based**
+authentication and add a single credential header:
+
+| Field | Value |
+| ----- | ----- |
+| Key | `Authorization` |
+| Value | `Basic <base64 of MCP_BASIC_AUTH_USERNAME:MCP_BASIC_AUTH_PASSWORD>` |
+
+Generate the header value from the credentials already in your `.env`:
+
+```powershell
+python -c "import base64,os;u=os.environ['MCP_BASIC_AUTH_USERNAME'];p=os.environ['MCP_BASIC_AUTH_PASSWORD'];print('Basic '+base64.b64encode(f'{u}:{p}'.encode()).decode())"
+```
+
 > Skipping deployment? Keep the servers running locally and point the
 > `*_MCP_URL` values at `http://localhost:<port>/mcp`. Every later module works
 > either way.

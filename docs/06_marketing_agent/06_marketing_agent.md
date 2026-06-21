@@ -94,7 +94,8 @@ Foundry IQ knowledge-base retrieval tool.
    | ----- | ----- |
    | Name | `zava-marketing` |
    | Remote MCP server endpoint | Your `MARKETING_MCP_URL`, for example `https://<marketing-container-app>/mcp` |
-   | Authentication | `Unauthenticated` |
+   | Authentication | `Key-based` |
+   | Credential | Key `Authorization`, Value `Basic <base64 of MCP_BASIC_AUTH_USERNAME:MCP_BASIC_AUTH_PASSWORD>` (see `.env`) |
    | Approval | `Never` |
 
 5. Save the tool and confirm it lists the Marketing tools:

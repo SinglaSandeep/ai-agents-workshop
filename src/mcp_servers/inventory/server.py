@@ -21,6 +21,8 @@ from typing import Annotated
 from fastmcp import FastMCP
 from pydantic import Field
 
+from src.common.basic_auth import mcp_basic_auth_middleware
+
 from .cosmos_repo import InventoryRepository
 
 SERVER_INSTRUCTIONS = (
@@ -81,7 +83,7 @@ def low_stock(
         str | None,
         Field(description="Optional category_id filter.", examples=["paint", "garden"]),
     ] = None,
-    limit: Annotated[int, Field(ge=1, le=50, description="Max rows (1-50). Default 10.")] = 10,
+    limit: Annotated[int, Field(ge=1, le=15, description="Max rows (1-15). Default 10. Use stock_status_summary for totals.")] = 10,
 ) -> list[dict]:
     """SKUs at or below their reorder point, lowest weeks-of-cover first (replenishment candidates)."""
     return _repo().low_stock(region=region, warehouse_id=warehouse_id, category=category, limit=limit)
@@ -93,7 +95,7 @@ def overstock(
         str | None,
         Field(description="Optional category_id filter.", examples=["garden", "paint"]),
     ] = None,
-    limit: Annotated[int, Field(ge=1, le=50, description="Max rows (1-50). Default 10.")] = 10,
+    limit: Annotated[int, Field(ge=1, le=15, description="Max rows (1-15). Default 10. Use stock_status_summary for totals.")] = 10,
 ) -> list[dict]:
     """SKUs flagged overstock (on hand above max_stock), greatest excess first."""
     return _repo().overstock(category=category, limit=limit)
@@ -110,7 +112,7 @@ def reorder_recommendations(
         str | None,
         Field(description="Optional category_id filter.", examples=["paint", "garden"]),
     ] = None,
-    limit: Annotated[int, Field(ge=1, le=50, description="Max rows (1-50). Default 10.")] = 10,
+    limit: Annotated[int, Field(ge=1, le=15, description="Max rows (1-15). Default 10. Use stock_status_summary for totals.")] = 10,
 ) -> list[dict]:
     """Low/stockout SKUs with a suggested reorder quantity (to reach max_stock) and lead time."""
     return _repo().reorder_recommendations(
@@ -178,7 +180,11 @@ _cors = Middleware(
     expose_headers=["mcp-session-id"],
 )
 
-app = mcp.http_app(path="/mcp", transport="streamable-http", middleware=[_cors])
+app = mcp.http_app(
+    path="/mcp",
+    transport="streamable-http",
+    middleware=[_cors, mcp_basic_auth_middleware()],
+)
 
 
 def main() -> None:
