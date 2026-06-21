@@ -27,7 +27,7 @@ from azure.ai.projects.models import (
     MCPTool,
 )
 
-from src.common.foundry_client import upsert_project_connection
+from src.common.foundry_client import upsert_kb_mcp_connection, upsert_mcp_connection
 from src.common.settings import get_settings
 from src.prompts import load_prompt
 from ._common import create_or_update_agent
@@ -57,19 +57,17 @@ def main() -> None:
     tools: list = []
 
     # 1) Marketing MCP server (Cosmos truth).
-    upsert_project_connection(
-        connection_name=settings.marketing_mcp_connection_name,
-        category="RemoteTool",
-        target=settings.marketing_mcp_url,
-        auth_type="None",
-        metadata={"ApiType": "MCP"},
+    marketing_conn = settings.scoped_connection_name(settings.marketing_mcp_connection_name)
+    upsert_mcp_connection(
+        marketing_conn,
+        settings.marketing_mcp_url,
     )
     tools.append(
         MCPTool(
             server_label="zava-marketing",
             server_url=settings.marketing_mcp_url,
             require_approval="never",
-            project_connection_id=settings.marketing_mcp_connection_name,
+            project_connection_id=marketing_conn,
         )
     )
 
@@ -81,18 +79,19 @@ def main() -> None:
         f"/knowledgebases/{settings.marketing_kb_name}"
         "/mcp?api-version=2025-11-01-preview"
     )
+    # Dedicated key-based connection (api-key header) for the KB MCP endpoint —
+    # the CognitiveSearch `srchwrk01` connection cannot auth the MCP path (401).
+    kb_conn = settings.scoped_connection_name(settings.marketing_kb_mcp_connection_name)
+    upsert_kb_mcp_connection(kb_conn, kb_url, settings.marketing_kb_name)
     print(f"Marketing KB MCP URL: {kb_url}")
-    print(
-        "Marketing KB MCP connection: "
-        f"{settings.marketing_kb_connection_name}"
-    )
+    print(f"Marketing KB MCP connection: {kb_conn}")
     tools.append(
         MCPTool(
             server_label="marketing-knowledge-base",
             server_url=kb_url,
             require_approval="never",
             allowed_tools=["knowledge_base_retrieve"],
-            project_connection_id=settings.marketing_kb_connection_name,
+            project_connection_id=kb_conn,
         )
     )
 

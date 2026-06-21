@@ -6,6 +6,7 @@ environment surface is documented in exactly one place.
 
 from __future__ import annotations
 
+import base64
 from functools import lru_cache
 from pathlib import Path
 
@@ -60,6 +61,11 @@ class Settings(BaseSettings):
     marketing_kb_connection_name: str = Field(
         default="srchwrk01", alias="MARKETING_KB_CONNECTION_NAME"
     )
+    # Dedicated RemoteTool/key-based connection that fronts the KB **MCP**
+    # endpoint (distinct from the CognitiveSearch `srchwrk01` connection).
+    marketing_kb_mcp_connection_name: str = Field(
+        default="zava-marketing-kb-mcp-conn", alias="MARKETING_KB_MCP_CONNECTION_NAME"
+    )
     marketing_toolbox_name: str = Field(
         default="zava-marketing-tools", alias="MARKETING_TOOLBOX_NAME"
     )
@@ -92,6 +98,34 @@ class Settings(BaseSettings):
     marketing_mcp_connection_name: str = Field(
         default="zava-marketing-mcp-conn", alias="MARKETING_MCP_CONNECTION_NAME"
     )
+
+    # ---- MCP server auth (HTTP Basic) -------------------------------------
+    mcp_basic_auth_username: str = Field(default="", alias="MCP_BASIC_AUTH_USERNAME")
+    mcp_basic_auth_password: str = Field(default="", alias="MCP_BASIC_AUTH_PASSWORD")
+
+    @property
+    def mcp_basic_auth_header(self) -> str:
+        """`Authorization` header value (`Basic <base64>`) for the MCP servers.
+
+        Returns an empty string when no credentials are configured, so callers
+        can fall back to an anonymous connection.
+        """
+        if not self.mcp_basic_auth_username or not self.mcp_basic_auth_password:
+            return ""
+        raw = f"{self.mcp_basic_auth_username}:{self.mcp_basic_auth_password}".encode()
+        return "Basic " + base64.b64encode(raw).decode()
+
+    def scoped_connection_name(self, base: str) -> str:
+        """Per-project connection name.
+
+        Foundry connection names are **account-scoped**: the first project to
+        create a name owns it, so other projects cannot reuse it. Appending the
+        project name keeps each workshop project's MCP connections distinct and
+        independently creatable.
+        """
+        if self.azure_ai_project_name:
+            return f"{base}-{self.azure_ai_project_name}"
+        return base
 
     # ---- Foundry agent names ----------------------------------------------
     sales_agent_name: str = Field(default="zava-sales-agent", alias="SALES_AGENT_NAME")

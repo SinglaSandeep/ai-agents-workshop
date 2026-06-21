@@ -6,7 +6,7 @@ import logging
 
 from azure.ai.projects.models import MCPTool
 
-from src.common.foundry_client import upsert_project_connection
+from src.common.foundry_client import upsert_mcp_connection
 from src.common.settings import get_settings
 from src.prompts import load_prompt
 
@@ -26,19 +26,17 @@ def main() -> None:
             "SALES_MCP_URL is empty. Deploy the Sales MCP server first."
         )
 
-    upsert_project_connection(
-        connection_name=settings.sales_mcp_connection_name,
-        category="RemoteTool",
-        target=settings.sales_mcp_url,
-        auth_type="None",
-        metadata={"ApiType": "MCP"},
+    sales_conn = settings.scoped_connection_name(settings.sales_mcp_connection_name)
+    upsert_mcp_connection(
+        sales_conn,
+        settings.sales_mcp_url,
     )
 
     sales_tool = MCPTool(
         server_label="zava-sales",
         server_url=settings.sales_mcp_url,
         require_approval="never",
-        project_connection_id=settings.sales_mcp_connection_name,
+        project_connection_id=sales_conn,
     )
 
     create_or_update_agent(
