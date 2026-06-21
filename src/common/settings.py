@@ -29,6 +29,17 @@ class Settings(BaseSettings):
     azure_subscription_id: str = Field(default="", alias="AZURE_SUBSCRIPTION_ID")
     azure_tenant_id: str = Field(default="", alias="AZURE_TENANT_ID")
     azure_resource_group: str = Field(default="", alias="AZURE_RESOURCE_GROUP")
+    # Client ID of a **user-assigned managed identity** to run hosted agents as.
+    # When set, the hosted container authenticates as this identity (which must
+    # already hold the needed roles); empty = use the system-assigned identity.
+    azure_client_id: str = Field(default="", alias="AZURE_CLIENT_ID")
+    # User-assigned managed identity for hosted-agent workloads. The resource ID
+    # is used by the deploy script to attach the identity to the Foundry account
+    # and grant it AcrPull; the client ID is what the container authenticates as
+    # at runtime (injected as AZURE_CLIENT_ID). These take precedence over
+    # AZURE_CLIENT_ID when set.
+    app_identity_resource_id: str = Field(default="", alias="APP_IDENTITY_RESOURCE_ID")
+    app_identity_client_id: str = Field(default="", alias="APP_IDENTITY_CLIENT_ID")
 
     # ---- Foundry project ---------------------------------------------------
     azure_ai_project_endpoint: str = Field(default="", alias="AZURE_AI_PROJECT_ENDPOINT")
@@ -86,6 +97,9 @@ class Settings(BaseSettings):
     sales_agent_name: str = Field(default="zava-sales-agent", alias="SALES_AGENT_NAME")
     inventory_agent_name: str = Field(
         default="zava-inventory-agent", alias="INVENTORY_AGENT_NAME"
+    )
+    inventory_hosted_agent_name: str = Field(
+        default="zava-inventory-hosted-agent", alias="INVENTORY_HOSTED_AGENT_NAME"
     )
     marketing_agent_name: str = Field(default="zava-marketing-agent", alias="MARKETING_AGENT_NAME")
     action_agent_name: str = Field(default="zava-action-agent", alias="ACTION_AGENT_NAME")

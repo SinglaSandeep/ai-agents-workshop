@@ -1,0 +1,20 @@
+# Zava Inventory **hosted** agent — container dependencies.
+#
+# agent-framework-foundry-hosting is a pre-release at workshop time, so install
+# with `--pre` (the Dockerfile passes it). Versions pinned to the last verified
+# working set (matches pyproject's `framework` extra).
+agent-framework-core==1.6.0
+agent-framework-foundry==1.6.0
+agent-framework-openai==1.6.0
+agent-framework-foundry-hosting==1.0.0a260521
+
+# The hosting runtime imports `McpError` from `mcp`, and the MCP tool needs a
+# recent client — pin >=1.9.0 so the container never crash-loops on import.
+mcp>=1.9.0
+
+azure-identity>=1.17.0
+openai>=1.55.0
+httpx>=0.27.0
+pydantic>=2.7.0
+pydantic-settings>=2.4.0
+python-dotenv>=1.0.1
