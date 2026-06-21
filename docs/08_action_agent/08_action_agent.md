@@ -38,7 +38,23 @@ optional chart spec the front end renders.
 
 ## Steps
 
-### Create the Action Recommender agent
+### Option 1 — Portal (preferred for the lab)
+
+1. Go to the [Foundry portal](https://ai.azure.com), open your workshop project, and choose **Build** → **Agents**.
+2. Select **Create agent**.
+3. In **Setup**, use these values:
+
+    | Field | Value |
+    | ----- | ----- |
+    | Agent name | `zava-action-agent` |
+    | Model deployment | Your `AZURE_AI_MODEL_DEPLOYMENT` value, usually `gpt-4.1-mini` |
+    | Instructions | Paste the `system:` body from `src/prompts/action_agent.prompty` |
+
+4. In **Tools**, select **Add** → **Code Interpreter**.
+5. Keep the default Code Interpreter container settings. This lab does not upload files to the agent; it uses Code Interpreter only for consolidating numbers already supplied by the specialists.
+6. Save or create the agent, then open **Try in playground**.
+
+### Option 2 — Python
 
 ```powershell
 python -m src.foundry_agents.create_action_agent

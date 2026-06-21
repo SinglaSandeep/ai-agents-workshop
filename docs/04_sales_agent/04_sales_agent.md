@@ -43,8 +43,9 @@ flowchart LR
 
 You built, ran, and (optionally) deployed the **Sales MCP server** in
 [Module 2 — Build the MCP Tools](../03_mcp_tools/03_mcp_tools.md). The Foundry
-agent reaches it through `SALES_MCP_URL` in your `.env`. Either keep the server
-running locally:
+agent reaches it through `SALES_MCP_URL` in your `.env`. For portal-created
+agents, use the deployed Container Apps endpoint because Foundry needs a remote
+MCP endpoint. For local MCP testing, keep the server running locally:
 
 ```powershell
 uvicorn src.mcp_servers.sales.server:app --port 8001
@@ -57,6 +58,40 @@ uvicorn src.mcp_servers.sales.server:app --port 8001
 > `python -m src.mcp_servers.sales.seed.seed_cosmos`.
 
 ### 2. Create the Sales Foundry agent
+
+#### Option 1 — Portal (preferred for the lab)
+
+First create the tool, then attach it to the agent.
+
+1. In the [Foundry portal](https://ai.azure.com), open your workshop project.
+2. Choose **Build** → **Tools** → **Add tool**.
+3. Select **Model Context Protocol (MCP)** or **Custom MCP server**.
+4. Configure the tool:
+
+   | Field | Value |
+   | ----- | ----- |
+   | Name | `zava-sales` |
+   | Remote MCP server endpoint | Your `SALES_MCP_URL`, for example `https://<sales-container-app>/mcp` |
+   | Authentication | `Unauthenticated` |
+   | Approval | `Never` |
+
+5. Save the tool and confirm it lists the Sales tools:
+   `list_dimensions`, `revenue_summary`, `monthly_trend`, `top_products`,
+   `sales_for_product`, `get_order`.
+6. Choose **Build** → **Agents** → **Create agent**.
+7. In **Setup**, use these values:
+
+   | Field | Value |
+   | ----- | ----- |
+   | Agent name | `zava-sales-agent` |
+   | Model deployment | Your `AZURE_AI_MODEL_DEPLOYMENT` value, usually `gpt-4.1-mini` |
+   | Instructions | Paste the `system:` body from `src/prompts/sales_agent.prompty` |
+
+8. In **Tools**, select **Add**, choose the `zava-sales` MCP tool you just
+   created, and add it to the agent.
+9. Save or create the agent, then open **Try in playground**.
+
+#### Option 2 — Python
 
 ```powershell
 python -m src.foundry_agents.create_sales_agent

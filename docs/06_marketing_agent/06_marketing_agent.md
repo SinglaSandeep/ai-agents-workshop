@@ -50,8 +50,9 @@ knowledge base adds **unstructured context** (briefs, post-mortems).
 
 You built the **Marketing MCP server** in
 [Module 2 — Build the MCP Tools](../03_mcp_tools/03_mcp_tools.md). The Foundry
-agent reaches it through `MARKETING_MCP_URL` in your `.env`. Keep it running
-locally:
+agent reaches it through `MARKETING_MCP_URL` in your `.env`. For portal-created
+agents, use the deployed Container Apps endpoint because Foundry needs a remote
+MCP endpoint. For local MCP testing, keep it running locally:
 
 ```powershell
 uvicorn src.mcp_servers.marketing.server:app --port 8003
@@ -78,6 +79,52 @@ This creates the Azure AI Search index, uploads the briefs/post-mortems from
 base, and registers its project connection.
 
 ### 3. Create the Marketing Foundry agent
+
+#### Option 1 — Portal (preferred for the lab)
+
+Marketing needs **two** tools: the structured campaign MCP tool and the
+Foundry IQ knowledge-base retrieval tool.
+
+1. In the [Foundry portal](https://ai.azure.com), open your workshop project.
+2. Choose **Build** → **Tools** → **Add tool**.
+3. Select **Model Context Protocol (MCP)** or **Custom MCP server**.
+4. Configure the Marketing MCP tool:
+
+   | Field | Value |
+   | ----- | ----- |
+   | Name | `zava-marketing` |
+   | Remote MCP server endpoint | Your `MARKETING_MCP_URL`, for example `https://<marketing-container-app>/mcp` |
+   | Authentication | `Unauthenticated` |
+   | Approval | `Never` |
+
+5. Save the tool and confirm it lists the Marketing tools:
+   `list_active_campaigns`, `list_campaigns_by_category`,
+   `list_campaigns_by_store`, `get_campaign`, `search_campaigns`,
+   `campaign_performance`.
+6. Choose **Add tool** again and add the Foundry IQ knowledge-base MCP tool:
+
+   | Field | Value |
+   | ----- | ----- |
+   | Name | `marketing-knowledge-base` |
+   | Remote MCP server endpoint | `<AZURE_SEARCH_ENDPOINT>/knowledgebases/zava-marketing-kb/mcp?api-version=2025-11-01-preview` |
+   | Authentication | Use the project connection created for the knowledge base, usually `srchwrk01` |
+   | Allowed tools | `knowledge_base_retrieve` |
+   | Approval | `Never` |
+
+7. Choose **Build** → **Agents** → **Create agent**.
+8. In **Setup**, use these values:
+
+   | Field | Value |
+   | ----- | ----- |
+   | Agent name | `zava-marketing-agent` |
+   | Model deployment | Your `AZURE_AI_MODEL_DEPLOYMENT` value, usually `gpt-4.1-mini` |
+   | Instructions | Paste the `system:` body from `src/prompts/marketing_agent.prompty` |
+
+9. In **Tools**, select **Add** and attach both tools:
+   `zava-marketing` and `marketing-knowledge-base`.
+10. Save or create the agent, then open **Try in playground**.
+
+#### Option 2 — Python
 
 ```powershell
 python -m src.foundry_agents.create_marketing_agent

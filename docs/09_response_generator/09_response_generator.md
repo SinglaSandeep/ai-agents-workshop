@@ -38,7 +38,22 @@ orchestrator output into the polished final answer.
 
 ## Steps
 
-### Create the Response Generator agent
+### Option 1 — Portal (preferred for the lab)
+
+1. Go to the [Foundry portal](https://ai.azure.com), open your workshop project, and choose **Build** → **Agents**.
+2. Select **Create agent**.
+3. In **Setup**, use these values:
+
+    | Field | Value |
+    | ----- | ----- |
+    | Agent name | `zava-response-generator` |
+    | Model deployment | Your `AZURE_AI_MODEL_DEPLOYMENT` value, usually `gpt-4.1-mini` |
+    | Instructions | Paste the `system:` body from `src/prompts/response_agent.prompty` |
+
+4. Leave **Tools** empty. This agent is intentionally tool-less.
+5. Save or create the agent, then open **Try in playground**.
+
+### Option 2 — Python
 
 ```powershell
 python -m src.foundry_agents.create_response_agent

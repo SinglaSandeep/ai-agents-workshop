@@ -44,8 +44,9 @@ flowchart LR
 
 You built and tested the **Inventory MCP server** in
 [Module 2 — Build the MCP Tools](../03_mcp_tools/03_mcp_tools.md). The Foundry
-agent reaches it through `INVENTORY_MCP_URL` in your `.env`. Either keep the
-server running locally:
+agent reaches it through `INVENTORY_MCP_URL` in your `.env`. For portal-created
+agents, use the deployed Container Apps endpoint because Foundry needs a remote
+MCP endpoint. For local MCP testing, keep the server running locally:
 
 ```powershell
 uvicorn src.mcp_servers.inventory.server:app --port 8002
@@ -58,6 +59,41 @@ uvicorn src.mcp_servers.inventory.server:app --port 8002
 > `python -m src.mcp_servers.inventory.seed.seed_cosmos`.
 
 ### 2. Create the Inventory Foundry agent
+
+#### Option 1 — Portal (preferred for the lab)
+
+First create the tool, then attach it to the agent.
+
+1. In the [Foundry portal](https://ai.azure.com), open your workshop project.
+2. Choose **Build** → **Tools** → **Add tool**.
+3. Select **Model Context Protocol (MCP)** or **Custom MCP server**.
+4. Configure the tool:
+
+   | Field | Value |
+   | ----- | ----- |
+   | Name | `zava-inventory` |
+   | Remote MCP server endpoint | Your `INVENTORY_MCP_URL`, for example `https://<inventory-container-app>/mcp` |
+   | Authentication | `Unauthenticated` |
+   | Approval | `Never` |
+
+5. Save the tool and confirm it lists the Inventory tools:
+   `list_distributors`, `stock_status_summary`, `low_stock`, `overstock`,
+   `reorder_recommendations`, `inventory_for_product`, `inventory_trend`,
+   `get_inventory`.
+6. Choose **Build** → **Agents** → **Create agent**.
+7. In **Setup**, use these values:
+
+   | Field | Value |
+   | ----- | ----- |
+   | Agent name | `zava-inventory-agent` |
+   | Model deployment | Your `AZURE_AI_MODEL_DEPLOYMENT` value, usually `gpt-4.1-mini` |
+   | Instructions | Paste the `system:` body from `src/prompts/inventory_agent.prompty` |
+
+8. In **Tools**, select **Add**, choose the `zava-inventory` MCP tool you just
+   created, and add it to the agent.
+9. Save or create the agent, then open **Try in playground**.
+
+#### Option 2 — Python
 
 ```powershell
 python -m src.foundry_agents.create_inventory_agent
