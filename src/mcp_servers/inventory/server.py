@@ -77,26 +77,48 @@ def low_stock(
         str | None,
         Field(description="Optional warehouse filter.", examples=["WH-SEA", "WH-SPO"]),
     ] = None,
-    limit: Annotated[int, Field(ge=1, le=100, description="Max rows (1–100). Default 25.")] = 25,
+    category: Annotated[
+        str | None,
+        Field(description="Optional category_id filter.", examples=["paint", "garden"]),
+    ] = None,
+    limit: Annotated[int, Field(ge=1, le=50, description="Max rows (1-50). Default 10.")] = 10,
 ) -> list[dict]:
     """SKUs at or below their reorder point, lowest weeks-of-cover first (replenishment candidates)."""
-    return _repo().low_stock(region=region, warehouse_id=warehouse_id, limit=limit)
+    return _repo().low_stock(region=region, warehouse_id=warehouse_id, category=category, limit=limit)
 
 
 @mcp.tool
 def overstock(
-    limit: Annotated[int, Field(ge=1, le=100, description="Max rows (1–100). Default 25.")] = 25,
+    category: Annotated[
+        str | None,
+        Field(description="Optional category_id filter.", examples=["garden", "paint"]),
+    ] = None,
+    limit: Annotated[int, Field(ge=1, le=50, description="Max rows (1-50). Default 10.")] = 10,
 ) -> list[dict]:
     """SKUs flagged overstock (on hand above max_stock), greatest excess first."""
-    return _repo().overstock(limit=limit)
+    return _repo().overstock(category=category, limit=limit)
 
 
 @mcp.tool
 def reorder_recommendations(
-    limit: Annotated[int, Field(ge=1, le=100, description="Max rows (1–100). Default 25.")] = 25,
+    region: Annotated[str | None, Field(description="Optional region filter.")] = None,
+    warehouse_id: Annotated[
+        str | None,
+        Field(description="Optional warehouse filter.", examples=["WH-SEA", "WH-SPO"]),
+    ] = None,
+    category: Annotated[
+        str | None,
+        Field(description="Optional category_id filter.", examples=["paint", "garden"]),
+    ] = None,
+    limit: Annotated[int, Field(ge=1, le=50, description="Max rows (1-50). Default 10.")] = 10,
 ) -> list[dict]:
     """Low/stockout SKUs with a suggested reorder quantity (to reach max_stock) and lead time."""
-    return _repo().reorder_recommendations(limit=limit)
+    return _repo().reorder_recommendations(
+        region=region,
+        warehouse_id=warehouse_id,
+        category=category,
+        limit=limit,
+    )
 
 
 @mcp.tool

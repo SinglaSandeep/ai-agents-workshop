@@ -237,7 +237,7 @@ class SalesRepository:
         try:
             item = self._container.read_item(item=order_id, partition_key=order_id)
             logger.info("cosmos get_order id=%s found=True elapsed_ms=%.1f", order_id, (time.perf_counter() - t0) * 1000)
-            return item
+            return self._project_order(item)
         except Exception as exc:
             logger.info(
                 "cosmos get_order id=%s found=False elapsed_ms=%.1f error=%s",
@@ -246,3 +246,23 @@ class SalesRepository:
                 exc.__class__.__name__,
             )
             return None
+
+    @staticmethod
+    def _project_order(row: dict[str, Any]) -> dict[str, Any]:
+        keys = (
+            "id",
+            "order_date",
+            "month",
+            "store_id",
+            "region",
+            "channel",
+            "category",
+            "product_id",
+            "product_name",
+            "customer_segment",
+            "units",
+            "unit_price_usd",
+            "revenue_usd",
+            "margin_usd",
+        )
+        return {k: row.get(k) for k in keys}

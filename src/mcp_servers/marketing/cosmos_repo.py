@@ -19,11 +19,11 @@ def _log_query(op, query, params, *, count, elapsed_ms):
     )
 
 
-# Common projection used by list/search tools.
-_PROJECTION = (
+# Compact projection used by list/search tools. KPI and spend details are
+# available through campaign_performance once a campaign id is selected.
+_LIST_PROJECTION = (
     "c.id, c.name, c.status, c.category, c.start_date, c.end_date, c.stores, "
-    "c.featured_products, c.discount_percent, c.channel, c.target_audience, "
-    "c.budget_usd, c.spend_usd, c.kb_brief"
+    "c.featured_products, c.discount_percent, c.channel, c.kb_brief"
 )
 
 
@@ -33,7 +33,7 @@ class MarketingRepository:
         self._container = get_container(settings.cosmos_marketing_container)
 
     def list_active_campaigns(self, limit: int = 20) -> list[dict[str, Any]]:
-        query = f"SELECT TOP @limit {_PROJECTION} FROM c WHERE c.status = 'active'"
+        query = f"SELECT TOP @limit {_LIST_PROJECTION} FROM c WHERE c.status = 'active'"
         params = [{"name": "@limit", "value": limit}]
         t0 = time.perf_counter()
         rows = list(self._container.query_items(
@@ -45,7 +45,7 @@ class MarketingRepository:
 
     def list_campaigns_by_category(self, category: str, limit: int = 20) -> list[dict[str, Any]]:
         query = (
-            f"SELECT TOP @limit {_PROJECTION} FROM c "
+            f"SELECT TOP @limit {_LIST_PROJECTION} FROM c "
             "WHERE LOWER(c.category) = LOWER(@cat)"
         )
         params = [{"name": "@limit", "value": limit}, {"name": "@cat", "value": category}]
@@ -60,7 +60,7 @@ class MarketingRepository:
     def list_campaigns_by_store(self, store_id: str, limit: int = 20) -> list[dict[str, Any]]:
         """Campaigns whose ``stores`` array contains ``store_id``."""
         query = (
-            f"SELECT TOP @limit {_PROJECTION} FROM c "
+            f"SELECT TOP @limit {_LIST_PROJECTION} FROM c "
             "WHERE ARRAY_CONTAINS(c.stores, @store_id, false)"
         )
         params = [{"name": "@limit", "value": limit}, {"name": "@store_id", "value": store_id.lower()}]
@@ -78,7 +78,7 @@ class MarketingRepository:
             item = self._container.read_item(item=campaign_id, partition_key=campaign_id)
             logger.info("cosmos get_campaign id=%s found=True elapsed_ms=%.1f",
                         campaign_id, (time.perf_counter() - t0) * 1000)
-            return item
+            return self._project_campaign(item)
         except Exception as exc:
             logger.info("cosmos get_campaign id=%s found=False elapsed_ms=%.1f error=%s",
                         campaign_id, (time.perf_counter() - t0) * 1000, exc.__class__.__name__)
@@ -86,7 +86,7 @@ class MarketingRepository:
 
     def search_campaigns(self, text: str, limit: int = 10) -> list[dict[str, Any]]:
         query = (
-            f"SELECT TOP @limit {_PROJECTION} FROM c "
+            f"SELECT TOP @limit {_LIST_PROJECTION} FROM c "
             "WHERE CONTAINS(LOWER(c.name), LOWER(@q)) "
             "   OR CONTAINS(LOWER(c.target_audience), LOWER(@q)) "
             "   OR CONTAINS(LOWER(c.category), LOWER(@q))"
@@ -121,3 +121,26 @@ class MarketingRepository:
             "ctr": round(ctr, 4),
             "roi": campaign.get("roi"),
         }
+
+    @staticmethod
+    def _project_campaign(campaign: dict[str, Any]) -> dict[str, Any]:
+        keys = (
+            "id",
+            "name",
+            "status",
+            "category",
+            "start_date",
+            "end_date",
+            "stores",
+            "featured_products",
+            "discount_percent",
+            "channel",
+            "target_audience",
+            "budget_usd",
+            "spend_usd",
+            "impressions",
+            "clicks",
+            "roi",
+            "kb_brief",
+        )
+        return {k: campaign.get(k) for k in keys}

@@ -113,7 +113,13 @@ class InventoryRepository:
         result.sort(key=lambda r: r.get("skus", 0), reverse=True)
         return result
 
-    def low_stock(self, region: str | None = None, warehouse_id: str | None = None, limit: int = 25) -> list[dict[str, Any]]:
+    def low_stock(
+        self,
+        region: str | None = None,
+        warehouse_id: str | None = None,
+        category: str | None = None,
+        limit: int = 10,
+    ) -> list[dict[str, Any]]:
         """Latest SKUs at or below their reorder point (low or stockout), worst first."""
         where = ["c.is_latest = true", "c.available_units <= c.reorder_point"]
         params: list[dict[str, Any]] = []
@@ -123,30 +129,65 @@ class InventoryRepository:
         if warehouse_id:
             where.append("LOWER(c.warehouse_id) = LOWER(@wh)")
             params.append({"name": "@wh", "value": warehouse_id})
+        if category:
+            where.append("LOWER(c.category) = LOWER(@category)")
+            params.append({"name": "@category", "value": category})
         clause = " AND ".join(where)
         rows = self._query(
             "low_stock",
-            f"SELECT * FROM c WHERE {clause}",
+            "SELECT c.id, c.distributor_id, c.distributor_name, c.warehouse_id, c.region, "
+            "c.product_id, c.product_name, c.category, c.available_units, c.reorder_point, "
+            f"c.weekly_demand_units, c.weeks_of_cover, c.stock_status FROM c WHERE {clause}",
             params or None,
         )
         rows.sort(key=lambda r: r.get("weeks_of_cover", 0))
         return [self._project(r) for r in rows[:limit]]
 
-    def overstock(self, limit: int = 25) -> list[dict[str, Any]]:
+    def overstock(self, category: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
         """Latest SKUs flagged overstock (above max_stock), most excess first."""
+        where = ["c.is_latest = true", "c.stock_status = 'overstock'"]
+        params: list[dict[str, Any]] = []
+        if category:
+            where.append("LOWER(c.category) = LOWER(@category)")
+            params.append({"name": "@category", "value": category})
+        clause = " AND ".join(where)
         rows = self._query(
             "overstock",
-            "SELECT * FROM c WHERE c.is_latest = true AND c.stock_status = 'overstock'",
+            "SELECT c.id, c.distributor_id, c.distributor_name, c.warehouse_id, c.region, "
+            "c.product_id, c.product_name, c.category, c.on_hand_units, c.available_units, "
+            f"c.max_stock, c.weeks_of_cover, c.stock_status FROM c WHERE {clause}",
+            params or None,
         )
         rows.sort(key=lambda r: r.get("on_hand_units", 0) - r.get("max_stock", 0), reverse=True)
-        return [self._project(r) for r in rows[:limit]]
+        return [{**self._project(r), "excess_units": max(0, int(r.get("on_hand_units", 0)) - int(r.get("max_stock", 0)))} for r in rows[:limit]]
 
-    def reorder_recommendations(self, limit: int = 25) -> list[dict[str, Any]]:
+    def reorder_recommendations(
+        self,
+        region: str | None = None,
+        warehouse_id: str | None = None,
+        category: str | None = None,
+        limit: int = 10,
+    ) -> list[dict[str, Any]]:
         """Latest low/stockout SKUs with a suggested reorder quantity to reach max_stock."""
+        where = ["c.is_latest = true", "c.available_units <= c.reorder_point"]
+        params: list[dict[str, Any]] = []
+        if region:
+            where.append("LOWER(c.region) = LOWER(@region)")
+            params.append({"name": "@region", "value": region})
+        if warehouse_id:
+            where.append("LOWER(c.warehouse_id) = LOWER(@wh)")
+            params.append({"name": "@wh", "value": warehouse_id})
+        if category:
+            where.append("LOWER(c.category) = LOWER(@category)")
+            params.append({"name": "@category", "value": category})
+        clause = " AND ".join(where)
         rows = self._query(
             "reorder_recommendations",
-            "SELECT * FROM c WHERE c.is_latest = true "
-            "AND c.available_units <= c.reorder_point",
+            "SELECT c.id, c.distributor_id, c.distributor_name, c.warehouse_id, c.region, "
+            "c.product_id, c.product_name, c.category, c.available_units, c.reorder_point, "
+            "c.max_stock, c.weekly_demand_units, c.weeks_of_cover, c.stock_status, "
+            f"c.lead_time_days FROM c WHERE {clause}",
+            params or None,
         )
         recs: list[dict[str, Any]] = []
         for r in rows:
@@ -166,7 +207,10 @@ class InventoryRepository:
         params = [{"name": "@pid", "value": product_id}]
         rows = self._query(
             "inventory_for_product",
-            "SELECT * FROM c WHERE c.is_latest = true AND c.product_id = @pid",
+            "SELECT c.id, c.distributor_id, c.distributor_name, c.warehouse_id, c.region, "
+            "c.product_id, c.product_name, c.category, c.on_hand_units, c.available_units, "
+            "c.reorder_point, c.weekly_demand_units, c.weeks_of_cover, c.stock_status "
+            "FROM c WHERE c.is_latest = true AND c.product_id = @pid",
             params,
         )
         if not rows:
@@ -211,7 +255,7 @@ class InventoryRepository:
                 inventory_id,
                 (time.perf_counter() - t0) * 1000,
             )
-            return item
+            return self._project(item)
         except Exception as exc:
             logger.info(
                 "cosmos get_inventory id=%s found=False elapsed_ms=%.1f error=%s",
@@ -226,8 +270,6 @@ class InventoryRepository:
         """Trim a raw snapshot document to the fields agents care about."""
         keys = (
             "id",
-            "snapshot_date",
-            "week",
             "distributor_id",
             "distributor_name",
             "warehouse_id",
@@ -236,13 +278,12 @@ class InventoryRepository:
             "product_name",
             "category",
             "on_hand_units",
-            "allocated_units",
             "available_units",
             "reorder_point",
-            "safety_stock",
             "max_stock",
             "weekly_demand_units",
             "weeks_of_cover",
             "stock_status",
+            "lead_time_days",
         )
-        return {k: row.get(k) for k in keys}
+        return {k: row.get(k) for k in keys if k in row}

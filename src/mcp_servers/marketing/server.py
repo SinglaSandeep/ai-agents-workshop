@@ -50,8 +50,8 @@ def _repo() -> MarketingRepository:
 def list_active_campaigns(
     limit: Annotated[
         int,
-        Field(ge=1, le=100, description="Maximum campaigns to return (1–100). Default 20."),
-    ] = 20,
+        Field(ge=1, le=25, description="Maximum campaigns to return (1-25). Default 5."),
+    ] = 5,
 ) -> list[dict]:
     """Return campaigns whose status is currently `active`.
 
@@ -78,8 +78,8 @@ def list_campaigns_by_category(
     ],
     limit: Annotated[
         int,
-        Field(ge=1, le=100, description="Maximum campaigns to return (1–100). Default 20."),
-    ] = 20,
+        Field(ge=1, le=25, description="Maximum campaigns to return (1-25). Default 5."),
+    ] = 5,
 ) -> list[dict]:
     """List campaigns for a specific category_id, regardless of status."""
     return _repo().list_campaigns_by_category(category=category, limit=limit)
@@ -101,8 +101,8 @@ def list_campaigns_by_store(
     ],
     limit: Annotated[
         int,
-        Field(ge=1, le=100, description="Maximum campaigns to return (1–100). Default 20."),
-    ] = 20,
+        Field(ge=1, le=25, description="Maximum campaigns to return (1-25). Default 5."),
+    ] = 5,
 ) -> list[dict]:
     """List campaigns whose ``stores`` array contains ``store_id``.
 
@@ -150,8 +150,8 @@ def search_campaigns(
     ],
     limit: Annotated[
         int,
-        Field(ge=1, le=50, description="Maximum matches to return (1–50). Default 10."),
-    ] = 10,
+        Field(ge=1, le=25, description="Maximum matches to return (1-25). Default 5."),
+    ] = 5,
 ) -> list[dict]:
     """Free-text search across campaign name, target_audience, and category.
 

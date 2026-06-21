@@ -68,8 +68,8 @@ def revenue_summary(
     ] = "category",
     limit: Annotated[
         int,
-        Field(ge=1, le=200, description="Maximum grouped rows to return (1–200). Default 50."),
-    ] = 50,
+        Field(ge=1, le=50, description="Maximum grouped rows to return (1-50). Default 10."),
+    ] = 10,
 ) -> list[dict]:
     """Aggregate total revenue, units, margin and order count grouped by one dimension.
 
@@ -106,7 +106,7 @@ def top_products(
         str,
         Field(description="Ranking metric: revenue_usd, units, or margin_usd.", examples=["revenue_usd", "units"]),
     ] = "revenue_usd",
-    limit: Annotated[int, Field(ge=1, le=50, description="How many products (1–50). Default 10.")] = 10,
+    limit: Annotated[int, Field(ge=1, le=25, description="How many products (1-25). Default 5.")] = 5,
     ascending: Annotated[
         bool,
         Field(description="Set true to return the WORST performers (markdown/clearance candidates)."),
