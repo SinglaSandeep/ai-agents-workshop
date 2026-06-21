@@ -113,7 +113,7 @@ def build_workflow(credential: Any, *, manager_model: str | None = None) -> Any:
             "Answers questions about Zava marketing campaigns (status, KPIs, "
             "budgets, ROI, target stores/categories) using the Marketing MCP "
             "server (Cosmos DB) joined with the Foundry IQ knowledge base of "
-            "briefs/post-mortems, plus the Foundry Toolbox web_search tool for live context."
+            "briefs/post-mortems."
         ),
     )
     action = FoundryAgent(

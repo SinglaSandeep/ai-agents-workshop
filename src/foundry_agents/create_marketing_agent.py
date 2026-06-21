@@ -103,7 +103,7 @@ def main() -> None:
         model=settings.azure_ai_model_deployment,
         description=(
             "Zava Marketing specialist (Foundry Prompt Agent). Wires "
-            "Marketing MCP + Code Interpreter + Foundry IQ KB."
+            "Marketing MCP + Foundry IQ KB."
         ),
     )
 
