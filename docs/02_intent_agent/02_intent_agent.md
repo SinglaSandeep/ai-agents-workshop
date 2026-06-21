@@ -38,7 +38,7 @@ exactly `GENERAL` or `BUSINESS`.
 
 ## Steps
 
-### Option 1 — Portal (preferred for the lab)
+### Option 1 — Portal
 
 1. Go to the [Foundry portal](https://ai.azure.com), open your workshop project, and choose **Build** → **Agents**.
 2. Select **Create agent**.
@@ -53,7 +53,7 @@ exactly `GENERAL` or `BUSINESS`.
 4. Leave **Tools** empty. This agent is intentionally tool-less.
 5. Save or create the agent, then open **Try in playground**.
 
-### Option 2 — Python
+### Option 2 — Script
 
 ```powershell
 python -m src.foundry_agents.create_intent_agent

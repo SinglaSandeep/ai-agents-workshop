@@ -38,7 +38,7 @@ optional chart spec the front end renders.
 
 ## Steps
 
-### Option 1 — Portal (preferred for the lab)
+### Option 1 — Portal
 
 1. Go to the [Foundry portal](https://ai.azure.com), open your workshop project, and choose **Build** → **Agents**.
 2. Select **Create agent**.
@@ -54,7 +54,7 @@ optional chart spec the front end renders.
 5. Keep the default Code Interpreter container settings. This lab does not upload files to the agent; it uses Code Interpreter only for consolidating numbers already supplied by the specialists.
 6. Save or create the agent, then open **Try in playground**.
 
-### Option 2 — Python
+### Option 2 — Script
 
 ```powershell
 python -m src.foundry_agents.create_action_agent

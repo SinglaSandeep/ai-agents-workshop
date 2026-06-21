@@ -80,7 +80,7 @@ base, and registers its project connection.
 
 ### 3. Create the Marketing Foundry agent
 
-#### Option 1 — Portal (preferred for the lab)
+#### Option 1 — Portal
 
 Marketing needs **two** tools: the structured campaign MCP tool and the
 Foundry IQ knowledge-base retrieval tool.
@@ -125,7 +125,7 @@ Foundry IQ knowledge-base retrieval tool.
    `zava-marketing` and `marketing-knowledge-base`.
 10. Save or create the agent, then open **Try in playground**.
 
-#### Option 2 — Python
+#### Option 2 — Script
 
 ```powershell
 python -m src.foundry_agents.create_marketing_agent

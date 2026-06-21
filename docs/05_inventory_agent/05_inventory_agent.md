@@ -60,7 +60,7 @@ uvicorn src.mcp_servers.inventory.server:app --port 8002
 
 ### 2. Create the Inventory Foundry agent
 
-#### Option 1 — Portal (preferred for the lab)
+#### Option 1 — Portal
 
 First create the tool, then attach it to the agent.
 
@@ -94,7 +94,7 @@ First create the tool, then attach it to the agent.
    created, and add it to the agent.
 9. Save or create the agent, then open **Try in playground**.
 
-#### Option 2 — Python
+#### Option 2 — Script
 
 ```powershell
 python -m src.foundry_agents.create_inventory_agent

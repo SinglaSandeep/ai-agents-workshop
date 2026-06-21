@@ -59,7 +59,7 @@ uvicorn src.mcp_servers.sales.server:app --port 8001
 
 ### 2. Create the Sales Foundry agent
 
-#### Option 1 — Portal (preferred for the lab)
+#### Option 1 — Portal
 
 First create the tool, then attach it to the agent.
 
@@ -92,7 +92,7 @@ First create the tool, then attach it to the agent.
    created, and add it to the agent.
 9. Save or create the agent, then open **Try in playground**.
 
-#### Option 2 — Python
+#### Option 2 — Script
 
 ```powershell
 python -m src.foundry_agents.create_sales_agent
