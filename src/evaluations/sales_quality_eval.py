@@ -116,7 +116,7 @@ def main() -> None:
             "name": ev["name"],
             "evaluator_name": ev["evaluator_name"],
             "data_mapping": ev["data_mapping"],
-            "initialization_parameters": {"deployment_name": "gpt-5-mini"},
+            "initialization_parameters": {"deployment_name": "gpt-5.4-mini"},
         }
         for ev in TOP_3_EVALUATORS
     ]

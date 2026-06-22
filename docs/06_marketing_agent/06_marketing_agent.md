@@ -171,7 +171,7 @@ Type a question and press **Enter**. Start simple, then go deeper:
 | --------------- | ----------------------------- |
 | *"What can you help me with?"* | A short description of its marketing role |
 | *"How did the spring garden campaign perform?"* | KPIs/ROI citing `campaign_id` / `store_id` / `category_id` |
-| *"What did we learn from that campaign?"* | A narrative drawn from the `zava-marketing-kb` briefs |
+| *"What did we learn from the 2025 Spring Paint Sale?"* | A narrative drawn from the `zava-marketing-kb` briefs |
 
 ### What to look for (beginner checklist)
 
