@@ -63,17 +63,23 @@ write new code — your job in this exercise is to **run** each server and
 ## 1. Run an MCP server locally
 
 Each server is a FastMCP app exposing a **streamable-HTTP** endpoint at
-`/mcp`. Start whichever one you want to test:
+`/mcp`. The servers enforce **HTTP Basic auth**, so they read
+`MCP_BASIC_AUTH_USERNAME` and `MCP_BASIC_AUTH_PASSWORD` (plus the Cosmos DB
+settings) from the environment at startup. `uvicorn` does **not** auto-load your
+`.env`, so pass it with `--env-file` — otherwise the server fails with
+`RuntimeError: MCP_BASIC_AUTH_USERNAME must be set to enable MCP Basic Auth.`
+
+Start whichever server you want to test:
 
 ```powershell
 # Sales insights  → http://localhost:8001/mcp
-uvicorn src.mcp_servers.sales.server:app --port 8001
+uvicorn src.mcp_servers.sales.server:app --port 8001 --env-file .env
 
 # Inventory health → http://localhost:8002/mcp
-uvicorn src.mcp_servers.inventory.server:app --port 8002
+uvicorn src.mcp_servers.inventory.server:app --port 8002 --env-file .env
 
 # Marketing campaigns → http://localhost:8003/mcp
-uvicorn src.mcp_servers.marketing.server:app --port 8003
+uvicorn src.mcp_servers.marketing.server:app --port 8003 --env-file .env
 ```
 
 Leave the server running in its own terminal.
@@ -103,21 +109,30 @@ Then, in the Inspector UI:
 1. **Transport Type** → select **Streamable HTTP**.
 2. **URL** → enter `http://localhost:8001/mcp` (use `8002` for inventory,
    `8003` for marketing).
-3. Click **Connect**. The status dot turns green.
-4. Open the **Tools** tab → click **List Tools**.
-5. Pick a tool (e.g. `monthly_trend`), fill in its arguments
+3. Expand **Authentication** → **Custom Headers** and add one header (the
+   servers require Basic auth, so without it Connect returns `401`):
+   - **Name**: `Authorization`
+   - **Value**: copy the ready-made `Basic …` value from the
+     **Foundry MCP connection** note in your `.env`.
+   Keep the header toggle **enabled**.
+4. Click **Connect**. The status dot turns green.
+5. Open the **Tools** tab → click **List Tools**.
+6. Pick a tool (e.g. `monthly_trend`), fill in its arguments
    (e.g. `category` = `paint`), then click **Run Tool**.
-6. Read the JSON in the **Response** pane — that's exactly what the agent
+7. Read the JSON in the **Response** pane — that's exactly what the agent
    receives.
 
 Prefer the terminal? Skip the UI entirely and call tools headless:
 
 ```powershell
-# List the tools a server exposes
-npx @modelcontextprotocol/inspector --cli http://localhost:8001/mcp --method tools/list
+# List the tools a server exposes (pass the Basic auth header the server requires;
+# copy the Basic … value from your .env)
+npx @modelcontextprotocol/inspector --cli http://localhost:8001/mcp `
+  --header "Authorization: Basic <value from .env>" --method tools/list
 
 # Call one tool with arguments
-npx @modelcontextprotocol/inspector --cli http://localhost:8001/mcp \
+npx @modelcontextprotocol/inspector --cli http://localhost:8001/mcp `
+  --header "Authorization: Basic <value from .env>" `
   --method tools/call --tool-name monthly_trend --tool-arg category=paint
 ```
 
