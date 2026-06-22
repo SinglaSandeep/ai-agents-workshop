@@ -135,5 +135,3 @@ flowchart LR
 | Evaluations                                  | [Exercise 12](12_evaluations/12_evaluations.md)                             |
 | Observability · App Insights                 | [Exercise 13](13_observability/13_observability.md)                         |
 | Guardrails & red teaming                     | [Exercise 14](14_guardrails_red_teaming/14_guardrails_red_teaming.md)       |
-| Governance                                   | [Exercise 15](15_governance/15_governance.md)                               |
-| Clean up                                     | [Exercise 16](16_cleanup/16_cleanup.md)                                     |

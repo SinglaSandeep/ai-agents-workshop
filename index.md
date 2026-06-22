@@ -82,7 +82,6 @@ start.
 | **4 · Add Knowledge with Foundry IQ** | Marketing agent (MCP + Foundry IQ) | A knowledge-grounded agent |
 | **5 · Orchestrate & Deploy** | Magentic orchestrator + Action & Response agents + deploy | Reliable coordination, shipped |
 | **6 · Evaluate, Trace & Guardrails** | Evaluations + observability + guardrails | Measured, safe behaviour |
-| **7 · Governance & Wrap-Up** | Governance review + cleanup | Governance and teardown |
 
 Work through the modules in order, using the navigation on the left.
 
